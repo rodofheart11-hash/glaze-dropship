@@ -411,7 +411,21 @@ function setupEventListeners() {
 
     // Checkout Action -> Redirect directly to Shopify Checkout!
     checkoutBtn.addEventListener("click", () => {
-        window.location.href = '/checkout';
+        const hasRealItems = cart.some(item => String(item.variantId).length >= 8 && !String(item.variantId).includes('mock') && String(item.variantId) !== "1");
+        if (hasRealItems) {
+            window.location.href = '/checkout';
+        } else {
+            // Local checkout simulation for mock demo
+            const prefix = "GLZ";
+            const num = Math.floor(100000 + Math.random() * 900000);
+            orderRefCode.innerText = `#${prefix}-${num}`;
+            cartDrawerOverlay.classList.remove("active");
+            setTimeout(() => {
+                checkoutSuccessModal.classList.add("active");
+                cart = [];
+                updateCartUI(0, 0);
+            }, 450);
+        }
     });
 
     // Success Modal Close
@@ -525,12 +539,32 @@ function renderProducts() {
 // --- Add Item to Shopify Cart (AJAX) ---
 function addToCart(product, size) {
     const variantId = product.variantsMap ? product.variantsMap[size] : null;
-    if (!variantId) {
-        showToast("Error: Size variant not found.", "fa-circle-xmark");
+    
+    // Detect if this is a mock product (non-Shopify numerical ID)
+    const isMock = !variantId || String(variantId).length < 8 || String(variantId) === "1";
+    
+    if (isMock) {
+        const existing = cart.find(item => item.product.id === product.id && item.size === size);
+        if (existing) {
+            existing.quantity += 1;
+        } else {
+            cart.push({
+                product: product,
+                size: size,
+                quantity: 1,
+                variantId: variantId || 'mock-' + Math.random().toString(36).substr(2, 9)
+            });
+        }
+        showToast(`Added ${product.name} to bag!`, "fa-bag-shopping");
+        updateCartUI(
+            cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
+            cart.reduce((sum, item) => sum + item.quantity, 0)
+        );
+        cartDrawerOverlay.classList.add("active");
         return;
     }
 
-    showToast(\`Adding \${product.name} (\${size}) to bag...\`, "fa-spinner");
+    showToast(`Adding ${product.name} (${size}) to bag...`, "fa-spinner");
 
     fetch('/cart/add.js', {
         method: 'POST',
@@ -544,7 +578,7 @@ function addToCart(product, size) {
         return res.json();
     })
     .then(() => {
-        showToast(\`Added \${product.name} to bag!\`, "fa-bag-shopping");
+        showToast(`Added ${product.name} to bag!`, "fa-bag-shopping");
         syncShopifyCart();
         cartDrawerOverlay.classList.add("active");
     })
@@ -556,6 +590,23 @@ function addToCart(product, size) {
 
 // --- Modify Variant Quantity in Shopify Cart (AJAX) ---
 function changeQuantity(variantId, newQty) {
+    const isMock = !variantId || String(variantId).length < 8 || String(variantId).includes('mock') || String(variantId) === "1";
+    if (isMock) {
+        const idx = cart.findIndex(item => item.variantId === variantId);
+        if (idx !== -1) {
+            if (newQty <= 0) {
+                cart.splice(idx, 1);
+            } else {
+                cart[idx].quantity = newQty;
+            }
+            updateCartUI(
+                cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
+                cart.reduce((sum, item) => sum + item.quantity, 0)
+            );
+        }
+        return;
+    }
+
     fetch('/cart/change.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
