@@ -415,10 +415,9 @@ function setupEventListeners() {
         if (hasRealItems) {
             window.location.href = '/checkout';
         } else {
-            // Local checkout simulation for mock demo
             const prefix = "GLZ";
             const num = Math.floor(100000 + Math.random() * 900000);
-            orderRefCode.innerText = `#${prefix}-${num}`;
+            orderRefCode.innerText = "#" + prefix + "-" + num;
             cartDrawerOverlay.classList.remove("active");
             setTimeout(() => {
                 checkoutSuccessModal.classList.add("active");
