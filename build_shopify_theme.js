@@ -804,6 +804,8 @@ const liquidSectionCode = `{% comment %}
 <div class="glaze-theme-wrapper" id="shopify-section-{{ section.id }}">
   {% if section.settings.collection != blank %}
     {% assign collection = collections[section.settings.collection] %}
+  {% elsif collections['glaze-runway'] != blank %}
+    {% assign collection = collections['glaze-runway'] %}
   {% else %}
     {% assign collection = collections.all %}
   {% endif %}

@@ -22,7 +22,7 @@ const HEADERS = [
   "Variant Inventory Qty", "Variant Inventory Policy",
   "Variant Fulfillment Service", "Variant Price",
   "Variant Requires Shipping", "Variant Taxable", "Image Src",
-  "Image Position", "Status"
+  "Image Position", "Status", "Collection"
 ];
 
 // Helper to escape CSV cells
@@ -150,7 +150,8 @@ async function main() {
         "Variant Taxable": "TRUE",
         "Image Src": isFirst ? imageUrl : "",
         "Image Position": isFirst ? "1" : "",
-        Status: "active"
+        Status: "active",
+        Collection: isFirst ? "GLAZE Runway" : ""
       };
 
       const csvRow = HEADERS.map((header) => csvCell(row[header])).join(",");
