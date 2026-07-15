@@ -53,7 +53,7 @@ const shopifyJS = `
 
 // --- Shopify Dynamic Products Config ---
 // This extracts the active collection products mapped directly in Liquid!
-const PRODUCTS = [
+let PRODUCTS = [
   {% for product in collection.products %}
   {
     id: "{{ product.id }}",
@@ -63,7 +63,7 @@ const PRODUCTS = [
     price: {{ product.price | divided_by: 100.0 }},
     rating: 4.8,
     reviewsCount: 124,
-    image: "{{ product.featured_image | image_url: width: 800 }}",
+    image: "{% if product.featured_image %}{{ product.featured_image | image_url: width: 800 }}{% else %}https://files.catbox.moe/hgn95m.jpg{% endif %}",
     tag: "{% if product.available %}Bestseller{% else %}Sold Out{% endif %}",
     description: "{{ product.description | strip_html | escape | strip_newlines }}",
     specs: {
@@ -84,6 +84,252 @@ const PRODUCTS = [
   }{% unless forloop.last %},{% endunless %}
   {% endfor %}
 ];
+
+// Fallback to static catalog if Shopify returns 0 products (collection not configured yet)
+if (PRODUCTS.length === 0) {
+  PRODUCTS = [
+    {
+      id: "hydro-jacket",
+      name: "GLAZE Hydro-Weave™ Coat",
+      category: "outerwear",
+      categoryLabel: "Outerwear",
+      price: 389.00,
+      rating: 4.9,
+      reviewsCount: 142,
+      image: "https://files.catbox.moe/hgn95m.jpg",
+      tag: "Bestseller",
+      description: "An ultra-futuristic coat woven from translucent hydrophobic liquid-glass polymer fibers. Water, oils, and mud slide right off without leaving a trace.",
+      specs: {
+        material: "92% Glass Polymer, 8% Elastane",
+        treatment: "Fused Silica Oleophobic Matrix",
+        weight: "220g / Ultra-Lightweight",
+        transparency: "92% Light Transmittance"
+      },
+      sizes: ["S", "M", "L", "XL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "neo-dress",
+      name: "NEO Bloom™ Iridescent Dress",
+      category: "dresses",
+      categoryLabel: "Dresses",
+      price: 520.00,
+      rating: 5.0,
+      reviewsCount: 88,
+      image: "https://files.catbox.moe/8qlm4b.jpg",
+      tag: "Limited Drop",
+      description: "An elegant, structural cocktail dress that shifts color from glowing violet to vibrant magenta depending on ambient light angles and body temperature.",
+      specs: {
+        material: "100% Crystalline Silica-Silk Blend",
+        treatment: "Thermochromic Iridescent Glaze",
+        stretch: "Low-Stretch Tailored Silhouette",
+        care: "Specialized Ultrasonic Clean Only"
+      },
+      sizes: ["XS", "S", "M", "L"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "chroma-hoodie",
+      name: "CHROMA Prism™ Tech Hoodie",
+      category: "outerwear",
+      categoryLabel: "Outerwear / Techwear",
+      price: 295.00,
+      rating: 4.8,
+      reviewsCount: 204,
+      image: "https://files.catbox.moe/0u8gzf.jpg",
+      tag: "New Arrival",
+      description: "Futuristic street fashion combined with modular technology. Features frosted glassmorphic shoulder armor plates and color-shifting geometric safety piping.",
+      specs: {
+        material: "80% Organic Cotton, 20% Tech Glass-Weave",
+        features: "Reinforced Frosted Panels, Dual-Zip",
+        fit: "Relaxed Boxy Streetwear Fit",
+        insulation: "Thermal Micro-Grid Interior"
+      },
+      sizes: ["S", "M", "L", "XL", "XXL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "lumen-tee",
+      name: "LUMEN Shield™ Active Tee",
+      category: "activewear",
+      categoryLabel: "Activewear",
+      price: 145.00,
+      rating: 4.7,
+      reviewsCount: 312,
+      image: "https://files.catbox.moe/hgn95m.jpg",
+      tag: "Core Essential",
+      description: "Athletic-fit performance shirt bonded at the molecular level with a silica coating. Stain-proof, anti-odor, sweat-wicking, and completely waterproof.",
+      specs: {
+        material: "95% Recycled Polyester, 5% Nano-Silica Fiber",
+        cooling: "Endothermic Heat Dispersal Matrix",
+        stains: "100% Liquid Repellent Shield",
+        uvFactor: "UPF 50+ Crystalline Guard"
+      },
+      sizes: ["S", "M", "L", "XL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B0FT4QF9D5",
+      name: "GLAZE Flow-Midi™ Sundress",
+      category: "dresses",
+      categoryLabel: "Dresses / Imported",
+      price: 17.99,
+      rating: 4.5,
+      reviewsCount: 2393,
+      image: "https://files.catbox.moe/rabxm9.jpg",
+      tag: "Imported Best Seller",
+      description: "A flowy liquid-glass draped sundress. Weaves light-transmitting silica micro-threads with soft rayon to create a dress that falls and behaves like fluid crystal.",
+      specs: {
+        material: "90% Breathable Rayon, 10% Micro-Silica Glass Fiber",
+        features: "Self-Draping, Dual Pockets, Hydrophobic Shield",
+        origin: "Scraped and Imported from Amazon US",
+        comfort: "Ultra-Flow Elastic Comfort Waist"
+      },
+      sizes: ["S", "M", "L", "XL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B0CSDK2C3P",
+      name: "GLAZE UV-Shield™ Longsleeve",
+      category: "activewear",
+      categoryLabel: "Activewear / Imported",
+      price: 19.99,
+      rating: 4.6,
+      reviewsCount: 3506,
+      image: "https://files.catbox.moe/17e114.jpg",
+      tag: "Amazon Import",
+      description: "High-performance UV-deflecting long sleeve shirt. Woven with reflective glass threads that block UPF 50+ solar radiation while allowing maximum cooling.",
+      specs: {
+        material: "88% Polyester, 12% Glass-Weave UPF Thread",
+        protection: "UPF 50+ Crystalline Solar Shield",
+        dryRate: "Nano-Pores for 3x Faster Drying",
+        weight: "Super Lightweight Cooling Wear"
+      },
+      sizes: ["S", "M", "L", "XL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B0BV241H3F",
+      name: "GLAZE Prism-Linen™ Button-Down",
+      category: "activewear",
+      categoryLabel: "Activewear / Shirts",
+      price: 29.99,
+      rating: 4.4,
+      reviewsCount: 14800,
+      image: "https://files.catbox.moe/h64bqu.jpg",
+      tag: "Imported Classic",
+      description: "Classic short-sleeve button-down made from silica-enhanced linen fibers that refract ambient light, actively keeping you cool while repelling sweat and stains.",
+      specs: {
+        material: "70% Organic Linen, 30% Fused Silica Blend",
+        structure: "Refractive Prism Weave",
+        fit: "Relaxed Summer Beach Fit",
+        features: "Fully Stain-Proof & Wrinkle-Resistant"
+      },
+      sizes: ["M", "L", "XL", "XXL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B09P3RHNSY",
+      name: "GLAZE Aero-Active™ Shorts",
+      category: "activewear",
+      categoryLabel: "Activewear / Imported",
+      price: 24.99,
+      rating: 4.5,
+      reviewsCount: 19928,
+      image: "https://files.catbox.moe/oms6xl.jpg",
+      tag: "Top Rated Import",
+      description: "Lightweight active shorts with glassmorphic mesh side panels. Fuses moisture-wicking stretch fibers with a hydrophobic liquid-glass water guard.",
+      specs: {
+        material: "92% Nylon, 8% Spandex, Micro-Glass Mesh Panels",
+        pockets: "Triple Glass-Secured Zippers",
+        protection: "Durable Hydrophobic Water Guard",
+        stretch: "4-Way Extreme Motion Stretch"
+      },
+      sizes: ["S", "M", "L", "XL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B09MKNL9M3",
+      name: "GLAZE Aero-Sporty Shorts",
+      category: "activewear",
+      categoryLabel: "Activewear / Women's",
+      price: 19.99,
+      rating: 4.5,
+      reviewsCount: 12857,
+      image: "https://files.catbox.moe/r4s2lf.jpg",
+      tag: "Active Bestseller",
+      description: "High-waisted running shorts with integrated side pockets. Coated with a dirt-repelling silica treatment and woven with stretchable glass-core active fibers.",
+      specs: {
+        material: "88% Polyester, 12% Spandex, Silica Coat",
+        pocket: "Dual Glass-Sewn Secure Side Pockets",
+        waist: "Wide Elastic Tummy Control Band",
+        aeration: "Side-Split Air Flow Paneling"
+      },
+      sizes: ["XS", "S", "M", "L"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B0CKZ4ZWYG",
+      name: "GLAZE Contour-Shield Leggings",
+      category: "activewear",
+      categoryLabel: "Activewear / Leggings",
+      price: 6.39,
+      rating: 4.6,
+      reviewsCount: 12949,
+      image: "https://files.catbox.moe/rrpwrx.jpg",
+      tag: "Super Value",
+      description: "Buttery-soft high-waisted compression leggings. Built from high-stretch fibers bonded with an ultra-thin moisture barrier that rejects sweat and water.",
+      specs: {
+        material: "90% Polyester, 10% Lycra, Micro-Silica Shield",
+        compression: "High-Density Sculpting Knit",
+        features: "Hidden Key Pocket, Zero Stain Grid",
+        stretch: "4-Way Squat-Proof Stretch"
+      },
+      sizes: ["S", "M", "L", "XL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B01GH5GSLG",
+      name: "GLAZE Tech-Performance Polo",
+      category: "activewear",
+      categoryLabel: "Activewear / Golf",
+      price: 35.00,
+      rating: 4.6,
+      reviewsCount: 15531,
+      image: "https://files.catbox.moe/hgo6lj.jpg",
+      tag: "Performance Pro",
+      description: "Classic collared golf polo with nanotech heat dispersal. Woven with smooth, friction-free micro-glass threads that draw body heat away.",
+      specs: {
+        material: "95% Polyester, 5% Glass-Infused Thread",
+        cooling: "Endothermic Heat Release Grid",
+        stretch: "4-Way Comfort Stretch Fit",
+        uvRating: "UPF 50+ Solar Deflector"
+      },
+      sizes: ["S", "M", "L", "XL", "XXL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B0018OKNWM",
+      name: "GLAZE Deni-Matrix Jeans",
+      category: "outerwear",
+      categoryLabel: "Outerwear / Denim",
+      price: 44.97,
+      rating: 4.5,
+      reviewsCount: 30385,
+      image: "https://files.catbox.moe/1zmw8n.jpg",
+      tag: "Denim Classic",
+      description: "Regular fit denim jeans reinforced at the molecular level with a clear silica spray coating. Stain-proof, splash-resistant, and highly durable.",
+      specs: {
+        material: "99% Heavy Cotton Denim, 1% Poly-Silica Guard",
+        fit: "Regular Straight-Leg Cut",
+        stains: "Repels coffee, mud, and water splashes",
+        care: "Standard machine wash, coating retains up to 100 washes"
+      },
+      sizes: ["28x30", "30x30", "32x30", "34x32", "36x32"],
+      variantsMap: { "32x30": "1" }
+    }
+  ];
+}
 
 let cart = [];
 let activeCategory = "all";
