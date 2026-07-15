@@ -513,6 +513,22 @@ const liquidSectionCode = `{% comment %}
 </style>
 
 <div class="glaze-theme-wrapper" id="shopify-section-{{ section.id }}">
+  {% if collection.products.size == 0 %}
+    <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; padding: 20px; text-align: center; margin: 40px auto; max-width: 800px; border-radius: 12px; font-family: sans-serif; backdrop-filter: blur(10px); z-index: 9999; position: relative;">
+      <h3 style="margin-top: 0; color: #fca5a5; font-size: 1.1rem;"><i class="fa-solid fa-triangle-exclamation" style="margin-right: 8px;"></i> No Products Found in Collection</h3>
+      <p style="font-size: 0.9rem; line-height: 1.5; margin: 10px 0;">
+        The theme is trying to load products from the collection handle: <strong>"{{ collection.handle }}"</strong>, but it contains 0 items.
+      </p>
+      <div style="display: inline-block; text-align: left; font-size: 0.85rem; margin-top: 5px; line-height: 1.6; color: #cbd5e1;">
+        <strong>How to resolve:</strong>
+        <ol style="margin: 5px 0 0 20px; padding: 0;">
+          <li>Make sure you have imported [shopify_import.csv](file:///d:/windowsssss/dropship/shopify_import.csv) in Shopify Admin.</li>
+          <li>Ensure the imported products are set to <strong>Active</strong>.</li>
+          <li>Ensure they are published to the <strong>Online Store</strong> sales channel (check "Manage Sales Channels" under product settings).</li>
+        </ol>
+      </div>
+    </div>
+  {% endif %}
   ${bodyContent}
 </div>
 
