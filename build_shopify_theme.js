@@ -411,20 +411,7 @@ function setupEventListeners() {
 
     // Checkout Action -> Redirect directly to Shopify Checkout!
     checkoutBtn.addEventListener("click", () => {
-        const hasRealItems = cart.some(item => String(item.variantId).length >= 8 && !String(item.variantId).includes('mock') && String(item.variantId) !== "1");
-        if (hasRealItems) {
-            window.location.href = '/checkout';
-        } else {
-            const prefix = "GLZ";
-            const num = Math.floor(100000 + Math.random() * 900000);
-            orderRefCode.innerText = "#" + prefix + "-" + num;
-            cartDrawerOverlay.classList.remove("active");
-            setTimeout(() => {
-                checkoutSuccessModal.classList.add("active");
-                cart = [];
-                updateCartUI(0, 0);
-            }, 450);
-        }
+        window.location.href = '/checkout';
     });
 
     // Success Modal Close
