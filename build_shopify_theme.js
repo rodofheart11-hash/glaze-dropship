@@ -60,7 +60,7 @@ const PRODUCTS = [
     name: "{{ product.title | escape }}",
     category: "{{ product.type | handleize }}",
     categoryLabel: "{{ product.type | escape }}",
-    price: {{ product.price | money_without_currency | replace: ',', '' }},
+    price: {{ product.price | divided_by: 100.0 }},
     rating: 4.8,
     reviewsCount: 124,
     image: "{{ product.featured_image | image_url: width: 800 }}",
@@ -109,14 +109,24 @@ const toastContainer = document.getElementById("toast-container");
 const newsletterForm = document.getElementById("newsletter-form");
 
 // --- Initialization ---
-document.addEventListener("DOMContentLoaded", () => {
+function initGlaze() {
     renderProducts();
     setupEventListeners();
     syncShopifyCart();
-});
+}
+
+// Run immediately as elements are already loaded in the DOM
+initGlaze();
+
+// Fallbacks for standard page loads and Shopify theme editor updates
+document.addEventListener("DOMContentLoaded", initGlaze);
+document.addEventListener("shopify:section:load", initGlaze);
 
 // --- Event Listeners Setup ---
 function setupEventListeners() {
+    if (window.glazeListenersAttached) return;
+    window.glazeListenersAttached = true;
+
     // Category Filtering
     filterTabs.forEach(tab => {
         tab.addEventListener("click", (e) => {
