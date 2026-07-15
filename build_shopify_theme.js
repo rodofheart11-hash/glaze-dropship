@@ -496,9 +496,6 @@ function renderProducts() {
                 <div class="glass-reflection-shine"></div>
                 <img src="\${product.image}" alt="\${product.name}" class="product-img" loading="lazy">
                 <div class="product-badge">\${product.tag}</div>
-                <button class="quick-add-btn" title="Quick Add">
-                    <i class="fa-solid fa-plus"></i>
-                </button>
             </div>
             <div class="product-info">
                 <div class="product-meta">
@@ -509,24 +506,23 @@ function renderProducts() {
                     </div>
                 </div>
                 <h3 class="product-name">\${product.name}</h3>
-                <div class="product-footer">
+                <div class="product-price-row">
                     <span class="product-price">\$\${product.price.toFixed(2)}</span>
-                    <button class="view-details-btn">View Details</button>
+                    <button class="btn-add-cart" title="Add to Bag">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                    </button>
                 </div>
             </div>
         \`;
 
-        // Bind quick add
-        card.querySelector(".quick-add-btn").addEventListener("click", (e) => {
+        // Bind add to cart
+        card.querySelector(".btn-add-cart").addEventListener("click", (e) => {
             e.stopPropagation();
             const defaultSize = product.sizes && product.sizes.length > 0 ? product.sizes[0] : "M";
             addToCart(product, defaultSize);
         });
 
-        // Bind open details modal
-        card.querySelector(".view-details-btn").addEventListener("click", () => {
-            openProductModal(product);
-        });
+        // Bind open details modal on card click
         card.addEventListener("click", () => {
             openProductModal(product);
         });
@@ -722,7 +718,7 @@ function openProductModal(product) {
     if (product.sizes) {
         product.sizes.forEach((size, idx) => {
             sizesHTML += \`
-                <button class="size-select-btn \${idx === 0 ? 'active' : ''}" data-size="\${size}">\${size}</button>
+                <button class="size-btn \${idx === 0 ? 'active' : ''}" data-size="\${size}">\${size}</button>
             \`;
         });
     }
@@ -749,9 +745,9 @@ function openProductModal(product) {
                 <span class="modal-product-price">\$\${product.price.toFixed(2)}</span>
                 <p class="modal-product-desc">\${product.description}</p>
                 
-                <div class="size-selector-wrapper">
-                    <span class="size-selector-label">Select Size</span>
-                    <div class="size-buttons-row">
+                <div style="margin: 20px 0;">
+                    <h4 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px;">Select Size</h4>
+                    <div class="size-selector">
                         \${sizesHTML}
                     </div>
                 </div>
@@ -766,7 +762,7 @@ function openProductModal(product) {
     \`;
 
     // Size Selection Handlers
-    const sizeBtns = modalProductDetails.querySelectorAll(".size-select-btn");
+    const sizeBtns = modalProductDetails.querySelectorAll(".size-btn");
     sizeBtns.forEach(btn => {
         btn.addEventListener("click", (e) => {
             sizeBtns.forEach(b => b.classList.remove("active"));
@@ -776,7 +772,7 @@ function openProductModal(product) {
 
     // Add To Bag in Modal Handler
     modalProductDetails.querySelector(".modal-add-to-bag-btn").addEventListener("click", () => {
-        const activeSizeBtn = modalProductDetails.querySelector(".size-select-btn.active");
+        const activeSizeBtn = modalProductDetails.querySelector(".size-btn.active");
         const selectedSize = activeSizeBtn ? activeSizeBtn.getAttribute("data-size") : "M";
         addToCart(product, selectedSize);
         productModal.classList.remove("active");
