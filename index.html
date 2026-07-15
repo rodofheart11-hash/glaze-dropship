@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLAZE® | Futuristic Liquid Glass Clothing</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Animated Liquid Glass Background Blobs -->
+    <div class="blob-container">
+        <div class="blob blob-cyan"></div>
+        <div class="blob blob-magenta"></div>
+        <div class="blob blob-indigo"></div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="main-header glass-card">
+        <div class="header-container">
+            <a href="#" class="logo">
+                <span class="logo-accent">GLA</span>ZE
+                <span class="logo-tm">®</span>
+            </a>
+            <nav class="nav-menu">
+                <a href="#hero" class="nav-link active">Home</a>
+                <a href="#catalog" class="nav-link">Shop</a>
+                <a href="#about" class="nav-link">Technology</a>
+                <a href="#newsletter" class="nav-link">Join</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="nav-btn" id="search-btn" aria-label="Search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+                <button class="nav-btn" id="wishlist-btn" aria-label="Wishlist">
+                    <i class="fa-regular fa-heart"></i>
+                </button>
+                <button class="nav-btn cart-toggle-btn" id="cart-btn" aria-label="Shopping Cart">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span class="cart-badge">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="hero-section">
+            <div class="hero-content">
+                <div class="badge glass-card">
+                    <span class="pulse-dot"></span> Next-Gen Silica Wear
+                </div>
+                <h1 class="hero-title">
+                    Wear the Liquid <span class="gradient-text text-liquid">Glass</span>.
+                </h1>
+                <p class="hero-subtitle">
+                    Woven from translucent hydrophobic silica polymers. Premium, stain-proof, color-shifting garments engineered to protect and elevate.
+                </p>
+                <div class="hero-actions">
+                    <a href="#catalog" class="btn btn-primary glow-effect">
+                        <span>Explore Collection</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                    <a href="#about" class="btn btn-secondary glass-card">
+                        <span>The Technology</span>
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image-wrapper">
+                <div class="hero-glass-display glass-card">
+                    <div class="glass-reflection-shine"></div>
+                    <img src="/assets/hero_glass_bg.png" alt="Liquid Glass Editorial Model" class="hero-display-img">
+                    <div class="glass-card-overlay">
+                        <div class="overlay-stat">
+                            <span class="stat-num">9H+</span>
+                            <span class="stat-lbl">Shield Matrix</span>
+                        </div>
+                        <div class="overlay-stat">
+                            <span class="stat-num">0.02μ</span>
+                            <span class="stat-lbl">Coating Layer</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="about" class="features-section">
+            <div class="section-header">
+                <h2 class="section-title">Engineered Apparel</h2>
+                <p class="section-desc">Weaving advanced nanotechnology directly into luxury clothing fibers.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card glass-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h3>Oleophobic Fiber</h3>
+                    <p>Repels oil, grease, dirt, and fingerprints. Maintain a clean, pristine look without washing under heavy wear.</p>
+                </div>
+                <div class="feature-card glass-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fa-solid fa-droplet"></i>
+                    </div>
+                    <h3>Hydrophobic Shell</h3>
+                    <p>Advanced silica bond forces water to slide off instantly. Keeps you dry and lightweight in any torrential rain.</p>
+                </div>
+                <div class="feature-card glass-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fa-solid fa-atom"></i>
+                    </div>
+                    <h3>Prism Color Shift</h3>
+                    <p>Interactive glass micro-spheres reflect light in a stunning spectrum, shifting color with environment and temperature.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Catalog Section -->
+        <section id="catalog" class="catalog-section">
+            <div class="section-header">
+                <h2 class="section-title">The Glass Runway</h2>
+                <p class="section-desc">Browse our curated collection of translucent, stain-resistant, and iridescent garments.</p>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs glass-card">
+                <button class="filter-tab active" data-category="all">All Items</button>
+                <button class="filter-tab" data-category="outerwear">Outerwear</button>
+                <button class="filter-tab" data-category="dresses">Dresses</button>
+                <button class="filter-tab" data-category="activewear">Activewear</button>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="product-grid" id="product-grid">
+                <!-- Injected via JavaScript -->
+            </div>
+        </section>
+
+        <!-- Newsletter Section -->
+        <section id="newsletter" class="newsletter-section">
+            <div class="newsletter-card glass-card">
+                <div class="newsletter-content">
+                    <h2>Join the Liquid Future</h2>
+                    <p>Subscribe to receive exclusive drops, advanced nanotech clothing releases, and private runway collection events.</p>
+                    <form class="newsletter-form" id="newsletter-form">
+                        <div class="input-wrapper glass-card">
+                            <input type="email" placeholder="Enter your email" required aria-label="Email Address">
+                            <button type="submit" class="btn-submit">
+                                <span>Subscribe</span>
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer glass-card">
+        <div class="footer-grid">
+            <div class="footer-info">
+                <a href="#" class="logo">
+                    <span class="logo-accent">GLA</span>ZE<span class="logo-tm">®</span>
+                </a>
+                <p>Creating advanced state-of-the-art silica fibers for luxury fashion, athletic outerwear, and custom aesthetic apparel.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h4>Collections</h4>
+                <ul>
+                    <li><a href="#catalog">Hydro-Weave™</a></li>
+                    <li><a href="#catalog">NEO Bloom™</a></li>
+                    <li><a href="#catalog">CHROMA Prism™</a></li>
+                    <li><a href="#catalog">LUMEN Shield™</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Science</h4>
+                <ul>
+                    <li><a href="#">Silica Woven Tech</a></li>
+                    <li><a href="#">Thermal Reflections</a></li>
+                    <li><a href="#">Hydrophobic Bond</a></li>
+                    <li><a href="#">Sustainability</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="#">Custom Tailoring</a></li>
+                    <li><a href="#">Care Instructions</a></li>
+                    <li><a href="#">Sizing Guide</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 GLAZE® Liquid Glass Clothing Inc. All rights reserved. Designed with custom glassmorphism.</p>
+        </div>
+    </footer>
+
+    <!-- Shopping Cart Slide-out Drawer -->
+    <div class="cart-drawer-overlay" id="cart-drawer-overlay">
+        <div class="cart-drawer glass-card">
+            <div class="cart-header">
+                <h3>Shopping Bag (<span id="cart-count">0</span>)</h3>
+                <button class="close-cart-btn" id="close-cart-btn" aria-label="Close Cart">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="cart-items" id="cart-items-container">
+                <!-- Injected via JavaScript -->
+                <div class="cart-empty-message">
+                    <i class="fa-solid fa-wind"></i>
+                    <p>Your bag is empty.</p>
+                    <a href="#catalog" class="btn btn-primary close-cart-btn-action">Browse Collection</a>
+                </div>
+            </div>
+            <div class="cart-footer">
+                <div class="cart-subtotal">
+                    <span>Subtotal</span>
+                    <span id="cart-subtotal-value">$0.00</span>
+                </div>
+                <p class="cart-shipping-notice">Shipping and taxes calculated at checkout.</p>
+                <button class="btn btn-primary btn-checkout" id="checkout-btn" disabled>
+                    <span>Proceed to Checkout</span>
+                    <i class="fa-solid fa-lock"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div class="modal-overlay" id="product-modal">
+        <div class="modal-content glass-card">
+            <button class="close-modal-btn" id="close-modal-btn" aria-label="Close Modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="modal-body-grid" id="modal-product-details">
+                <!-- Injected via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Success Notification/Modal -->
+    <div class="modal-overlay" id="checkout-success-modal">
+        <div class="success-modal-content glass-card text-center">
+            <div class="success-icon-pulse">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h2>Order Placed Successfully!</h2>
+            <p>Your transaction has been processed. We have initialized the molecular packaging of your GLAZE design.</p>
+            <p class="order-number-text">Order Ref: <span id="order-ref-code">#GLZ-84920</span></p>
+            <button class="btn btn-primary" id="success-close-btn">
+                <span>Continue Shopping</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Live Notification Toast -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Vite module loader link -->
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
