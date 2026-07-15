@@ -11,7 +11,7 @@ export const PRODUCTS = [
         price: 389.00,
         rating: 4.9,
         reviewsCount: 142,
-        image: "/assets/clothing_hydro_jacket.png",
+        image: "/assets/clothing_hydro_jacket.jpg",
         tag: "Bestseller",
         description: "An ultra-futuristic coat woven from translucent hydrophobic liquid-glass polymer fibers. Water, oils, and mud slide right off without leaving a trace.",
         specs: {
@@ -30,7 +30,7 @@ export const PRODUCTS = [
         price: 520.00,
         rating: 5.0,
         reviewsCount: 88,
-        image: "/assets/clothing_neo_dress.png",
+        image: "/assets/clothing_neo_dress.jpg",
         tag: "Limited Drop",
         description: "An elegant, structural cocktail dress that shifts color from glowing violet to vibrant magenta depending on ambient light angles and body temperature.",
         specs: {
@@ -49,7 +49,7 @@ export const PRODUCTS = [
         price: 295.00,
         rating: 4.8,
         reviewsCount: 204,
-        image: "/assets/clothing_chroma_hoodie.png",
+        image: "/assets/clothing_chroma_hoodie.jpg",
         tag: "New Arrival",
         description: "Futuristic street fashion combined with modular technology. Features frosted glassmorphic shoulder armor plates and color-shifting geometric safety piping.",
         specs: {
@@ -68,7 +68,7 @@ export const PRODUCTS = [
         price: 145.00,
         rating: 4.7,
         reviewsCount: 312,
-        image: "/assets/clothing_hydro_jacket.png", // Consistent premium asset loading
+        image: "/assets/clothing_hydro_jacket.jpg", // Consistent premium asset loading
         tag: "Core Essential",
         description: "Athletic-fit performance shirt bonded at the molecular level with a silica coating. Stain-proof, anti-odor, sweat-wicking, and completely waterproof.",
         specs: {
@@ -87,7 +87,7 @@ export const PRODUCTS = [
         price: 17.99,
         rating: 4.5,
         reviewsCount: 2393,
-        image: "/assets/clothing_flow_dress.png",
+        image: "/assets/clothing_flow_dress.jpg",
         tag: "Imported Best Seller",
         description: "A flowy liquid-glass draped sundress. Weaves light-transmitting silica micro-threads with soft rayon to create a dress that falls and behaves like fluid crystal.",
         specs: {
@@ -106,7 +106,7 @@ export const PRODUCTS = [
         price: 19.99,
         rating: 4.6,
         reviewsCount: 3506,
-        image: "/assets/clothing_uv_shirt.png",
+        image: "/assets/clothing_uv_shirt.jpg",
         tag: "Amazon Import",
         description: "High-performance UV-deflecting long sleeve shirt. Woven with reflective glass threads that block UPF 50+ solar radiation while allowing maximum cooling.",
         specs: {
@@ -125,7 +125,7 @@ export const PRODUCTS = [
         price: 29.99,
         rating: 4.4,
         reviewsCount: 14800,
-        image: "/assets/clothing_prism_shirt.png",
+        image: "/assets/clothing_prism_shirt.jpg",
         tag: "Imported Classic",
         description: "Classic short-sleeve button-down made from silica-enhanced linen fibers that refract ambient light, actively keeping you cool while repelling sweat and stains.",
         specs: {
@@ -144,7 +144,7 @@ export const PRODUCTS = [
         price: 24.99,
         rating: 4.5,
         reviewsCount: 19928,
-        image: "/assets/clothing_aero_shorts.png",
+        image: "/assets/clothing_aero_shorts.jpg",
         tag: "Top Rated Import",
         description: "Lightweight active shorts with glassmorphic mesh side panels. Fuses moisture-wicking stretch fibers with a hydrophobic liquid-glass water guard.",
         specs: {
@@ -163,7 +163,7 @@ export const PRODUCTS = [
         price: 19.99,
         rating: 4.5,
         reviewsCount: 12857,
-        image: "/assets/clothing_womens_shorts.png",
+        image: "/assets/clothing_womens_shorts.jpg",
         tag: "Active Bestseller",
         description: "High-waisted running shorts with integrated side pockets. Coated with a dirt-repelling silica treatment and woven with stretchable glass-core active fibers.",
         specs: {
@@ -182,7 +182,7 @@ export const PRODUCTS = [
         price: 6.39,
         rating: 4.6,
         reviewsCount: 12949,
-        image: "/assets/clothing_leggings.png",
+        image: "/assets/clothing_leggings.jpg",
         tag: "Super Value",
         description: "Buttery-soft high-waisted compression leggings. Built from high-stretch fibers bonded with an ultra-thin moisture barrier that rejects sweat and water.",
         specs: {
@@ -201,7 +201,7 @@ export const PRODUCTS = [
         price: 35.00,
         rating: 4.6,
         reviewsCount: 15531,
-        image: "/assets/clothing_golf_polo.png",
+        image: "/assets/clothing_golf_polo.jpg",
         tag: "Performance Pro",
         description: "Classic collared golf polo with nanotech heat dispersal. Woven with smooth, friction-free micro-glass threads that draw body heat away.",
         specs: {
@@ -220,7 +220,7 @@ export const PRODUCTS = [
         price: 44.97,
         rating: 4.5,
         reviewsCount: 30385,
-        image: "/assets/clothing_jeans.png",
+        image: "/assets/clothing_jeans.jpg",
         tag: "Denim Classic",
         description: "Regular fit denim jeans reinforced at the molecular level with a clear silica spray coating. Stain-proof, splash-resistant, and highly durable.",
         specs: {
