@@ -83,7 +83,9 @@ function setupEventListeners() {
     });
 
     // Checkout Action
-    checkoutBtn.addEventListener("click", handleCheckout);
+    checkoutBtn.addEventListener("click", () => {
+        window.location.href = '/checkout';
+    });
 
     // Success Modal Close
     successCloseBtn.addEventListener("click", () => {
