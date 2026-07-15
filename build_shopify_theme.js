@@ -15,10 +15,18 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-const outDir = './shopify-theme/sections';
-if (!existsSync(outDir)) {
-  mkdirSync(outDir, { recursive: true });
-}
+const themeDirs = [
+  './temp-shopify-theme/sections',
+  './temp-shopify-theme/layout',
+  './temp-shopify-theme/templates',
+  './temp-shopify-theme/config'
+];
+
+themeDirs.forEach(dir => {
+  if (!existsSync(dir)) {
+    mkdirSync(dir, { recursive: true });
+  }
+});
 
 // 1. Read input files
 const indexHTML = readFileSync('index.html', 'utf-8');
@@ -533,8 +541,60 @@ const liquidSectionCode = `{% comment %}
 {% endschema %}
 `;
 
-writeFileSync('./shopify-theme/sections/glaze-storefront.liquid', liquidSectionCode, 'utf-8');
+writeFileSync('./temp-shopify-theme/sections/glaze-storefront.liquid', liquidSectionCode, 'utf-8');
+
+// Write theme.liquid boilerplate
+const themeLiquid = `<!DOCTYPE html>
+<html class="no-js" lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="">
+    <link rel="canonical" href="{{ canonical_url }}">
+    <title>{{ page_title }}</title>
+    {% if page_description %}
+      <meta name="description" content="{{ page_description | escape }}">
+    {% endif %}
+    {{ content_for_header }}
+  </head>
+  <body style="margin: 0; padding: 0; background: #0a0b0e;">
+    {{ content_for_layout }}
+  </body>
+</html>`;
+writeFileSync('./temp-shopify-theme/layout/theme.liquid', themeLiquid, 'utf-8');
+
+// Write index.liquid
+writeFileSync('./temp-shopify-theme/templates/index.liquid', "{% section 'glaze-storefront' %}", 'utf-8');
+
+// Write settings_schema.json
+const schema = [
+  {
+    "name": "Theme information",
+    "theme_name": "GLAZE Liquid Glass theme",
+    "theme_author": "Antigravity AI",
+    "theme_version": "1.0.0"
+  }
+];
+writeFileSync('./temp-shopify-theme/config/settings_schema.json', JSON.stringify(schema, null, 2), 'utf-8');
+
+// Write settings_data.json
+const settingsData = {
+  "current": {
+    "sections": {
+      "glaze-storefront": {
+        "type": "glaze-storefront",
+        "settings": {}
+      }
+    },
+    "content_for_layout": [
+      "glaze-storefront"
+    ]
+  }
+};
+writeFileSync('./temp-shopify-theme/config/settings_data.json', JSON.stringify(settingsData, null, 2), 'utf-8');
+
 console.log(`\n==================================================`);
-console.log(`SUCCESS: Compiled sections/glaze-storefront.liquid`);
-console.log(`Location: ./shopify-theme/sections/glaze-storefront.liquid`);
+console.log(`SUCCESS: Compiled complete Shopify Theme scaffolding`);
+console.log(`Location: ./temp-shopify-theme/`);
 console.log(`==================================================\n`);
