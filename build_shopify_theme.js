@@ -802,6 +802,12 @@ const liquidSectionCode = `{% comment %}
 </style>
 
 <div class="glaze-theme-wrapper" id="shopify-section-{{ section.id }}">
+  {% if section.settings.collection != blank %}
+    {% assign collection = collections[section.settings.collection] %}
+  {% else %}
+    {% assign collection = collections.all %}
+  {% endif %}
+
   {% if collection.products.size == 0 %}
     <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; padding: 20px; text-align: center; margin: 40px auto; max-width: 800px; border-radius: 12px; font-family: sans-serif; backdrop-filter: blur(10px); z-index: 9999; position: relative;">
       <h3 style="margin-top: 0; color: #fca5a5; font-size: 1.1rem;"><i class="fa-solid fa-triangle-exclamation" style="margin-right: 8px;"></i> No Products Found in Collection</h3>
