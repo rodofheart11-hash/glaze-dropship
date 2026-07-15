@@ -554,7 +554,7 @@ function addToCart(product, size) {
                 variantId: variantId || 'mock-' + Math.random().toString(36).substr(2, 9)
             });
         }
-        showToast(`Added ${product.name} to bag!`, "fa-bag-shopping");
+        showToast("Added " + product.name + " to bag!", "fa-bag-shopping");
         updateCartUI(
             cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
             cart.reduce((sum, item) => sum + item.quantity, 0)
@@ -563,7 +563,7 @@ function addToCart(product, size) {
         return;
     }
 
-    showToast(`Adding ${product.name} (${size}) to bag...`, "fa-spinner");
+    showToast("Adding " + product.name + " (" + size + ") to bag...", "fa-spinner");
 
     fetch('/cart/add.js', {
         method: 'POST',
@@ -577,7 +577,7 @@ function addToCart(product, size) {
         return res.json();
     })
     .then(() => {
-        showToast(`Added ${product.name} to bag!`, "fa-bag-shopping");
+        showToast("Added " + product.name + " to bag!", "fa-bag-shopping");
         syncShopifyCart();
         cartDrawerOverlay.classList.add("active");
     })
