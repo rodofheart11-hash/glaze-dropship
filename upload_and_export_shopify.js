@@ -44,7 +44,7 @@ const slugify = (text) => {
     .trim();
 };
 
-async function uploadToTmpfiles(localPath) {
+async function uploadToCatbox(localPath) {
   if (!existsSync(localPath)) {
     console.log(`  [WARN] File not found: ${localPath}`);
     return "";
@@ -55,9 +55,10 @@ async function uploadToTmpfiles(localPath) {
     const fileName = localPath.split('/').pop();
     const blob = new Blob([fileBuffer], { type: 'image/jpeg' });
     const formData = new FormData();
-    formData.append('file', blob, fileName);
+    formData.append('reqtype', 'fileupload');
+    formData.append('fileToUpload', blob, fileName);
 
-    const res = await fetch('https://tmpfiles.org/api/v1/upload', {
+    const res = await fetch('https://catbox.moe/user/api.php', {
       method: 'POST',
       body: formData
     });
@@ -67,15 +68,8 @@ async function uploadToTmpfiles(localPath) {
       return "";
     }
     
-    const data = await res.json();
-    if (data.status === 'success' && data.data && data.data.url) {
-      const viewUrl = data.data.url;
-      // Convert standard viewer link to direct download link
-      const directUrl = viewUrl.replace('https://tmpfiles.org/', 'https://tmpfiles.org/dl/');
-      return directUrl;
-    } else {
-      console.log(`  [ERR] Unexpected upload API response: ${JSON.stringify(data)}`);
-    }
+    const url = await res.text();
+    return url.trim();
   } catch (e) {
     console.log(`  [ERR] Exception uploading ${localPath}: ${e.message}`);
   }
@@ -97,7 +91,7 @@ async function main() {
   for (const imgPath of uniqueImages) {
     const localPath = `./public${imgPath}`;
     console.log(`Uploading ${localPath}...`);
-    const publicUrl = await uploadToTmpfiles(localPath);
+    const publicUrl = await uploadToCatbox(localPath);
     if (publicUrl) {
       console.log(`  -> Hosted URL: ${publicUrl}`);
       urlMap[imgPath] = publicUrl;
@@ -170,8 +164,8 @@ async function main() {
   console.log(`SUCCESS: Compiled shopify_import.csv`);
   console.log(`Total Products: ${PRODUCTS.length}`);
   console.log(`Total Rows (variants): ${lines.length - 1}`);
-  console.log(`Note: Images are hosted publicly on tmpfiles.org direct links.`);
-  console.log(`These links are valid for 60 minutes for import.`);
+  console.log(`Note: Images are hosted publicly on catbox.moe direct links.`);
+  console.log(`These links are permanent and ready for import.`);
   console.log(`==================================================\n`);
 }
 
