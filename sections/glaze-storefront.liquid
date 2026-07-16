@@ -1544,7 +1544,35 @@ body {
 </style>
 
 <div class="glaze-theme-wrapper" id="shopify-section-{{ section.id }}">
+  {% if section.settings.collection != blank %}
+    {% assign collection = collections[section.settings.collection] %}
+  {% elsif collections['glaze-runway'] != blank %}
+    {% assign collection = collections['glaze-runway'] %}
+  {% else %}
+    {% assign collection = collections.all %}
+  {% endif %}
+
+  {% if collection.products.size == 0 %}
+    <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; padding: 20px; text-align: center; margin: 40px auto; max-width: 800px; border-radius: 12px; font-family: sans-serif; backdrop-filter: blur(10px); z-index: 9999; position: relative;">
+      <h3 style="margin-top: 0; color: #fca5a5; font-size: 1.1rem;"><i class="fa-solid fa-triangle-exclamation" style="margin-right: 8px;"></i> No Products Found in Collection</h3>
+      <p style="font-size: 0.9rem; line-height: 1.5; margin: 10px 0;">
+        The theme is trying to load products from the collection handle: <strong>"{{ collection.handle }}"</strong>, but it contains 0 items.
+      </p>
+      <div style="display: inline-block; text-align: left; font-size: 0.85rem; margin-top: 5px; line-height: 1.6; color: #cbd5e1;">
+        <strong>How to resolve:</strong>
+        <ol style="margin: 5px 0 0 20px; padding: 0;">
+          <li>Make sure you have imported [shopify_import.csv](file:///d:/windowsssss/dropship/shopify_import.csv) in Shopify Admin.</li>
+          <li>Ensure the imported products are set to <strong>Active</strong>.</li>
+          <li>Ensure they are published to the <strong>Online Store</strong> sales channel (check "Manage Sales Channels" under product settings).</li>
+        </ol>
+      </div>
+    </div>
+  {% endif %}
   
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MD8DQMFD"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <!-- Animated Liquid Glass Background Blobs -->
     <div class="blob-container">
         <div class="blob blob-cyan"></div>
@@ -1735,6 +1763,15 @@ body {
                     <li><a href="#">Contact Us</a></li>
                 </ul>
             </div>
+            <div class="footer-links">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="/policies/refund-policy">Refund Policy</a></li>
+                    <li><a href="/policies/shipping-policy">Shipping Policy</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="/policies/terms-of-service">Terms of Service</a></li>
+                </ul>
+            </div>
         </div>
         <div class="footer-bottom">
             <p>&copy; 2026 GLAZE® Liquid Glass Clothing Inc. All rights reserved. Designed with custom glassmorphism.</p>
@@ -1815,24 +1852,20 @@ body {
 
 // --- Shopify Dynamic Products Config ---
 // This extracts the active collection products mapped directly in Liquid!
-const PRODUCTS = [
+let PRODUCTS = [
   {% for product in collection.products %}
   {
     id: "{{ product.id }}",
     name: "{{ product.title | escape }}",
     category: "{{ product.type | handleize }}",
     categoryLabel: "{{ product.type | escape }}",
-    price: {{ product.price | money_without_currency | replace: ',', '' }},
+    price: {{ product.price | divided_by: 100.0 }},
     rating: 4.8,
     reviewsCount: 124,
-    image: "{{ product.featured_image | image_url: width: 800 }}",
+    image: "{% if product.featured_image %}{{ product.featured_image | image_url: width: 800 }}{% else %}https://files.catbox.moe/hgn95m.jpg{% endif %}",
     tag: "{% if product.available %}Bestseller{% else %}Sold Out{% endif %}",
-    description: "{{ product.description | strip_html | escape | strip_newlines }}",
-    specs: {
-      material: "Shopify Managed Fabric",
-      care: "Standard Care instructions",
-      fit: "Tailored fit"
-    },
+    description: "{{ product.description | escape | strip_newlines }}",
+    specs: {},
     sizes: [
       {% for variant in product.variants %}
         "{{ variant.title | escape }}"{% unless forloop.last %},{% endunless %}
@@ -1846,6 +1879,323 @@ const PRODUCTS = [
   }{% unless forloop.last %},{% endunless %}
   {% endfor %}
 ];
+
+// Post-process PRODUCTS to extract specs from description HTML and clean up description text
+PRODUCTS.forEach(product => {
+  if (product.description.includes('Specifications')) {
+    try {
+      const txt = document.createElement("textarea");
+      txt.innerHTML = product.description;
+      const rawHtml = txt.value;
+      
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(rawHtml, 'text/html');
+      
+      const liElements = doc.querySelectorAll('li');
+      liElements.forEach(li => {
+        const strong = li.querySelector('strong');
+        if (strong) {
+          const key = strong.textContent.replace(':', '').trim();
+          const value = li.textContent.replace(strong.textContent, '').trim();
+          product.specs[key] = value;
+        }
+      });
+      
+      const pElements = doc.querySelectorAll('p');
+      if (pElements.length > 0) {
+        product.description = Array.from(pElements).map(p => p.outerHTML).join('');
+      } else {
+        const parts = rawHtml.split(/<h[23]>/i);
+        product.description = parts[0].trim();
+      }
+    } catch (e) {
+      console.error("Failed to parse product specifications:", e);
+    }
+  }
+});
+
+// Fallback to static catalog if Shopify returns 0 products (collection not configured yet)
+if (PRODUCTS.length === 0) {
+  PRODUCTS = [
+    {
+      id: "hydro-jacket",
+      name: "GLAZE Hydro-Weave™ Coat",
+      category: "outerwear",
+      categoryLabel: "Outerwear",
+      price: 778.00,
+      rating: 4.9,
+      reviewsCount: 142,
+      image: "https://files.catbox.moe/hgn95m.jpg",
+      tag: "Bestseller",
+      description: "An ultra-futuristic coat woven from translucent hydrophobic liquid-glass polymer fibers. Water, oils, and mud slide right off without leaving a trace.",
+      specs: {
+        material: "92% Glass Polymer, 8% Elastane",
+        treatment: "Fused Silica Oleophobic Matrix",
+        weight: "220g / Ultra-Lightweight",
+        transparency: "92% Light Transmittance"
+      },
+      sizes: ["S", "M", "L", "XL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "neo-dress",
+      name: "NEO Bloom™ Iridescent Dress",
+      category: "dresses",
+      categoryLabel: "Dresses",
+      price: 1040.00,
+      rating: 5.0,
+      reviewsCount: 88,
+      image: "https://files.catbox.moe/8qlm4b.jpg",
+      tag: "Limited Drop",
+      description: "An elegant, structural cocktail dress that shifts color from glowing violet to vibrant magenta depending on ambient light angles and body temperature.",
+      specs: {
+        material: "100% Crystalline Silica-Silk Blend",
+        treatment: "Thermochromic Iridescent Glaze",
+        stretch: "Low-Stretch Tailored Silhouette",
+        care: "Specialized Ultrasonic Clean Only"
+      },
+      sizes: ["XS", "S", "M", "L"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "chroma-hoodie",
+      name: "CHROMA Prism™ Tech Hoodie",
+      category: "outerwear",
+      categoryLabel: "Outerwear / Techwear",
+      price: 590.00,
+      rating: 4.8,
+      reviewsCount: 204,
+      image: "https://files.catbox.moe/0u8gzf.jpg",
+      tag: "New Arrival",
+      description: "Futuristic street fashion combined with modular technology. Features frosted glassmorphic shoulder armor plates and color-shifting geometric safety piping.",
+      specs: {
+        material: "80% Organic Cotton, 20% Tech Glass-Weave",
+        features: "Reinforced Frosted Panels, Dual-Zip",
+        fit: "Relaxed Boxy Streetwear Fit",
+        insulation: "Thermal Micro-Grid Interior"
+      },
+      sizes: ["S", "M", "L", "XL", "XXL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B0FT4QF9D5",
+      name: "GLAZE Flow-Midi™ Sundress",
+      category: "dresses",
+      categoryLabel: "Dresses / Imported",
+      price: 35.98,
+      rating: 4.5,
+      reviewsCount: 2393,
+      image: "https://files.catbox.moe/rabxm9.jpg",
+      tag: "Imported Best Seller",
+      description: "A flowy liquid-glass draped sundress. Weaves light-transmitting silica micro-threads with soft rayon to create a dress that falls and behaves like fluid crystal.",
+      specs: {
+        material: "90% Breathable Rayon, 10% Micro-Silica Glass Fiber",
+        features: "Self-Draping, Dual Pockets, Hydrophobic Shield",
+        origin: "Scraped and Imported from Amazon US",
+        comfort: "Ultra-Flow Elastic Comfort Waist"
+      },
+      sizes: ["S", "M", "L", "XL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B0CSDK2C3P",
+      name: "GLAZE UV-Shield™ Longsleeve",
+      category: "activewear",
+      categoryLabel: "Activewear / Imported",
+      price: 39.98,
+      rating: 4.6,
+      reviewsCount: 3506,
+      image: "https://files.catbox.moe/17e114.jpg",
+      tag: "Amazon Import",
+      description: "High-performance UV-deflecting long sleeve shirt. Woven with reflective glass threads that block UPF 50+ solar radiation while allowing maximum cooling.",
+      specs: {
+        material: "88% Polyester, 12% Glass-Weave UPF Thread",
+        protection: "UPF 50+ Crystalline Solar Shield",
+        dryRate: "Nano-Pores for 3x Faster Drying",
+        weight: "Super Lightweight Cooling Wear"
+      },
+      sizes: ["S", "M", "L", "XL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B0BV241H3F",
+      name: "GLAZE Prism-Linen™ Button-Down",
+      category: "activewear",
+      categoryLabel: "Activewear / Shirts",
+      price: 59.98,
+      rating: 4.4,
+      reviewsCount: 14800,
+      image: "https://files.catbox.moe/h64bqu.jpg",
+      tag: "Imported Classic",
+      description: "Classic short-sleeve button-down made from silica-enhanced linen fibers that refract ambient light, actively keeping you cool while repelling sweat and stains.",
+      specs: {
+        material: "70% Organic Linen, 30% Fused Silica Blend",
+        structure: "Refractive Prism Weave",
+        fit: "Relaxed Summer Beach Fit",
+        features: "Fully Stain-Proof & Wrinkle-Resistant"
+      },
+      sizes: ["M", "L", "XL", "XXL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B09P3RHNSY",
+      name: "GLAZE Aero-Active™ Shorts",
+      category: "activewear",
+      categoryLabel: "Activewear / Imported",
+      price: 49.98,
+      rating: 4.5,
+      reviewsCount: 19928,
+      image: "https://files.catbox.moe/oms6xl.jpg",
+      tag: "Top Rated Import",
+      description: "Lightweight active shorts with glassmorphic mesh side panels. Fuses moisture-wicking stretch fibers with a hydrophobic liquid-glass water guard.",
+      specs: {
+        material: "92% Nylon, 8% Spandex, Micro-Glass Mesh Panels",
+        pockets: "Triple Glass-Secured Zippers",
+        protection: "Durable Hydrophobic Water Guard",
+        stretch: "4-Way Extreme Motion Stretch"
+      },
+      sizes: ["S", "M", "L", "XL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B09MKNL9M3",
+      name: "GLAZE Aero-Sporty Shorts",
+      category: "activewear",
+      categoryLabel: "Activewear / Women's",
+      price: 39.98,
+      rating: 4.5,
+      reviewsCount: 12857,
+      image: "https://files.catbox.moe/r4s2lf.jpg",
+      tag: "Active Bestseller",
+      description: "High-waisted running shorts with integrated side pockets. Coated with a dirt-repelling silica treatment and woven with stretchable glass-core active fibers.",
+      specs: {
+        material: "88% Polyester, 12% Spandex, Silica Coat",
+        pocket: "Dual Glass-Sewn Secure Side Pockets",
+        waist: "Wide Elastic Tummy Control Band",
+        aeration: "Side-Split Air Flow Paneling"
+      },
+      sizes: ["XS", "S", "M", "L"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B0CKZ4ZWYG",
+      name: "GLAZE Contour-Shield Leggings",
+      category: "activewear",
+      categoryLabel: "Activewear / Leggings",
+      price: 12.78,
+      rating: 4.6,
+      reviewsCount: 12949,
+      image: "https://files.catbox.moe/rrpwrx.jpg",
+      tag: "Super Value",
+      description: "Buttery-soft high-waisted compression leggings. Built from high-stretch fibers bonded with an ultra-thin moisture barrier that rejects sweat and water.",
+      specs: {
+        material: "90% Polyester, 10% Lycra, Micro-Silica Shield",
+        compression: "High-Density Sculpting Knit",
+        features: "Hidden Key Pocket, Zero Stain Grid",
+        stretch: "4-Way Squat-Proof Stretch"
+      },
+      sizes: ["S", "M", "L", "XL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B01GH5GSLG",
+      name: "GLAZE Tech-Performance Polo",
+      category: "activewear",
+      categoryLabel: "Activewear / Golf",
+      price: 70.00,
+      rating: 4.6,
+      reviewsCount: 15531,
+      image: "https://files.catbox.moe/hgo6lj.jpg",
+      tag: "Performance Pro",
+      description: "Classic collared golf polo with nanotech heat dispersal. Woven with smooth, friction-free micro-glass threads that draw body heat away.",
+      specs: {
+        material: "95% Polyester, 5% Glass-Infused Thread",
+        cooling: "Endothermic Heat Release Grid",
+        stretch: "4-Way Comfort Stretch Fit",
+        uvRating: "UPF 50+ Solar Deflector"
+      },
+      sizes: ["S", "M", "L", "XL", "XXL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B0018OKNWM",
+      name: "GLAZE Deni-Matrix Jeans",
+      category: "outerwear",
+      categoryLabel: "Outerwear / Denim",
+      price: 89.94,
+      rating: 4.5,
+      reviewsCount: 30385,
+      image: "https://files.catbox.moe/1zmw8n.jpg",
+      tag: "Denim Classic",
+      description: "Regular fit denim jeans reinforced at the molecular level with a clear silica spray coating. Stain-proof, splash-resistant, and highly durable.",
+      specs: {
+        material: "99% Heavy Cotton Denim, 1% Poly-Silica Guard",
+        fit: "Regular Straight-Leg Cut",
+        stains: "Repels coffee, mud, and water splashes",
+        care: "Standard machine wash, coating retains up to 100 washes"
+      },
+      sizes: ["28x30", "30x30", "32x30", "34x32", "36x32"],
+      variantsMap: { "32x30": "1" }
+    },
+    {
+      id: "B0FP5BYXVR",
+      name: "GLAZE Palazzo-Flow™ Wide-Leg Pants",
+      category: "activewear",
+      categoryLabel: "Activewear / Imported",
+      price: 35.98,
+      rating: 4.5,
+      reviewsCount: 2745,
+      image: "https://files.catbox.moe/ivmew0.jpg",
+      tag: "Imported Palazzo",
+      description: "Flowy palazzo drawstring pants woven with light-transmitting silica micro-threads. Behaves like fluid crystal while keeping you completely cool.",
+      specs: {
+        material: "90% Rayon, 10% Micro-Silica Glass Fiber",
+        fit: "Wide Leg Palazzo Cut",
+        comfort: "Drawstring Elastic Waist"
+      },
+      sizes: ["S", "M", "L", "XL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B0FTSVKP9B",
+      name: "GLAZE Ribbed-Knit™ Tank Top",
+      category: "activewear",
+      categoryLabel: "Activewear / Tops",
+      price: 16.20,
+      rating: 4.6,
+      reviewsCount: 2032,
+      image: "https://files.catbox.moe/u8xrnb.jpg",
+      tag: "Summer Ribbed",
+      description: "Sleek tank top woven with glowing liquid-glass optical micro-threads. Fits like a second skin with stretch-comfort cooling fiber matrix.",
+      specs: {
+        material: "95% Ribbed Cotton, 5% Nano-Silica Fiber",
+        weave: "Friction-Free Micro-Glass Knit",
+        cooling: "Advanced Heat Release Channels"
+      },
+      sizes: ["XS", "S", "M", "L"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B0785VXRX2",
+      name: "GLAZE Tech-Comfort™ Active Tee",
+      category: "activewear",
+      categoryLabel: "Activewear / Performance",
+      price: 50.00,
+      rating: 4.6,
+      reviewsCount: 25950,
+      image: "https://files.catbox.moe/5whik4.jpg",
+      tag: "Performance Tech",
+      description: "Futuristic short-sleeve athletic active tee. Woven with translucent, quick-drying silica threads that reflect heat away.",
+      specs: {
+        material: "92% Recycled Polyester, 8% Spandex, Nano-Silica Guard",
+        protection: "UPF 50+ Solar Deflector",
+        weave: "Refractive Diamond Tech Weave"
+      },
+      sizes: ["S", "M", "L", "XL", "XXL"],
+      variantsMap: { "M": "1" }
+    }
+  ];
+}
 
 let cart = [];
 let activeCategory = "all";
@@ -1871,14 +2221,27 @@ const toastContainer = document.getElementById("toast-container");
 const newsletterForm = document.getElementById("newsletter-form");
 
 // --- Initialization ---
-document.addEventListener("DOMContentLoaded", () => {
+function initGlaze() {
     renderProducts();
     setupEventListeners();
     syncShopifyCart();
-});
+    if (window.AYSzvothEK) {
+        window.AYSzvothEK.track('page_viewed');
+    }
+}
+
+// Run immediately as elements are already loaded in the DOM
+initGlaze();
+
+// Fallbacks for standard page loads and Shopify theme editor updates
+document.addEventListener("DOMContentLoaded", initGlaze);
+document.addEventListener("shopify:section:load", initGlaze);
 
 // --- Event Listeners Setup ---
 function setupEventListeners() {
+    if (window.glazeListenersAttached) return;
+    window.glazeListenersAttached = true;
+
     // Category Filtering
     filterTabs.forEach(tab => {
         tab.addEventListener("click", (e) => {
@@ -1886,12 +2249,24 @@ function setupEventListeners() {
             e.target.classList.add("active");
             activeCategory = e.target.getAttribute("data-category");
             renderProducts();
+            if (window.AYSzvothEK) {
+                window.AYSzvothEK.track('collection_viewed', { category: activeCategory });
+            }
+            if (window.Shopify && window.Shopify.analytics) {
+                window.Shopify.analytics.publish('custom_collection_viewed', { category: activeCategory });
+            }
         });
     });
 
     // Cart Drawer Toggle
     cartBtn.addEventListener("click", () => {
         cartDrawerOverlay.classList.add("active");
+        if (window.AYSzvothEK) {
+            window.AYSzvothEK.track('cart_viewed');
+        }
+        if (window.Shopify && window.Shopify.analytics) {
+            window.Shopify.analytics.publish('custom_cart_viewed', {});
+        }
     });
 
     closeCartBtn.addEventListener("click", () => {
@@ -1917,6 +2292,9 @@ function setupEventListeners() {
 
     // Checkout Action -> Redirect directly to Shopify Checkout!
     checkoutBtn.addEventListener("click", () => {
+        if (window.AYSzvothEK) {
+            window.AYSzvothEK.track('checkout_started');
+        }
         window.location.href = '/checkout';
     });
 
@@ -1989,9 +2367,6 @@ function renderProducts() {
                 <div class="glass-reflection-shine"></div>
                 <img src="${product.image}" alt="${product.name}" class="product-img" loading="lazy">
                 <div class="product-badge">${product.tag}</div>
-                <button class="quick-add-btn" title="Quick Add">
-                    <i class="fa-solid fa-plus"></i>
-                </button>
             </div>
             <div class="product-info">
                 <div class="product-meta">
@@ -2002,24 +2377,23 @@ function renderProducts() {
                     </div>
                 </div>
                 <h3 class="product-name">${product.name}</h3>
-                <div class="product-footer">
+                <div class="product-price-row">
                     <span class="product-price">$${product.price.toFixed(2)}</span>
-                    <button class="view-details-btn">View Details</button>
+                    <button class="btn-add-cart" title="Add to Bag">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                    </button>
                 </div>
             </div>
         `;
 
-        // Bind quick add
-        card.querySelector(".quick-add-btn").addEventListener("click", (e) => {
+        // Bind add to cart
+        card.querySelector(".btn-add-cart").addEventListener("click", (e) => {
             e.stopPropagation();
             const defaultSize = product.sizes && product.sizes.length > 0 ? product.sizes[0] : "M";
             addToCart(product, defaultSize);
         });
 
-        // Bind open details modal
-        card.querySelector(".view-details-btn").addEventListener("click", () => {
-            openProductModal(product);
-        });
+        // Bind open details modal on card click
         card.addEventListener("click", () => {
             openProductModal(product);
         });
@@ -2030,13 +2404,41 @@ function renderProducts() {
 
 // --- Add Item to Shopify Cart (AJAX) ---
 function addToCart(product, size) {
+    if (window.AYSzvothEK) {
+        window.AYSzvothEK.track('AddToCart', {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            size: size
+        });
+    }
     const variantId = product.variantsMap ? product.variantsMap[size] : null;
-    if (!variantId) {
-        showToast("Error: Size variant not found.", "fa-circle-xmark");
+    
+    // Detect if this is a mock product (non-Shopify numerical ID)
+    const isMock = !variantId || String(variantId).length < 8 || String(variantId) === "1";
+    
+    if (isMock) {
+        const existing = cart.find(item => item.product.id === product.id && item.size === size);
+        if (existing) {
+            existing.quantity += 1;
+        } else {
+            cart.push({
+                product: product,
+                size: size,
+                quantity: 1,
+                variantId: variantId || 'mock-' + Math.random().toString(36).substr(2, 9)
+            });
+        }
+        showToast("Added " + product.name + " to bag!", "fa-bag-shopping");
+        updateCartUI(
+            cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
+            cart.reduce((sum, item) => sum + item.quantity, 0)
+        );
+        cartDrawerOverlay.classList.add("active");
         return;
     }
 
-    showToast(`Adding ${product.name} (${size}) to bag...`, "fa-spinner");
+    showToast("Adding " + product.name + " (" + size + ") to bag...", "fa-spinner");
 
     fetch('/cart/add.js', {
         method: 'POST',
@@ -2050,7 +2452,7 @@ function addToCart(product, size) {
         return res.json();
     })
     .then(() => {
-        showToast(`Added ${product.name} to bag!`, "fa-bag-shopping");
+        showToast("Added " + product.name + " to bag!", "fa-bag-shopping");
         syncShopifyCart();
         cartDrawerOverlay.classList.add("active");
     })
@@ -2062,6 +2464,23 @@ function addToCart(product, size) {
 
 // --- Modify Variant Quantity in Shopify Cart (AJAX) ---
 function changeQuantity(variantId, newQty) {
+    const isMock = !variantId || String(variantId).length < 8 || String(variantId).includes('mock') || String(variantId) === "1";
+    if (isMock) {
+        const idx = cart.findIndex(item => item.variantId === variantId);
+        if (idx !== -1) {
+            if (newQty <= 0) {
+                cart.splice(idx, 1);
+            } else {
+                cart[idx].quantity = newQty;
+            }
+            updateCartUI(
+                cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
+                cart.reduce((sum, item) => sum + item.quantity, 0)
+            );
+        }
+        return;
+    }
+
     fetch('/cart/change.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -2155,6 +2574,20 @@ function updateCartUI(totalPrice = 0, itemCount = 0) {
 
 // --- Product Detail Modal ---
 function openProductModal(product) {
+    if (window.AYSzvothEK) {
+        window.AYSzvothEK.track('product_viewed', {
+            id: product.id,
+            name: product.name,
+            price: product.price
+        });
+    }
+    if (window.Shopify && window.Shopify.analytics) {
+        window.Shopify.analytics.publish('custom_product_viewed', {
+            id: product.id,
+            name: product.name,
+            price: product.price
+        });
+    }
     activeModalProduct = product;
     
     // Format specifications
@@ -2178,7 +2611,7 @@ function openProductModal(product) {
     if (product.sizes) {
         product.sizes.forEach((size, idx) => {
             sizesHTML += `
-                <button class="size-select-btn ${idx === 0 ? 'active' : ''}" data-size="${size}">${size}</button>
+                <button class="size-btn ${idx === 0 ? 'active' : ''}" data-size="${size}">${size}</button>
             `;
         });
     }
@@ -2205,9 +2638,9 @@ function openProductModal(product) {
                 <span class="modal-product-price">$${product.price.toFixed(2)}</span>
                 <p class="modal-product-desc">${product.description}</p>
                 
-                <div class="size-selector-wrapper">
-                    <span class="size-selector-label">Select Size</span>
-                    <div class="size-buttons-row">
+                <div style="margin: 20px 0;">
+                    <h4 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px;">Select Size</h4>
+                    <div class="size-selector">
                         ${sizesHTML}
                     </div>
                 </div>
@@ -2222,7 +2655,7 @@ function openProductModal(product) {
     `;
 
     // Size Selection Handlers
-    const sizeBtns = modalProductDetails.querySelectorAll(".size-select-btn");
+    const sizeBtns = modalProductDetails.querySelectorAll(".size-btn");
     sizeBtns.forEach(btn => {
         btn.addEventListener("click", (e) => {
             sizeBtns.forEach(b => b.classList.remove("active"));
@@ -2232,7 +2665,7 @@ function openProductModal(product) {
 
     // Add To Bag in Modal Handler
     modalProductDetails.querySelector(".modal-add-to-bag-btn").addEventListener("click", () => {
-        const activeSizeBtn = modalProductDetails.querySelector(".size-select-btn.active");
+        const activeSizeBtn = modalProductDetails.querySelector(".size-btn.active");
         const selectedSize = activeSizeBtn ? activeSizeBtn.getAttribute("data-size") : "M";
         addToCart(product, selectedSize);
         productModal.classList.remove("active");
