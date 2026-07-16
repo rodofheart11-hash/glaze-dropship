@@ -1,6 +1,6 @@
 // CONFIG
 const CONFIG = {
-    SOURCE_ID: "cmrmurz1i000edtnrb55ig6b7",
+    SOURCE_ID: "cmrmwf37f000ydtnraghdreol",
     ENDPOINT: "https://s1.rbrun.com/api/conversion",
     HEARTBEAT_ENDPOINT: "https://s1.rbrun.com/api/heartbeat",
     STORAGE_KEY: "_rb_vid"
