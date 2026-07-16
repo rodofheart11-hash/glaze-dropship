@@ -1,5 +1,5 @@
 {% comment %}
-  GLAZE Clothing Storefront Section
+  GLAZE Storefront Section (Liquid Glass = visual design theme)
   Install: Copy this entire file and paste it into a new file sections/glaze-storefront.liquid in your Shopify Theme.
 {% endcomment %}
 
@@ -1851,7 +1851,8 @@ body {
 <script>
   
 /* ==========================================================================
-   GLAZE Clothing - Shopify AJAX Cart Integration
+   GLAZE Liquid Glass - Shopify AJAX Cart Integration
+   (Liquid Glass = visual/glassmorphic design theme only)
    ========================================================================== */
 
 // --- Shopify Dynamic Products Config ---
@@ -1934,7 +1935,7 @@ if (PRODUCTS.length === 0) {
       description: "A lightweight, flowy midi sundress cut for warm-weather days and vacations. Soft, breathable fabric with a relaxed drape and handy side pockets.",
       specs: {
         material: "Rayon / spandex blend",
-        fit: "Relaxed A-line, midi length",
+        fit: "Relaxed A-line midi length",
         features: "Two side pockets, elastic comfort waist",
         care: "Machine wash cold, hang dry"
       },
@@ -2240,7 +2241,7 @@ function renderProducts() {
         : PRODUCTS.filter(p => p.category === activeCategory);
 
     if (filtered.length === 0) {
-        productGrid.innerHTML = `<div class="empty-message">No designs found in this matrix segment.</div>`;
+        productGrid.innerHTML = `<div class="empty-message">No items found in this category.</div>`;
         return;
     }
 
@@ -2589,7 +2590,7 @@ function showToast(message, iconName = "fa-info-circle") {
       "type": "collection",
       "id": "collection",
       "label": "Collection to Render",
-      "info": "Choose the collection containing your GLAZE apparel items."
+      "info": "Choose the collection containing your apparel items."
     }
   ],
   "presets": [
