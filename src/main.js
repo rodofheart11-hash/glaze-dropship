@@ -181,8 +181,13 @@ function renderProducts() {
         card.className = "product-card glass-card";
         card.setAttribute("data-id", product.id);
 
+        const rankBadge = product.rankLabel
+            ? `<div class="product-rank-badge"><i class="fa-solid fa-award"></i> ${product.rankLabel}</div>`
+            : (product.badges && product.badges[0] ? `<div class="product-rank-badge alt">${product.badges[0]}</div>` : "");
+        const chipsHTML = (product.badges || []).slice(0, 3).map(b =>
+            `<span class="product-chip">${b}</span>`).join("");
+
         card.innerHTML = `
-            ${product.tag ? `<span class="product-tag">${product.tag}</span>` : ""}
             <div class="product-img-wrapper">
                 <img src="${product.image}" alt="${product.name}" class="product-img" loading="lazy">
                 <div class="product-actions-overlay">
@@ -193,20 +198,20 @@ function renderProducts() {
                         <i class="fa-solid fa-bag-shopping"></i>
                     </button>
                 </div>
+                ${rankBadge}
             </div>
             <div class="product-info">
-                <div class="product-meta">
-                    <span class="product-category">${product.categoryLabel}</span>
-                    <div class="product-rating">
-                        <span class="stars-inline">${renderStars(product.rating)}</span>
-                        <span class="rating-count">${product.rating} (${Number(product.reviewsCount).toLocaleString()})</span>
-                    </div>
+                <div class="product-rating">
+                    <span class="stars-inline">${renderStars(product.rating)}</span>
+                    <span class="rating-count"><strong>${product.rating}</strong> · ${Number(product.reviewsCount).toLocaleString()} reviews</span>
                 </div>
                 <h3 class="product-name">${product.name}</h3>
+                ${product.hook ? `<p class="product-hook">${product.hook}</p>` : ""}
+                <div class="product-chips">${chipsHTML}</div>
                 <div class="product-price-row">
                     <span class="product-price">$${product.price.toFixed(2)}</span>
                     <button class="btn-add-cart direct-add-btn" title="Add to Bag">
-                        <i class="fa-solid fa-plus"></i>
+                        <i class="fa-solid fa-bag-shopping"></i> Add
                     </button>
                 </div>
             </div>
@@ -280,23 +285,33 @@ function openModal(product) {
         `;
     }
 
+    // Benefit bullets (what you GET) — the primary selling content.
+    let benefitsHTML = "";
+    if (product.benefits && product.benefits.length) {
+        benefitsHTML = `<ul class="modal-benefits">` +
+            product.benefits.map(b => `<li><i class="fa-solid fa-check"></i> ${b}</li>`).join("") +
+            `</ul>`;
+    }
+
+    // Rank ribbon (real bestseller rank) sits above the title as top proof.
+    const rankRibbon = product.rankLabel
+        ? `<div class="modal-rank"><i class="fa-solid fa-award"></i> ${product.rankLabel}</div>` : "";
+
     modalProductDetails.innerHTML = `
         <div class="modal-img-wrapper">
             <img src="${product.image}" alt="${product.name}">
         </div>
         <div class="modal-details">
             <span class="product-category">${product.categoryLabel}</span>
+            ${rankRibbon}
             <h2 class="modal-product-name">${product.name}</h2>
             <div class="modal-rating-row">
                 <div class="stars">${renderStars(product.rating)}</div>
-                <span class="reviews-count">${product.rating} · ${Number(product.reviewsCount).toLocaleString()} reviews</span>
+                <span class="reviews-count"><strong>${product.rating}</strong> · ${Number(product.reviewsCount).toLocaleString()} reviews</span>
             </div>
+            ${product.hook ? `<p class="modal-hook">${product.hook}</p>` : ""}
             <div class="modal-product-price">$${product.price.toFixed(2)}</div>
-            <p class="modal-product-desc">${product.description}</p>
-
-            <div class="specs-grid">
-                ${specsHTML}
-            </div>
+            ${benefitsHTML}
 
             <div class="size-head">
                 <h4>Select Size</h4>
@@ -321,10 +336,15 @@ function openModal(product) {
                 <p class="size-guide-note">Measurements are approximate. If you're between sizes, we suggest sizing up.</p>
             </div>
 
+            ${product.description ? `<p class="modal-product-desc">${product.description}</p>` : ""}
+
+            <div class="specs-grid">
+                ${specsHTML}
+            </div>
+
             <div class="modal-actions">
                 <button class="btn btn-primary btn-add-modal glow-effect" id="modal-add-btn">
-                    <span>Add to Shopping Bag</span>
-                    <i class="fa-solid fa-bag-shopping"></i>
+                    <i class="fa-solid fa-bag-shopping"></i> Add To Bag · $${product.price.toFixed(2)}
                 </button>
             </div>
 

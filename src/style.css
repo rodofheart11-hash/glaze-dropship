@@ -11,8 +11,9 @@
     --border-glass: rgba(255, 255, 255, 0.06);
     --border-glass-active: rgba(255, 255, 255, 0.15);
     
-    /* Muted Liquid Glass Accents (Low Saturation Ice Blue & Soft Lavender) */
-    --primary: #a5f3fc;     /* Translucent Ice Cyan */
+    /* Electric cyan accent (bright, saturated) with soft lavender secondary */
+    --primary: #22d3ee;     /* Electric Cyan */
+    --primary-soft: #a5f3fc;/* Softer ice cyan for subtle fills/gradients */
     --secondary: #d8b4fe;   /* Muted Lavender */
     --accent: #475569;      /* Architectural Slate */
     
@@ -1638,3 +1639,178 @@ body {
     color: var(--text-muted);
 }
 .cart-trust-row i { color: var(--primary); margin-right: 4px; }
+
+/* ==========================================================================
+   Merchandising: rank badges, benefit bullets, hooks, chips, social proof
+   ========================================================================== */
+
+/* Bestseller rank badge on product image */
+.product-rank-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 11px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--bg-dark);
+    background: var(--primary);
+    border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(34, 211, 238, 0.35);
+}
+.product-rank-badge.alt {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    box-shadow: none;
+    border: 1px solid var(--border-glass-active);
+}
+.product-rank-badge i { font-size: 0.72rem; }
+
+/* Card rating row (now leads the info block) */
+.product-info .product-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.product-info .rating-count {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    margin-left: 0;
+}
+.product-info .rating-count strong { color: var(--text-main); }
+
+/* One-line value hook on card */
+.product-hook {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.45;
+    margin: 6px 0 12px;
+}
+
+/* Badge chips */
+.product-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+.product-chip {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: var(--primary);
+    background: rgba(34, 211, 238, 0.08);
+    border: 1px solid rgba(34, 211, 238, 0.2);
+    padding: 3px 9px;
+    border-radius: 20px;
+}
+
+/* Add button now shows a label */
+.btn-add-cart {
+    width: auto;
+    padding: 0 16px;
+    height: 38px;
+    gap: 7px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* Modal: rank ribbon */
+.modal-rank {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin: 10px 0 4px;
+    padding: 6px 12px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--bg-dark);
+    background: var(--primary);
+    border-radius: 6px;
+}
+
+/* Modal: hook */
+.modal-hook {
+    font-size: 1.02rem;
+    line-height: 1.5;
+    color: var(--text-main);
+    margin: 10px 0 14px;
+    font-weight: 500;
+}
+
+/* Modal: benefit bullets — the primary selling content */
+.modal-benefits {
+    list-style: none;
+    margin: 16px 0 20px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.modal-benefits li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--text-main);
+}
+.modal-benefits li i {
+    color: var(--primary);
+    margin-top: 3px;
+    font-size: 0.82rem;
+    flex-shrink: 0;
+}
+
+/* Modal: description demoted to secondary detail */
+.modal-product-desc {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 4px 0 16px;
+}
+
+/* Aggregate social-proof strip */
+.social-proof-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 22px 40px;
+    border-top: 1px solid var(--border-glass);
+    border-bottom: 1px solid var(--border-glass);
+    text-align: center;
+}
+.social-proof-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+.social-proof-item .sp-num {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+.social-proof-item .sp-lbl {
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+.social-proof-item .sp-num .accent { color: var(--primary); }

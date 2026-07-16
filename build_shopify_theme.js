@@ -14,6 +14,65 @@
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { PRODUCTS as CATALOG, TOTAL_REVIEWS } from './src/products.js';
+
+// Build a keyed enrichment map so the LIVE Shopify Liquid products (which don't
+// carry our custom merchandising fields) get the real rating, reviewsCount,
+// hook, benefits, badges and rankLabel merged in by product handle/id at runtime.
+// Keyed by handle AND by the raw title (handleized) so we can match regardless
+// of how the product was imported.
+const enrichmentMap = {};
+CATALOG.forEach(p => {
+  const entry = {
+    rating: p.rating,
+    reviewsCount: p.reviewsCount,
+    hook: p.hook || "",
+    rankLabel: p.rankLabel || "",
+    badges: p.badges || [],
+    benefits: p.benefits || [],
+    specs: p.specs || {},
+    categoryLabel: p.categoryLabel || ""
+  };
+  // Key by a handleized version of the product name so it matches Shopify's handle.
+  const handleKey = p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  enrichmentMap[handleKey] = entry;
+  // Also key by the source ASIN id for a secondary match.
+  enrichmentMap[p.id] = entry;
+});
+const enrichmentJSON = JSON.stringify(enrichmentMap);
+const totalReviewsRounded = Math.floor(TOTAL_REVIEWS / 1000) * 1000; // "70,000+" honest floor
+
+// Hosted image URLs (by source id) used by the static fallback catalog.
+const FALLBACK_IMAGES = {
+  B0FT4QF9D5: "https://files.catbox.moe/rabxm9.jpg",
+  B0CSDK2C3P: "https://files.catbox.moe/17e114.jpg",
+  B0BV241H3F: "https://files.catbox.moe/h64bqu.jpg",
+  B09P3RHNSY: "https://files.catbox.moe/oms6xl.jpg",
+  B09MKNL9M3: "https://files.catbox.moe/r4s2lf.jpg",
+  B0CKZ4ZWYG: "https://files.catbox.moe/rrpwrx.jpg",
+  B0FP5BYXVR: "https://files.catbox.moe/ivmew0.jpg",
+  B0FTSVKP9B: "https://files.catbox.moe/u8xrnb.jpg"
+};
+// Build the static fallback array from the catalog (kept in sync automatically).
+const fallbackArray = CATALOG.map(p => ({
+  id: p.id,
+  name: p.name,
+  category: p.category,
+  categoryLabel: p.categoryLabel,
+  price: p.price,
+  rating: p.rating,
+  reviewsCount: p.reviewsCount,
+  image: FALLBACK_IMAGES[p.id] || p.image,
+  hook: p.hook || "",
+  rankLabel: p.rankLabel || "",
+  badges: p.badges || [],
+  benefits: p.benefits || [],
+  description: p.description,
+  specs: p.specs || {},
+  sizes: p.sizes || [],
+  variantsMap: { [ (p.sizes && p.sizes[0]) || "M" ]: "1" }
+}));
+const fallbackArrayJSON = JSON.stringify(fallbackArray, null, 2);
 
 const themeDirs = [
   './temp-shopify-theme/sections',
@@ -54,18 +113,22 @@ const shopifyJS = `
 
 // --- Shopify Dynamic Products Config ---
 // This extracts the active collection products mapped directly in Liquid!
+// Merchandising enrichment (real ratings, reviews, hooks, badges, benefits,
+// bestseller ranks) keyed by product handle / source id. Merged onto the live
+// Shopify products below so the real store shows genuine social proof.
+const ENRICHMENT = ${enrichmentJSON};
+
 let PRODUCTS = [
   {% for product in collection.products %}
   {
     id: "{{ product.id }}",
+    handle: "{{ product.handle }}",
     name: "{{ product.title | escape }}",
     category: "{{ product.type | handleize }}",
     categoryLabel: "{{ product.type | escape }}",
     price: {{ product.price | divided_by: 100.0 }},
-    rating: 4.8,
-    reviewsCount: 124,
+    available: {% if product.available %}true{% else %}false{% endif %},
     image: "{% if product.featured_image %}{{ product.featured_image | image_url: width: 800 }}{% else %}https://files.catbox.moe/hgn95m.jpg{% endif %}",
-    tag: "{% if product.available %}Bestseller{% else %}Sold Out{% endif %}",
     description: "{{ product.description | escape | strip_newlines }}",
     specs: {},
     sizes: [
@@ -82,204 +145,73 @@ let PRODUCTS = [
   {% endfor %}
 ];
 
-// Post-process PRODUCTS to extract specs from description HTML and clean up description text
+// Merge merchandising enrichment onto each live product (match by handle, then id).
 PRODUCTS.forEach(product => {
-  if (product.description.includes('Specifications')) {
+  const e = ENRICHMENT[product.handle] || ENRICHMENT[product.id] || null;
+  if (e) {
+    product.rating = e.rating;
+    product.reviewsCount = e.reviewsCount;
+    product.hook = e.hook;
+    product.rankLabel = e.rankLabel;
+    product.badges = e.badges;
+    product.benefits = e.benefits;
+    if (e.specs && Object.keys(e.specs).length) product.specs = e.specs;
+    if (e.categoryLabel) product.categoryLabel = e.categoryLabel;
+  }
+  // Sensible fallbacks so the UI never breaks on an unmatched product.
+  if (product.rating == null) product.rating = 4.6;
+  if (product.reviewsCount == null) product.reviewsCount = 0;
+  if (!product.badges) product.badges = product.available ? ["New"] : ["Sold Out"];
+  if (!product.benefits) product.benefits = [];
+  if (product.hook == null) product.hook = "";
+  if (product.rankLabel == null) product.rankLabel = "";
+});
+
+// Bestsellers first: order by review count so the most-proven items lead.
+PRODUCTS.sort((a, b) => (b.reviewsCount || 0) - (a.reviewsCount || 0));
+
+// Post-process: clean the Shopify description into plain prose, and (only as a
+// fallback, when enrichment didn't supply them) parse specs from the description.
+PRODUCTS.forEach(product => {
+  if (product.description && /<[a-z]/i.test(product.description)) {
     try {
       const txt = document.createElement("textarea");
       txt.innerHTML = product.description;
       const rawHtml = txt.value;
-      
+
       const parser = new DOMParser();
       const doc = parser.parseFromString(rawHtml, 'text/html');
-      
-      const liElements = doc.querySelectorAll('li');
-      liElements.forEach(li => {
-        const strong = li.querySelector('strong');
-        if (strong) {
-          const key = strong.textContent.replace(':', '').trim();
-          const value = li.textContent.replace(strong.textContent, '').trim();
-          product.specs[key] = value;
-        }
-      });
-      
+
+      // Fallback spec extraction only if enrichment gave us nothing.
+      if (!product.specs || Object.keys(product.specs).length === 0) {
+        product.specs = product.specs || {};
+        doc.querySelectorAll('li').forEach(li => {
+          const strong = li.querySelector('strong');
+          if (strong) {
+            const key = strong.textContent.replace(':', '').trim();
+            const value = li.textContent.replace(strong.textContent, '').trim();
+            product.specs[key] = value;
+          }
+        });
+      }
+
+      // Use just the intro paragraph(s) as the prose description.
       const pElements = doc.querySelectorAll('p');
       if (pElements.length > 0) {
-        product.description = Array.from(pElements).map(p => p.outerHTML).join('');
+        product.description = Array.from(pElements).map(p => p.textContent.trim()).join(' ');
       } else {
-        const parts = rawHtml.split(/<h[23]>/i);
-        product.description = parts[0].trim();
+        product.description = (doc.body.textContent || '').trim();
       }
     } catch (e) {
-      console.error("Failed to parse product specifications:", e);
+      console.error("Failed to parse product description:", e);
     }
   }
 });
 
-// Fallback to static catalog if Shopify returns 0 products (collection not configured yet)
+// Fallback to static catalog if Shopify returns 0 products (collection not configured yet).
+// Generated from src/products.js (single source of truth) with the real image URLs.
 if (PRODUCTS.length === 0) {
-  PRODUCTS = [
-    {
-      id: "B0FT4QF9D5",
-      name: "GLAZE Flow Midi Sundress",
-      category: "dresses",
-      categoryLabel: "Dresses",
-      price: 32.99,
-      rating: 4.5,
-      reviewsCount: 2393,
-      image: "https://files.catbox.moe/rabxm9.jpg",
-      tag: "Best Seller",
-      description: "A lightweight, flowy midi sundress cut for warm-weather days and vacations. Soft, breathable fabric with a relaxed drape and handy side pockets.",
-      specs: {
-        material: "Rayon / spandex blend",
-        fit: "Relaxed A-line midi length",
-        features: "Two side pockets, elastic comfort waist",
-        care: "Machine wash cold, hang dry"
-      },
-      sizes: ["S", "M", "L", "XL"],
-      variantsMap: { "M": "1" }
-    },
-    {
-      id: "B0CSDK2C3P",
-      name: "GLAZE UV-Shield Long Sleeve Sun Shirt",
-      category: "activewear",
-      categoryLabel: "Activewear",
-      price: 27.99,
-      rating: 4.6,
-      reviewsCount: 3506,
-      image: "https://files.catbox.moe/17e114.jpg",
-      tag: "Sun Protection",
-      description: "A lightweight, quick-drying long sleeve shirt with UPF 50+ rated sun protection. Made for hiking, workouts and long days outdoors, with a breathable feel that helps keep you cool.",
-      specs: {
-        material: "Polyester / spandex blend",
-        protection: "UPF 50+ rated fabric (manufacturer tested)",
-        performance: "Moisture-wicking, quick-drying",
-        fit: "Lightweight, breathable long sleeve"
-      },
-      sizes: ["S", "M", "L", "XL"],
-      variantsMap: { "M": "1" }
-    },
-    {
-      id: "B0BV241H3F",
-      name: "GLAZE Summer Linen-Blend Button-Down",
-      category: "activewear",
-      categoryLabel: "Shirts",
-      price: 34.99,
-      rating: 4.4,
-      reviewsCount: 14800,
-      image: "https://files.catbox.moe/h64bqu.jpg",
-      tag: "Summer Classic",
-      description: "A relaxed short-sleeve button-down in a breathable linen-cotton blend. A lightweight staple for the beach, summer events and everyday warm-weather wear.",
-      specs: {
-        material: "Linen / cotton blend",
-        fit: "Relaxed casual fit",
-        features: "Button-down front, short sleeve",
-        care: "Machine wash cold, iron low if needed"
-      },
-      sizes: ["M", "L", "XL", "XXL"],
-      variantsMap: { "M": "1" }
-    },
-    {
-      id: "B09P3RHNSY",
-      name: "GLAZE Aero Men's Running Shorts",
-      category: "activewear",
-      categoryLabel: "Activewear",
-      price: 26.99,
-      rating: 4.5,
-      reviewsCount: 19928,
-      image: "https://files.catbox.moe/oms6xl.jpg",
-      tag: "Top Rated",
-      description: "Lightweight athletic shorts built for running, gym and court sports. Quick-drying fabric with three zippered pockets to keep your phone and keys secure while you move.",
-      specs: {
-        material: "Polyester / spandex blend",
-        pockets: "Three zippered pockets",
-        performance: "Quick-drying, lightweight",
-        fit: "Athletic fit with mesh liner"
-      },
-      sizes: ["S", "M", "L", "XL"],
-      variantsMap: { "M": "1" }
-    },
-    {
-      id: "B09MKNL9M3",
-      name: "GLAZE Aero Women's Athletic Shorts",
-      category: "activewear",
-      categoryLabel: "Activewear",
-      price: 24.99,
-      rating: 4.5,
-      reviewsCount: 12857,
-      image: "https://files.catbox.moe/r4s2lf.jpg",
-      tag: "Best Seller",
-      description: "High-waisted running shorts with a secure pocket, made for gym workouts and everyday active wear. Stretchy, comfortable fabric with a flattering high-rise waistband.",
-      specs: {
-        material: "Polyester / spandex blend",
-        waist: "High-waisted elastic waistband",
-        pockets: "Side pocket",
-        fit: "Sporty running short"
-      },
-      sizes: ["XS", "S", "M", "L"],
-      variantsMap: { "M": "1" }
-    },
-    {
-      id: "B0CKZ4ZWYG",
-      name: "GLAZE Everyday High-Waisted Leggings",
-      category: "activewear",
-      categoryLabel: "Activewear",
-      price: 15.99,
-      rating: 4.6,
-      reviewsCount: 12949,
-      image: "https://files.catbox.moe/rrpwrx.jpg",
-      tag: "Great Value",
-      description: "Buttery-soft high-waisted leggings with side pockets. A stretchy, comfortable everyday layer for yoga, workouts and lounging.",
-      specs: {
-        material: "Polyester / spandex blend",
-        waist: "High-waisted",
-        features: "Side pockets, 4-way stretch",
-        fit: "Full length, buttery-soft feel"
-      },
-      sizes: ["S", "M", "L", "XL"],
-      variantsMap: { "M": "1" }
-    },
-    {
-      id: "B0FP5BYXVR",
-      name: "GLAZE Palazzo Wide-Leg Pants",
-      category: "activewear",
-      categoryLabel: "Pants",
-      price: 32.99,
-      rating: 4.5,
-      reviewsCount: 2745,
-      image: "https://files.catbox.moe/ivmew0.jpg",
-      tag: "Summer Favorite",
-      description: "Flowy wide-leg palazzo pants with a drawstring elastic waist and pockets. Lightweight and breezy for summer, the beach and vacation.",
-      specs: {
-        material: "Rayon blend",
-        fit: "Wide-leg palazzo cut",
-        waist: "Drawstring elastic waist",
-        features: "Side pockets"
-      },
-      sizes: ["S", "M", "L", "XL"],
-      variantsMap: { "M": "1" }
-    },
-    {
-      id: "B0FTSVKP9B",
-      name: "GLAZE Ribbed Knit Tank Top",
-      category: "activewear",
-      categoryLabel: "Tops",
-      price: 14.99,
-      rating: 4.6,
-      reviewsCount: 2032,
-      image: "https://files.catbox.moe/u8xrnb.jpg",
-      tag: "Summer Basic",
-      description: "A slim-fitting V-neck ribbed knit tank top. A soft, stretchy basic that layers easily and works for everyday summer wear.",
-      specs: {
-        material: "Ribbed cotton blend",
-        neckline: "V-neck",
-        fit: "Slim, fitted sleeveless",
-        care: "Machine wash cold"
-      },
-      sizes: ["XS", "S", "M", "L"],
-      variantsMap: { "M": "1" }
-    }
-  ];
+  PRODUCTS = ${fallbackArrayJSON};
 }
 
 let cart = [];
@@ -476,25 +408,30 @@ function renderProducts() {
         card.className = "product-card";
         card.setAttribute("data-id", product.id);
 
+        const rankBadge = product.rankLabel
+            ? \`<div class="product-rank-badge"><i class="fa-solid fa-award"></i> \${product.rankLabel}</div>\`
+            : (product.badges && product.badges[0] ? \`<div class="product-rank-badge alt">\${product.badges[0]}</div>\` : "");
+        const chipsHTML = (product.badges || []).slice(0, 3).map(b =>
+            \`<span class="product-chip">\${b}</span>\`).join("");
+
         card.innerHTML = \`
             <div class="product-img-wrapper">
                 <div class="glass-reflection-shine"></div>
                 <img src="\${product.image}" alt="\${product.name}" class="product-img" loading="lazy">
-                <div class="product-badge">\${product.tag}</div>
+                \${rankBadge}
             </div>
             <div class="product-info">
-                <div class="product-meta">
-                    <span class="product-category">\${product.categoryLabel}</span>
-                    <div class="product-rating">
-                        <span class="stars-inline">\${renderStars(product.rating)}</span>
-                        <span class="rating-count">\${product.rating} (\${Number(product.reviewsCount).toLocaleString()})</span>
-                    </div>
+                <div class="product-rating">
+                    <span class="stars-inline">\${renderStars(product.rating)}</span>
+                    <span class="rating-count"><strong>\${product.rating}</strong> · \${Number(product.reviewsCount).toLocaleString()} reviews</span>
                 </div>
                 <h3 class="product-name">\${product.name}</h3>
+                \${product.hook ? \`<p class="product-hook">\${product.hook}</p>\` : ""}
+                <div class="product-chips">\${chipsHTML}</div>
                 <div class="product-price-row">
                     <span class="product-price">\$\${product.price.toFixed(2)}</span>
                     <button class="btn-add-cart" title="Add to Bag">
-                        <i class="fa-solid fa-bag-shopping"></i>
+                        <i class="fa-solid fa-bag-shopping"></i> Add
                     </button>
                 </div>
             </div>
@@ -704,6 +641,18 @@ function openProductModal(product) {
         });
     }
 
+    // Benefit bullets (what you GET) — the primary selling content.
+    let benefitsHTML = "";
+    if (product.benefits && product.benefits.length) {
+        benefitsHTML = \`<ul class="modal-benefits">\` +
+            product.benefits.map(b => \`<li><i class="fa-solid fa-check"></i> \${b}</li>\`).join("") +
+            \`</ul>\`;
+    }
+
+    // Rank ribbon (real bestseller rank) sits above the title as top proof.
+    const rankRibbon = product.rankLabel
+        ? \`<div class="modal-rank"><i class="fa-solid fa-award"></i> \${product.rankLabel}</div>\` : "";
+
     modalProductDetails.innerHTML = \`
         <div class="modal-img-wrapper glass-card">
             <div class="glass-reflection-shine"></div>
@@ -711,14 +660,16 @@ function openProductModal(product) {
         </div>
         <div class="modal-details">
             <span class="modal-category">\${product.categoryLabel}</span>
+            \${rankRibbon}
             <h2 class="modal-product-name">\${product.name}</h2>
             <div class="modal-rating-row">
                 <div class="stars">\${renderStars(product.rating)}</div>
-                <span class="reviews-count">\${product.rating} · \${Number(product.reviewsCount).toLocaleString()} reviews</span>
+                <span class="reviews-count"><strong>\${product.rating}</strong> · \${Number(product.reviewsCount).toLocaleString()} reviews</span>
             </div>
+            \${product.hook ? \`<p class="modal-hook">\${product.hook}</p>\` : ""}
             <span class="modal-product-price">\$\${product.price.toFixed(2)}</span>
-            <p class="modal-product-desc">\${product.description}</p>
-            
+            \${benefitsHTML}
+
             <div style="margin: 20px 0;">
                 <div class="size-head">
                     <h4 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; margin: 0;">Select Size</h4>
@@ -744,10 +695,12 @@ function openProductModal(product) {
                 </div>
             </div>
 
+            \${product.description ? \`<p class="modal-product-desc">\${product.description}</p>\` : ""}
+
             \${specsHTML}
 
             <button class="btn btn-primary modal-add-to-bag-btn">
-                <i class="fa-solid fa-bag-shopping"></i> Add To Bag
+                <i class="fa-solid fa-bag-shopping"></i> Add To Bag · \$\${product.price.toFixed(2)}
             </button>
 
             <div class="trust-badges">

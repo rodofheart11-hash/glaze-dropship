@@ -19,8 +19,9 @@
     --border-glass: rgba(255, 255, 255, 0.06);
     --border-glass-active: rgba(255, 255, 255, 0.15);
     
-    /* Muted Liquid Glass Accents (Low Saturation Ice Blue & Soft Lavender) */
-    --primary: #a5f3fc;     /* Translucent Ice Cyan */
+    /* Electric cyan accent (bright, saturated) with soft lavender secondary */
+    --primary: #22d3ee;     /* Electric Cyan */
+    --primary-soft: #a5f3fc;/* Softer ice cyan for subtle fills/gradients */
     --secondary: #d8b4fe;   /* Muted Lavender */
     --accent: #475569;      /* Architectural Slate */
     
@@ -1647,6 +1648,181 @@ body {
 }
 .cart-trust-row i { color: var(--primary); margin-right: 4px; }
 
+/* ==========================================================================
+   Merchandising: rank badges, benefit bullets, hooks, chips, social proof
+   ========================================================================== */
+
+/* Bestseller rank badge on product image */
+.product-rank-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 11px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--bg-dark);
+    background: var(--primary);
+    border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(34, 211, 238, 0.35);
+}
+.product-rank-badge.alt {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    box-shadow: none;
+    border: 1px solid var(--border-glass-active);
+}
+.product-rank-badge i { font-size: 0.72rem; }
+
+/* Card rating row (now leads the info block) */
+.product-info .product-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.product-info .rating-count {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    margin-left: 0;
+}
+.product-info .rating-count strong { color: var(--text-main); }
+
+/* One-line value hook on card */
+.product-hook {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.45;
+    margin: 6px 0 12px;
+}
+
+/* Badge chips */
+.product-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+.product-chip {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: var(--primary);
+    background: rgba(34, 211, 238, 0.08);
+    border: 1px solid rgba(34, 211, 238, 0.2);
+    padding: 3px 9px;
+    border-radius: 20px;
+}
+
+/* Add button now shows a label */
+.btn-add-cart {
+    width: auto;
+    padding: 0 16px;
+    height: 38px;
+    gap: 7px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* Modal: rank ribbon */
+.modal-rank {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin: 10px 0 4px;
+    padding: 6px 12px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--bg-dark);
+    background: var(--primary);
+    border-radius: 6px;
+}
+
+/* Modal: hook */
+.modal-hook {
+    font-size: 1.02rem;
+    line-height: 1.5;
+    color: var(--text-main);
+    margin: 10px 0 14px;
+    font-weight: 500;
+}
+
+/* Modal: benefit bullets — the primary selling content */
+.modal-benefits {
+    list-style: none;
+    margin: 16px 0 20px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.modal-benefits li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--text-main);
+}
+.modal-benefits li i {
+    color: var(--primary);
+    margin-top: 3px;
+    font-size: 0.82rem;
+    flex-shrink: 0;
+}
+
+/* Modal: description demoted to secondary detail */
+.modal-product-desc {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 4px 0 16px;
+}
+
+/* Aggregate social-proof strip */
+.social-proof-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 22px 40px;
+    border-top: 1px solid var(--border-glass);
+    border-bottom: 1px solid var(--border-glass);
+    text-align: center;
+}
+.social-proof-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+.social-proof-item .sp-num {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+.social-proof-item .sp-lbl {
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+.social-proof-item .sp-num .accent { color: var(--primary); }
+
 </style>
 
 <div class="glaze-theme-wrapper" id="shopify-section-{{ section.id }}">
@@ -1719,13 +1895,13 @@ body {
         <section id="hero" class="hero-section">
             <div class="hero-content">
                 <div class="badge glass-card">
-                    <span class="pulse-dot"></span> Modern Everyday Apparel
+                    <span class="pulse-dot"></span> Loved by 70,000+ shoppers
                 </div>
                 <h1 class="hero-title">
                     Effortless Style, <span class="gradient-text text-liquid">Every Day</span>.
                 </h1>
                 <p class="hero-subtitle">
-                    Comfortable, well-made everyday clothing for warm days, workouts and life in between. Carefully curated, quality-checked, and shipped worldwide.
+                    Comfortable, well-made everyday clothing for warm days, workouts and life in between — hand-picked from top-rated bestsellers, quality-checked, and shipped worldwide free.
                 </p>
                 <div class="hero-actions">
                     <a href="#catalog" class="btn btn-primary glow-effect">
@@ -1752,6 +1928,26 @@ body {
                         </div>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- Social Proof Bar -->
+        <section class="social-proof-bar" aria-label="Store highlights">
+            <div class="social-proof-item">
+                <span class="sp-num"><span class="accent">70,000+</span></span>
+                <span class="sp-lbl">Verified Reviews</span>
+            </div>
+            <div class="social-proof-item">
+                <span class="sp-num">4.5<span class="accent">★</span></span>
+                <span class="sp-lbl">Average Rating</span>
+            </div>
+            <div class="social-proof-item">
+                <span class="sp-num">Free</span>
+                <span class="sp-lbl">Worldwide Shipping</span>
+            </div>
+            <div class="social-proof-item">
+                <span class="sp-num">30-Day</span>
+                <span class="sp-lbl">Easy Returns</span>
             </div>
         </section>
 
@@ -1961,18 +2157,22 @@ body {
 
 // --- Shopify Dynamic Products Config ---
 // This extracts the active collection products mapped directly in Liquid!
+// Merchandising enrichment (real ratings, reviews, hooks, badges, benefits,
+// bestseller ranks) keyed by product handle / source id. Merged onto the live
+// Shopify products below so the real store shows genuine social proof.
+const ENRICHMENT = {"glaze-aero-men-s-running-shorts":{"rating":4.5,"reviewsCount":19928,"hook":"Quick-dry training shorts with 3 zip pockets — loved by nearly 20,000 shoppers.","rankLabel":"Top 15 in Men's Clothing","badges":["Top Rated","3 Zip Pockets","Quick-Dry"],"benefits":["Three zippered pockets keep your phone, keys and cards secure while you move","Quick-drying, lightweight fabric for running, gym and court sports","Built-in mesh liner for all-day comfort"],"specs":{"material":"Polyester / spandex blend","pockets":"Three zippered pockets","performance":"Quick-drying, lightweight","fit":"Athletic fit with mesh liner"},"categoryLabel":"Men's Activewear"},"B09P3RHNSY":{"rating":4.5,"reviewsCount":19928,"hook":"Quick-dry training shorts with 3 zip pockets — loved by nearly 20,000 shoppers.","rankLabel":"Top 15 in Men's Clothing","badges":["Top Rated","3 Zip Pockets","Quick-Dry"],"benefits":["Three zippered pockets keep your phone, keys and cards secure while you move","Quick-drying, lightweight fabric for running, gym and court sports","Built-in mesh liner for all-day comfort"],"specs":{"material":"Polyester / spandex blend","pockets":"Three zippered pockets","performance":"Quick-drying, lightweight","fit":"Athletic fit with mesh liner"},"categoryLabel":"Men's Activewear"},"glaze-everyday-high-waisted-leggings":{"rating":4.6,"reviewsCount":12949,"hook":"Buttery-soft leggings with real pockets — a 12,000+ review bestseller.","rankLabel":"#11 Bestseller in Women's Clothing","badges":["Bestseller","Side Pockets","Squat-Proof"],"benefits":["Actual side pockets that fit your phone — not fake ones","Buttery-soft, 4-way stretch that moves with you","High-waisted with a wide band that won't roll down"],"specs":{"material":"Polyester / spandex blend","waist":"High-waisted","features":"Side pockets, 4-way stretch","fit":"Full length, buttery-soft feel"},"categoryLabel":"Women's Activewear"},"B0CKZ4ZWYG":{"rating":4.6,"reviewsCount":12949,"hook":"Buttery-soft leggings with real pockets — a 12,000+ review bestseller.","rankLabel":"#11 Bestseller in Women's Clothing","badges":["Bestseller","Side Pockets","Squat-Proof"],"benefits":["Actual side pockets that fit your phone — not fake ones","Buttery-soft, 4-way stretch that moves with you","High-waisted with a wide band that won't roll down"],"specs":{"material":"Polyester / spandex blend","waist":"High-waisted","features":"Side pockets, 4-way stretch","fit":"Full length, buttery-soft feel"},"categoryLabel":"Women's Activewear"},"glaze-summer-linen-blend-button-down":{"rating":4.4,"reviewsCount":14800,"hook":"The breathable summer shirt with 14,800 reviews — beach to wedding.","rankLabel":"#4 Bestseller in Men's Clothing","badges":["Bestseller","Breathable Linen","Wedding-Ready"],"benefits":["Lightweight linen-cotton blend keeps you cool in the heat","Dresses up or down — beach, summer events, weddings","Relaxed casual fit that isn't boxy"],"specs":{"material":"Linen / cotton blend","fit":"Relaxed casual fit","features":"Button-down front, short sleeve","care":"Machine wash cold, iron low if needed"},"categoryLabel":"Men's Shirts"},"B0BV241H3F":{"rating":4.4,"reviewsCount":14800,"hook":"The breathable summer shirt with 14,800 reviews — beach to wedding.","rankLabel":"#4 Bestseller in Men's Clothing","badges":["Bestseller","Breathable Linen","Wedding-Ready"],"benefits":["Lightweight linen-cotton blend keeps you cool in the heat","Dresses up or down — beach, summer events, weddings","Relaxed casual fit that isn't boxy"],"specs":{"material":"Linen / cotton blend","fit":"Relaxed casual fit","features":"Button-down front, short sleeve","care":"Machine wash cold, iron low if needed"},"categoryLabel":"Men's Shirts"},"glaze-aero-women-s-athletic-shorts":{"rating":4.5,"reviewsCount":12857,"hook":"High-waisted workout shorts with a secure pocket — 12,000+ reviews.","rankLabel":"#10 Bestseller in Women's Clothing","badges":["Bestseller","High-Waisted","Pocket"],"benefits":["Flattering high-rise waistband that stays put through any workout","Secure pocket for your phone or keys","Stretchy, breathable fabric for gym and everyday wear"],"specs":{"material":"Polyester / spandex blend","waist":"High-waisted elastic waistband","pockets":"Side pocket","fit":"Sporty running short"},"categoryLabel":"Women's Activewear"},"B09MKNL9M3":{"rating":4.5,"reviewsCount":12857,"hook":"High-waisted workout shorts with a secure pocket — 12,000+ reviews.","rankLabel":"#10 Bestseller in Women's Clothing","badges":["Bestseller","High-Waisted","Pocket"],"benefits":["Flattering high-rise waistband that stays put through any workout","Secure pocket for your phone or keys","Stretchy, breathable fabric for gym and everyday wear"],"specs":{"material":"Polyester / spandex blend","waist":"High-waisted elastic waistband","pockets":"Side pocket","fit":"Sporty running short"},"categoryLabel":"Women's Activewear"},"glaze-uv-shield-long-sleeve-sun-shirt":{"rating":4.6,"reviewsCount":3506,"hook":"UPF 50+ sun protection that actually stays cool — 3,500+ reviews.","rankLabel":"Top 25 in Women's Clothing","badges":["UPF 50+","Quick-Dry","Cooling"],"benefits":["UPF 50+ rated fabric blocks the sun on long days outdoors","Moisture-wicking and quick-drying for hikes and workouts","Lightweight and breathable so you stay cool, not sweaty"],"specs":{"material":"Polyester / spandex blend","protection":"UPF 50+ rated fabric (manufacturer tested)","performance":"Moisture-wicking, quick-drying","fit":"Lightweight, breathable long sleeve"},"categoryLabel":"Women's Activewear"},"B0CSDK2C3P":{"rating":4.6,"reviewsCount":3506,"hook":"UPF 50+ sun protection that actually stays cool — 3,500+ reviews.","rankLabel":"Top 25 in Women's Clothing","badges":["UPF 50+","Quick-Dry","Cooling"],"benefits":["UPF 50+ rated fabric blocks the sun on long days outdoors","Moisture-wicking and quick-drying for hikes and workouts","Lightweight and breathable so you stay cool, not sweaty"],"specs":{"material":"Polyester / spandex blend","protection":"UPF 50+ rated fabric (manufacturer tested)","performance":"Moisture-wicking, quick-drying","fit":"Lightweight, breathable long sleeve"},"categoryLabel":"Women's Activewear"},"glaze-palazzo-wide-leg-pants":{"rating":4.5,"reviewsCount":2745,"hook":"Flowy vacation pants with pockets — a top-3 women's bestseller.","rankLabel":"#3 Bestseller in Women's Clothing","badges":["Bestseller","Pockets","Vacation-Ready"],"benefits":["Breezy wide-leg cut that's cool and comfortable in the heat","Real pockets and a drawstring elastic waist for easy fit","Dresses up for dinner or down for the beach"],"specs":{"material":"Rayon blend","fit":"Wide-leg palazzo cut","waist":"Drawstring elastic waist","features":"Side pockets"},"categoryLabel":"Women's Pants"},"B0FP5BYXVR":{"rating":4.5,"reviewsCount":2745,"hook":"Flowy vacation pants with pockets — a top-3 women's bestseller.","rankLabel":"#3 Bestseller in Women's Clothing","badges":["Bestseller","Pockets","Vacation-Ready"],"benefits":["Breezy wide-leg cut that's cool and comfortable in the heat","Real pockets and a drawstring elastic waist for easy fit","Dresses up for dinner or down for the beach"],"specs":{"material":"Rayon blend","fit":"Wide-leg palazzo cut","waist":"Drawstring elastic waist","features":"Side pockets"},"categoryLabel":"Women's Pants"},"glaze-flow-midi-sundress":{"rating":4.5,"reviewsCount":2393,"hook":"The flowy midi sundress with real pockets — made for vacation.","rankLabel":"","badges":["Best Seller","Side Pockets","Vacation-Ready"],"benefits":["Handy side pockets — rare on a dress this light","Soft, breathable fabric with an easy, flattering drape","Midi length that works for the beach, brunch or a day out"],"specs":{"material":"Rayon / spandex blend","fit":"Relaxed A-line midi length","features":"Two side pockets, elastic comfort waist","care":"Machine wash cold, hang dry"},"categoryLabel":"Women's Dresses"},"B0FT4QF9D5":{"rating":4.5,"reviewsCount":2393,"hook":"The flowy midi sundress with real pockets — made for vacation.","rankLabel":"","badges":["Best Seller","Side Pockets","Vacation-Ready"],"benefits":["Handy side pockets — rare on a dress this light","Soft, breathable fabric with an easy, flattering drape","Midi length that works for the beach, brunch or a day out"],"specs":{"material":"Rayon / spandex blend","fit":"Relaxed A-line midi length","features":"Two side pockets, elastic comfort waist","care":"Machine wash cold, hang dry"},"categoryLabel":"Women's Dresses"},"glaze-ribbed-knit-tank-top":{"rating":4.6,"reviewsCount":2032,"hook":"The soft ribbed layering tank that goes with everything.","rankLabel":"#5 Bestseller in Women's Clothing","badges":["Bestseller","Layerable","Soft Stretch"],"benefits":["Slim V-neck fit that layers cleanly under anything","Soft ribbed knit with comfortable stretch","An everyday basic you'll reach for all summer"],"specs":{"material":"Ribbed cotton blend","neckline":"V-neck","fit":"Slim, fitted sleeveless","care":"Machine wash cold"},"categoryLabel":"Women's Tops"},"B0FTSVKP9B":{"rating":4.6,"reviewsCount":2032,"hook":"The soft ribbed layering tank that goes with everything.","rankLabel":"#5 Bestseller in Women's Clothing","badges":["Bestseller","Layerable","Soft Stretch"],"benefits":["Slim V-neck fit that layers cleanly under anything","Soft ribbed knit with comfortable stretch","An everyday basic you'll reach for all summer"],"specs":{"material":"Ribbed cotton blend","neckline":"V-neck","fit":"Slim, fitted sleeveless","care":"Machine wash cold"},"categoryLabel":"Women's Tops"}};
+
 let PRODUCTS = [
   {% for product in collection.products %}
   {
     id: "{{ product.id }}",
+    handle: "{{ product.handle }}",
     name: "{{ product.title | escape }}",
     category: "{{ product.type | handleize }}",
     categoryLabel: "{{ product.type | escape }}",
     price: {{ product.price | divided_by: 100.0 }},
-    rating: 4.8,
-    reviewsCount: 124,
+    available: {% if product.available %}true{% else %}false{% endif %},
     image: "{% if product.featured_image %}{{ product.featured_image | image_url: width: 800 }}{% else %}https://files.catbox.moe/hgn95m.jpg{% endif %}",
-    tag: "{% if product.available %}Bestseller{% else %}Sold Out{% endif %}",
     description: "{{ product.description | escape | strip_newlines }}",
     specs: {},
     sizes: [
@@ -1989,204 +2189,378 @@ let PRODUCTS = [
   {% endfor %}
 ];
 
-// Post-process PRODUCTS to extract specs from description HTML and clean up description text
+// Merge merchandising enrichment onto each live product (match by handle, then id).
 PRODUCTS.forEach(product => {
-  if (product.description.includes('Specifications')) {
+  const e = ENRICHMENT[product.handle] || ENRICHMENT[product.id] || null;
+  if (e) {
+    product.rating = e.rating;
+    product.reviewsCount = e.reviewsCount;
+    product.hook = e.hook;
+    product.rankLabel = e.rankLabel;
+    product.badges = e.badges;
+    product.benefits = e.benefits;
+    if (e.specs && Object.keys(e.specs).length) product.specs = e.specs;
+    if (e.categoryLabel) product.categoryLabel = e.categoryLabel;
+  }
+  // Sensible fallbacks so the UI never breaks on an unmatched product.
+  if (product.rating == null) product.rating = 4.6;
+  if (product.reviewsCount == null) product.reviewsCount = 0;
+  if (!product.badges) product.badges = product.available ? ["New"] : ["Sold Out"];
+  if (!product.benefits) product.benefits = [];
+  if (product.hook == null) product.hook = "";
+  if (product.rankLabel == null) product.rankLabel = "";
+});
+
+// Bestsellers first: order by review count so the most-proven items lead.
+PRODUCTS.sort((a, b) => (b.reviewsCount || 0) - (a.reviewsCount || 0));
+
+// Post-process: clean the Shopify description into plain prose, and (only as a
+// fallback, when enrichment didn't supply them) parse specs from the description.
+PRODUCTS.forEach(product => {
+  if (product.description && /<[a-z]/i.test(product.description)) {
     try {
       const txt = document.createElement("textarea");
       txt.innerHTML = product.description;
       const rawHtml = txt.value;
-      
+
       const parser = new DOMParser();
       const doc = parser.parseFromString(rawHtml, 'text/html');
-      
-      const liElements = doc.querySelectorAll('li');
-      liElements.forEach(li => {
-        const strong = li.querySelector('strong');
-        if (strong) {
-          const key = strong.textContent.replace(':', '').trim();
-          const value = li.textContent.replace(strong.textContent, '').trim();
-          product.specs[key] = value;
-        }
-      });
-      
+
+      // Fallback spec extraction only if enrichment gave us nothing.
+      if (!product.specs || Object.keys(product.specs).length === 0) {
+        product.specs = product.specs || {};
+        doc.querySelectorAll('li').forEach(li => {
+          const strong = li.querySelector('strong');
+          if (strong) {
+            const key = strong.textContent.replace(':', '').trim();
+            const value = li.textContent.replace(strong.textContent, '').trim();
+            product.specs[key] = value;
+          }
+        });
+      }
+
+      // Use just the intro paragraph(s) as the prose description.
       const pElements = doc.querySelectorAll('p');
       if (pElements.length > 0) {
-        product.description = Array.from(pElements).map(p => p.outerHTML).join('');
+        product.description = Array.from(pElements).map(p => p.textContent.trim()).join(' ');
       } else {
-        const parts = rawHtml.split(/<h[23]>/i);
-        product.description = parts[0].trim();
+        product.description = (doc.body.textContent || '').trim();
       }
     } catch (e) {
-      console.error("Failed to parse product specifications:", e);
+      console.error("Failed to parse product description:", e);
     }
   }
 });
 
-// Fallback to static catalog if Shopify returns 0 products (collection not configured yet)
+// Fallback to static catalog if Shopify returns 0 products (collection not configured yet).
+// Generated from src/products.js (single source of truth) with the real image URLs.
 if (PRODUCTS.length === 0) {
   PRODUCTS = [
-    {
-      id: "B0FT4QF9D5",
-      name: "GLAZE Flow Midi Sundress",
-      category: "dresses",
-      categoryLabel: "Dresses",
-      price: 32.99,
-      rating: 4.5,
-      reviewsCount: 2393,
-      image: "https://files.catbox.moe/rabxm9.jpg",
-      tag: "Best Seller",
-      description: "A lightweight, flowy midi sundress cut for warm-weather days and vacations. Soft, breathable fabric with a relaxed drape and handy side pockets.",
-      specs: {
-        material: "Rayon / spandex blend",
-        fit: "Relaxed A-line midi length",
-        features: "Two side pockets, elastic comfort waist",
-        care: "Machine wash cold, hang dry"
-      },
-      sizes: ["S", "M", "L", "XL"],
-      variantsMap: { "M": "1" }
+  {
+    "id": "B09P3RHNSY",
+    "name": "GLAZE Aero Men's Running Shorts",
+    "category": "activewear",
+    "categoryLabel": "Men's Activewear",
+    "price": 26.99,
+    "rating": 4.5,
+    "reviewsCount": 19928,
+    "image": "https://files.catbox.moe/oms6xl.jpg",
+    "hook": "Quick-dry training shorts with 3 zip pockets — loved by nearly 20,000 shoppers.",
+    "rankLabel": "Top 15 in Men's Clothing",
+    "badges": [
+      "Top Rated",
+      "3 Zip Pockets",
+      "Quick-Dry"
+    ],
+    "benefits": [
+      "Three zippered pockets keep your phone, keys and cards secure while you move",
+      "Quick-drying, lightweight fabric for running, gym and court sports",
+      "Built-in mesh liner for all-day comfort"
+    ],
+    "description": "Lightweight athletic shorts built for running, gym and court sports. Quick-drying fabric with three zippered pockets to keep your essentials secure while you move.",
+    "specs": {
+      "material": "Polyester / spandex blend",
+      "pockets": "Three zippered pockets",
+      "performance": "Quick-drying, lightweight",
+      "fit": "Athletic fit with mesh liner"
     },
-    {
-      id: "B0CSDK2C3P",
-      name: "GLAZE UV-Shield Long Sleeve Sun Shirt",
-      category: "activewear",
-      categoryLabel: "Activewear",
-      price: 27.99,
-      rating: 4.6,
-      reviewsCount: 3506,
-      image: "https://files.catbox.moe/17e114.jpg",
-      tag: "Sun Protection",
-      description: "A lightweight, quick-drying long sleeve shirt with UPF 50+ rated sun protection. Made for hiking, workouts and long days outdoors, with a breathable feel that helps keep you cool.",
-      specs: {
-        material: "Polyester / spandex blend",
-        protection: "UPF 50+ rated fabric (manufacturer tested)",
-        performance: "Moisture-wicking, quick-drying",
-        fit: "Lightweight, breathable long sleeve"
-      },
-      sizes: ["S", "M", "L", "XL"],
-      variantsMap: { "M": "1" }
-    },
-    {
-      id: "B0BV241H3F",
-      name: "GLAZE Summer Linen-Blend Button-Down",
-      category: "activewear",
-      categoryLabel: "Shirts",
-      price: 34.99,
-      rating: 4.4,
-      reviewsCount: 14800,
-      image: "https://files.catbox.moe/h64bqu.jpg",
-      tag: "Summer Classic",
-      description: "A relaxed short-sleeve button-down in a breathable linen-cotton blend. A lightweight staple for the beach, summer events and everyday warm-weather wear.",
-      specs: {
-        material: "Linen / cotton blend",
-        fit: "Relaxed casual fit",
-        features: "Button-down front, short sleeve",
-        care: "Machine wash cold, iron low if needed"
-      },
-      sizes: ["M", "L", "XL", "XXL"],
-      variantsMap: { "M": "1" }
-    },
-    {
-      id: "B09P3RHNSY",
-      name: "GLAZE Aero Men's Running Shorts",
-      category: "activewear",
-      categoryLabel: "Activewear",
-      price: 26.99,
-      rating: 4.5,
-      reviewsCount: 19928,
-      image: "https://files.catbox.moe/oms6xl.jpg",
-      tag: "Top Rated",
-      description: "Lightweight athletic shorts built for running, gym and court sports. Quick-drying fabric with three zippered pockets to keep your phone and keys secure while you move.",
-      specs: {
-        material: "Polyester / spandex blend",
-        pockets: "Three zippered pockets",
-        performance: "Quick-drying, lightweight",
-        fit: "Athletic fit with mesh liner"
-      },
-      sizes: ["S", "M", "L", "XL"],
-      variantsMap: { "M": "1" }
-    },
-    {
-      id: "B09MKNL9M3",
-      name: "GLAZE Aero Women's Athletic Shorts",
-      category: "activewear",
-      categoryLabel: "Activewear",
-      price: 24.99,
-      rating: 4.5,
-      reviewsCount: 12857,
-      image: "https://files.catbox.moe/r4s2lf.jpg",
-      tag: "Best Seller",
-      description: "High-waisted running shorts with a secure pocket, made for gym workouts and everyday active wear. Stretchy, comfortable fabric with a flattering high-rise waistband.",
-      specs: {
-        material: "Polyester / spandex blend",
-        waist: "High-waisted elastic waistband",
-        pockets: "Side pocket",
-        fit: "Sporty running short"
-      },
-      sizes: ["XS", "S", "M", "L"],
-      variantsMap: { "M": "1" }
-    },
-    {
-      id: "B0CKZ4ZWYG",
-      name: "GLAZE Everyday High-Waisted Leggings",
-      category: "activewear",
-      categoryLabel: "Activewear",
-      price: 15.99,
-      rating: 4.6,
-      reviewsCount: 12949,
-      image: "https://files.catbox.moe/rrpwrx.jpg",
-      tag: "Great Value",
-      description: "Buttery-soft high-waisted leggings with side pockets. A stretchy, comfortable everyday layer for yoga, workouts and lounging.",
-      specs: {
-        material: "Polyester / spandex blend",
-        waist: "High-waisted",
-        features: "Side pockets, 4-way stretch",
-        fit: "Full length, buttery-soft feel"
-      },
-      sizes: ["S", "M", "L", "XL"],
-      variantsMap: { "M": "1" }
-    },
-    {
-      id: "B0FP5BYXVR",
-      name: "GLAZE Palazzo Wide-Leg Pants",
-      category: "activewear",
-      categoryLabel: "Pants",
-      price: 32.99,
-      rating: 4.5,
-      reviewsCount: 2745,
-      image: "https://files.catbox.moe/ivmew0.jpg",
-      tag: "Summer Favorite",
-      description: "Flowy wide-leg palazzo pants with a drawstring elastic waist and pockets. Lightweight and breezy for summer, the beach and vacation.",
-      specs: {
-        material: "Rayon blend",
-        fit: "Wide-leg palazzo cut",
-        waist: "Drawstring elastic waist",
-        features: "Side pockets"
-      },
-      sizes: ["S", "M", "L", "XL"],
-      variantsMap: { "M": "1" }
-    },
-    {
-      id: "B0FTSVKP9B",
-      name: "GLAZE Ribbed Knit Tank Top",
-      category: "activewear",
-      categoryLabel: "Tops",
-      price: 14.99,
-      rating: 4.6,
-      reviewsCount: 2032,
-      image: "https://files.catbox.moe/u8xrnb.jpg",
-      tag: "Summer Basic",
-      description: "A slim-fitting V-neck ribbed knit tank top. A soft, stretchy basic that layers easily and works for everyday summer wear.",
-      specs: {
-        material: "Ribbed cotton blend",
-        neckline: "V-neck",
-        fit: "Slim, fitted sleeveless",
-        care: "Machine wash cold"
-      },
-      sizes: ["XS", "S", "M", "L"],
-      variantsMap: { "M": "1" }
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "variantsMap": {
+      "S": "1"
     }
-  ];
+  },
+  {
+    "id": "B0CKZ4ZWYG",
+    "name": "GLAZE Everyday High-Waisted Leggings",
+    "category": "activewear",
+    "categoryLabel": "Women's Activewear",
+    "price": 15.99,
+    "rating": 4.6,
+    "reviewsCount": 12949,
+    "image": "https://files.catbox.moe/rrpwrx.jpg",
+    "hook": "Buttery-soft leggings with real pockets — a 12,000+ review bestseller.",
+    "rankLabel": "#11 Bestseller in Women's Clothing",
+    "badges": [
+      "Bestseller",
+      "Side Pockets",
+      "Squat-Proof"
+    ],
+    "benefits": [
+      "Actual side pockets that fit your phone — not fake ones",
+      "Buttery-soft, 4-way stretch that moves with you",
+      "High-waisted with a wide band that won't roll down"
+    ],
+    "description": "Buttery-soft high-waisted leggings with side pockets. A stretchy, comfortable everyday layer for yoga, workouts and lounging.",
+    "specs": {
+      "material": "Polyester / spandex blend",
+      "waist": "High-waisted",
+      "features": "Side pockets, 4-way stretch",
+      "fit": "Full length, buttery-soft feel"
+    },
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "variantsMap": {
+      "S": "1"
+    }
+  },
+  {
+    "id": "B0BV241H3F",
+    "name": "GLAZE Summer Linen-Blend Button-Down",
+    "category": "shirts",
+    "categoryLabel": "Men's Shirts",
+    "price": 34.99,
+    "rating": 4.4,
+    "reviewsCount": 14800,
+    "image": "https://files.catbox.moe/h64bqu.jpg",
+    "hook": "The breathable summer shirt with 14,800 reviews — beach to wedding.",
+    "rankLabel": "#4 Bestseller in Men's Clothing",
+    "badges": [
+      "Bestseller",
+      "Breathable Linen",
+      "Wedding-Ready"
+    ],
+    "benefits": [
+      "Lightweight linen-cotton blend keeps you cool in the heat",
+      "Dresses up or down — beach, summer events, weddings",
+      "Relaxed casual fit that isn't boxy"
+    ],
+    "description": "A relaxed short-sleeve button-down in a breathable linen-cotton blend. A lightweight staple for the beach, summer events and everyday warm-weather wear.",
+    "specs": {
+      "material": "Linen / cotton blend",
+      "fit": "Relaxed casual fit",
+      "features": "Button-down front, short sleeve",
+      "care": "Machine wash cold, iron low if needed"
+    },
+    "sizes": [
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "variantsMap": {
+      "M": "1"
+    }
+  },
+  {
+    "id": "B09MKNL9M3",
+    "name": "GLAZE Aero Women's Athletic Shorts",
+    "category": "activewear",
+    "categoryLabel": "Women's Activewear",
+    "price": 24.99,
+    "rating": 4.5,
+    "reviewsCount": 12857,
+    "image": "https://files.catbox.moe/r4s2lf.jpg",
+    "hook": "High-waisted workout shorts with a secure pocket — 12,000+ reviews.",
+    "rankLabel": "#10 Bestseller in Women's Clothing",
+    "badges": [
+      "Bestseller",
+      "High-Waisted",
+      "Pocket"
+    ],
+    "benefits": [
+      "Flattering high-rise waistband that stays put through any workout",
+      "Secure pocket for your phone or keys",
+      "Stretchy, breathable fabric for gym and everyday wear"
+    ],
+    "description": "High-waisted running shorts with a secure pocket, made for gym workouts and everyday active wear. Stretchy, comfortable fabric with a flattering high-rise waistband.",
+    "specs": {
+      "material": "Polyester / spandex blend",
+      "waist": "High-waisted elastic waistband",
+      "pockets": "Side pocket",
+      "fit": "Sporty running short"
+    },
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "variantsMap": {
+      "XS": "1"
+    }
+  },
+  {
+    "id": "B0CSDK2C3P",
+    "name": "GLAZE UV-Shield Long Sleeve Sun Shirt",
+    "category": "activewear",
+    "categoryLabel": "Women's Activewear",
+    "price": 27.99,
+    "rating": 4.6,
+    "reviewsCount": 3506,
+    "image": "https://files.catbox.moe/17e114.jpg",
+    "hook": "UPF 50+ sun protection that actually stays cool — 3,500+ reviews.",
+    "rankLabel": "Top 25 in Women's Clothing",
+    "badges": [
+      "UPF 50+",
+      "Quick-Dry",
+      "Cooling"
+    ],
+    "benefits": [
+      "UPF 50+ rated fabric blocks the sun on long days outdoors",
+      "Moisture-wicking and quick-drying for hikes and workouts",
+      "Lightweight and breathable so you stay cool, not sweaty"
+    ],
+    "description": "A lightweight, quick-drying long sleeve shirt with UPF 50+ rated sun protection. Made for hiking, workouts and long days outdoors, with a breathable feel that helps keep you cool.",
+    "specs": {
+      "material": "Polyester / spandex blend",
+      "protection": "UPF 50+ rated fabric (manufacturer tested)",
+      "performance": "Moisture-wicking, quick-drying",
+      "fit": "Lightweight, breathable long sleeve"
+    },
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "variantsMap": {
+      "S": "1"
+    }
+  },
+  {
+    "id": "B0FP5BYXVR",
+    "name": "GLAZE Palazzo Wide-Leg Pants",
+    "category": "pants",
+    "categoryLabel": "Women's Pants",
+    "price": 32.99,
+    "rating": 4.5,
+    "reviewsCount": 2745,
+    "image": "https://files.catbox.moe/ivmew0.jpg",
+    "hook": "Flowy vacation pants with pockets — a top-3 women's bestseller.",
+    "rankLabel": "#3 Bestseller in Women's Clothing",
+    "badges": [
+      "Bestseller",
+      "Pockets",
+      "Vacation-Ready"
+    ],
+    "benefits": [
+      "Breezy wide-leg cut that's cool and comfortable in the heat",
+      "Real pockets and a drawstring elastic waist for easy fit",
+      "Dresses up for dinner or down for the beach"
+    ],
+    "description": "Flowy wide-leg palazzo pants with a drawstring elastic waist and pockets. Lightweight and breezy for summer, the beach and vacation.",
+    "specs": {
+      "material": "Rayon blend",
+      "fit": "Wide-leg palazzo cut",
+      "waist": "Drawstring elastic waist",
+      "features": "Side pockets"
+    },
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "variantsMap": {
+      "S": "1"
+    }
+  },
+  {
+    "id": "B0FT4QF9D5",
+    "name": "GLAZE Flow Midi Sundress",
+    "category": "dresses",
+    "categoryLabel": "Women's Dresses",
+    "price": 32.99,
+    "rating": 4.5,
+    "reviewsCount": 2393,
+    "image": "https://files.catbox.moe/rabxm9.jpg",
+    "hook": "The flowy midi sundress with real pockets — made for vacation.",
+    "rankLabel": "",
+    "badges": [
+      "Best Seller",
+      "Side Pockets",
+      "Vacation-Ready"
+    ],
+    "benefits": [
+      "Handy side pockets — rare on a dress this light",
+      "Soft, breathable fabric with an easy, flattering drape",
+      "Midi length that works for the beach, brunch or a day out"
+    ],
+    "description": "A lightweight, flowy midi sundress cut for warm-weather days and vacations. Soft, breathable fabric with a relaxed drape and handy side pockets.",
+    "specs": {
+      "material": "Rayon / spandex blend",
+      "fit": "Relaxed A-line midi length",
+      "features": "Two side pockets, elastic comfort waist",
+      "care": "Machine wash cold, hang dry"
+    },
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "variantsMap": {
+      "S": "1"
+    }
+  },
+  {
+    "id": "B0FTSVKP9B",
+    "name": "GLAZE Ribbed Knit Tank Top",
+    "category": "tops",
+    "categoryLabel": "Women's Tops",
+    "price": 14.99,
+    "rating": 4.6,
+    "reviewsCount": 2032,
+    "image": "https://files.catbox.moe/u8xrnb.jpg",
+    "hook": "The soft ribbed layering tank that goes with everything.",
+    "rankLabel": "#5 Bestseller in Women's Clothing",
+    "badges": [
+      "Bestseller",
+      "Layerable",
+      "Soft Stretch"
+    ],
+    "benefits": [
+      "Slim V-neck fit that layers cleanly under anything",
+      "Soft ribbed knit with comfortable stretch",
+      "An everyday basic you'll reach for all summer"
+    ],
+    "description": "A slim-fitting V-neck ribbed knit tank top. A soft, stretchy basic that layers easily and works for everyday summer wear.",
+    "specs": {
+      "material": "Ribbed cotton blend",
+      "neckline": "V-neck",
+      "fit": "Slim, fitted sleeveless",
+      "care": "Machine wash cold"
+    },
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "variantsMap": {
+      "XS": "1"
+    }
+  }
+];
 }
 
 let cart = [];
@@ -2383,25 +2757,30 @@ function renderProducts() {
         card.className = "product-card";
         card.setAttribute("data-id", product.id);
 
+        const rankBadge = product.rankLabel
+            ? `<div class="product-rank-badge"><i class="fa-solid fa-award"></i> ${product.rankLabel}</div>`
+            : (product.badges && product.badges[0] ? `<div class="product-rank-badge alt">${product.badges[0]}</div>` : "");
+        const chipsHTML = (product.badges || []).slice(0, 3).map(b =>
+            `<span class="product-chip">${b}</span>`).join("");
+
         card.innerHTML = `
             <div class="product-img-wrapper">
                 <div class="glass-reflection-shine"></div>
                 <img src="${product.image}" alt="${product.name}" class="product-img" loading="lazy">
-                <div class="product-badge">${product.tag}</div>
+                ${rankBadge}
             </div>
             <div class="product-info">
-                <div class="product-meta">
-                    <span class="product-category">${product.categoryLabel}</span>
-                    <div class="product-rating">
-                        <span class="stars-inline">${renderStars(product.rating)}</span>
-                        <span class="rating-count">${product.rating} (${Number(product.reviewsCount).toLocaleString()})</span>
-                    </div>
+                <div class="product-rating">
+                    <span class="stars-inline">${renderStars(product.rating)}</span>
+                    <span class="rating-count"><strong>${product.rating}</strong> · ${Number(product.reviewsCount).toLocaleString()} reviews</span>
                 </div>
                 <h3 class="product-name">${product.name}</h3>
+                ${product.hook ? `<p class="product-hook">${product.hook}</p>` : ""}
+                <div class="product-chips">${chipsHTML}</div>
                 <div class="product-price-row">
                     <span class="product-price">$${product.price.toFixed(2)}</span>
                     <button class="btn-add-cart" title="Add to Bag">
-                        <i class="fa-solid fa-bag-shopping"></i>
+                        <i class="fa-solid fa-bag-shopping"></i> Add
                     </button>
                 </div>
             </div>
@@ -2611,6 +2990,18 @@ function openProductModal(product) {
         });
     }
 
+    // Benefit bullets (what you GET) — the primary selling content.
+    let benefitsHTML = "";
+    if (product.benefits && product.benefits.length) {
+        benefitsHTML = `<ul class="modal-benefits">` +
+            product.benefits.map(b => `<li><i class="fa-solid fa-check"></i> ${b}</li>`).join("") +
+            `</ul>`;
+    }
+
+    // Rank ribbon (real bestseller rank) sits above the title as top proof.
+    const rankRibbon = product.rankLabel
+        ? `<div class="modal-rank"><i class="fa-solid fa-award"></i> ${product.rankLabel}</div>` : "";
+
     modalProductDetails.innerHTML = `
         <div class="modal-img-wrapper glass-card">
             <div class="glass-reflection-shine"></div>
@@ -2618,14 +3009,16 @@ function openProductModal(product) {
         </div>
         <div class="modal-details">
             <span class="modal-category">${product.categoryLabel}</span>
+            ${rankRibbon}
             <h2 class="modal-product-name">${product.name}</h2>
             <div class="modal-rating-row">
                 <div class="stars">${renderStars(product.rating)}</div>
-                <span class="reviews-count">${product.rating} · ${Number(product.reviewsCount).toLocaleString()} reviews</span>
+                <span class="reviews-count"><strong>${product.rating}</strong> · ${Number(product.reviewsCount).toLocaleString()} reviews</span>
             </div>
+            ${product.hook ? `<p class="modal-hook">${product.hook}</p>` : ""}
             <span class="modal-product-price">$${product.price.toFixed(2)}</span>
-            <p class="modal-product-desc">${product.description}</p>
-            
+            ${benefitsHTML}
+
             <div style="margin: 20px 0;">
                 <div class="size-head">
                     <h4 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; margin: 0;">Select Size</h4>
@@ -2651,10 +3044,12 @@ function openProductModal(product) {
                 </div>
             </div>
 
+            ${product.description ? `<p class="modal-product-desc">${product.description}</p>` : ""}
+
             ${specsHTML}
 
             <button class="btn btn-primary modal-add-to-bag-btn">
-                <i class="fa-solid fa-bag-shopping"></i> Add To Bag
+                <i class="fa-solid fa-bag-shopping"></i> Add To Bag · $${product.price.toFixed(2)}
             </button>
 
             <div class="trust-badges">
