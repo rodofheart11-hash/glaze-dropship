@@ -2593,12 +2593,12 @@ function openProductModal(product) {
     // Format specifications
     let specsHTML = "";
     if (product.specs) {
-        specsHTML = `<div class="modal-specs-grid">`;
+        specsHTML = `<div class="specs-grid">`;
         for (const [key, value] of Object.entries(product.specs)) {
             const label = key.charAt(0).toUpperCase() + key.slice(1);
             specsHTML += `
                 <div class="spec-item">
-                    <span class="spec-lbl">${label}</span>
+                    <span class="spec-label">${label}</span>
                     <span class="spec-val">${value}</span>
                 </div>
             `;
@@ -2617,40 +2617,38 @@ function openProductModal(product) {
     }
 
     modalProductDetails.innerHTML = `
-        <div class="modal-body-grid">
-            <div class="modal-img-wrapper glass-card">
-                <div class="glass-reflection-shine"></div>
-                <img src="${product.image}" alt="${product.name}" class="modal-product-img">
-            </div>
-            <div class="modal-details">
-                <span class="modal-category">${product.categoryLabel}</span>
-                <h2 class="modal-product-name">${product.name}</h2>
-                <div class="modal-rating-row">
-                    <div class="stars">
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                    </div>
-                    <span class="reviews-count">(${product.reviewsCount} reviews)</span>
+        <div class="modal-img-wrapper glass-card">
+            <div class="glass-reflection-shine"></div>
+            <img src="${product.image}" alt="${product.name}" class="modal-product-img">
+        </div>
+        <div class="modal-details">
+            <span class="modal-category">${product.categoryLabel}</span>
+            <h2 class="modal-product-name">${product.name}</h2>
+            <div class="modal-rating-row">
+                <div class="stars">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
                 </div>
-                <span class="modal-product-price">$${product.price.toFixed(2)}</span>
-                <p class="modal-product-desc">${product.description}</p>
-                
-                <div style="margin: 20px 0;">
-                    <h4 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px;">Select Size</h4>
-                    <div class="size-selector">
-                        ${sizesHTML}
-                    </div>
-                </div>
-
-                ${specsHTML}
-
-                <button class="btn btn-primary modal-add-to-bag-btn">
-                    <i class="fa-solid fa-bag-shopping"></i> Add To Bag
-                </button>
+                <span class="reviews-count">(${product.reviewsCount} reviews)</span>
             </div>
+            <span class="modal-product-price">$${product.price.toFixed(2)}</span>
+            <p class="modal-product-desc">${product.description}</p>
+            
+            <div style="margin: 20px 0;">
+                <h4 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px;">Select Size</h4>
+                <div class="size-selector">
+                    ${sizesHTML}
+                </div>
+            </div>
+
+            ${specsHTML}
+
+            <button class="btn btn-primary modal-add-to-bag-btn">
+                <i class="fa-solid fa-bag-shopping"></i> Add To Bag
+            </button>
         </div>
     `;
 
