@@ -335,7 +335,7 @@ if (PRODUCTS.length === 0) {
       price: 16.20,
       rating: 4.6,
       reviewsCount: 2032,
-      image: "https://files.catbox.moe/wmxx5u.jpg",
+      image: "https://files.catbox.moe/u8xrnb.jpg",
       tag: "Summer Ribbed",
       description: "Sleek tank top woven with glowing liquid-glass optical micro-threads. Fits like a second skin with stretch-comfort cooling fiber matrix.",
       specs: {
