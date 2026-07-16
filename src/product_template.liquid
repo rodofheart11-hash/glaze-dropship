@@ -113,7 +113,7 @@
           </div>
 
           <!-- Dynamic Specifications -->
-          <div class="modal-specs-grid" id="product-specs-grid"></div>
+          <div class="specs-grid" id="product-specs-grid"></div>
 
           <button class="btn btn-primary glow-effect" id="add-to-bag-btn" style="margin-top: 30px; width: 100%;">
             <span>Add to Shopping Bag</span>
@@ -124,31 +124,12 @@
     </div>
 
     <!-- GLAZE® Nanotech Matrix Showcase -->
-    <div class="nanotech-matrix-container glass-card" style="margin-top: 30px; padding: 40px; border-radius: 24px;">
+    <div class="nanotech-matrix-container glass-card" id="nanotech-matrix-container" style="margin-top: 30px; padding: 40px; border-radius: 24px; display: none;">
       <h3 style="font-family: var(--font-heading); font-size: 1.3rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px; color: var(--primary);">
         <i class="fa-solid fa-microchip"></i> GLAZE® Nanotech Matrix
       </h3>
-      <div class="nanotech-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;">
-        <!-- Feature 1 -->
-        <div class="nanotech-card glass-card" style="padding: 25px; border: 1px solid var(--border-glass);">
-          <div style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"><i class="fa-solid fa-fingerprint"></i></div>
-          <h4 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600; margin-bottom: 10px;">Oleophobic Fiber</h4>
-          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">Repels oil, grease, dirt, and fingerprints. Maintain a clean, pristine look without washing under heavy wear.</p>
-        </div>
-        
-        <!-- Feature 2 -->
-        <div class="nanotech-card glass-card" style="padding: 25px; border: 1px solid var(--border-glass);">
-          <div style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"><i class="fa-solid fa-droplet"></i></div>
-          <h4 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600; margin-bottom: 10px;">Hydrophobic Shell</h4>
-          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">Advanced silica bond forces water to slide off instantly. Keeps you dry and lightweight in any torrential rain.</p>
-        </div>
-        
-        <!-- Feature 3 -->
-        <div class="nanotech-card glass-card" style="padding: 25px; border: 1px solid var(--border-glass);">
-          <div style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"><i class="fa-solid fa-atom"></i></div>
-          <h4 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600; margin-bottom: 10px;">Prism Color Shift</h4>
-          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">Interactive glass micro-spheres reflect light in a stunning spectrum, shifting color with environment and temperature.</p>
-        </div>
+      <div class="nanotech-grid" id="nanotech-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;">
+        <!-- Dynamically injected matching specs -->
       </div>
     </div>
   </main>
@@ -219,7 +200,7 @@ if (currentProduct.description.includes('Specifications')) {
         
         specsHTML += `
           <div class="spec-item">
-            <span class="spec-lbl">${key}</span>
+            <span class="spec-label">${key}</span>
             <span class="spec-val">${value}</span>
           </div>
         `;
@@ -240,6 +221,57 @@ if (currentProduct.description.includes('Specifications')) {
         const parts = rawHtml.split(/<h[23]>/i);
         descContainer.innerHTML = parts[0].trim();
       }
+    }
+    }
+    
+    // Dynamically generate matching specifications cards
+    try {
+      const features = [];
+      const searchContent = (currentProduct.name + " " + currentProduct.description + " " + JSON.stringify(currentProduct.specs)).toLowerCase();
+      
+      if (searchContent.includes("oleophobic") || searchContent.includes("grease") || searchContent.includes("fingerprint")) {
+        features.push({
+          icon: "fa-fingerprint",
+          title: "Oleophobic Fiber",
+          desc: "Repels oil, grease, dirt, and fingerprints. Maintain a clean, pristine look without washing under heavy wear."
+        });
+      }
+      
+      if (searchContent.includes("hydrophobic") || searchContent.includes("water") || searchContent.includes("rain") || searchContent.includes("splash") || searchContent.includes("sundress")) {
+        features.push({
+          icon: "fa-droplet",
+          title: "Hydrophobic Shell",
+          desc: "Advanced silica bond forces water to slide off instantly. Keeps you dry and lightweight in any torrential rain."
+        });
+      }
+      
+      if (searchContent.includes("prism") || searchContent.includes("color-shift") || searchContent.includes("color-shifting") || searchContent.includes("iridescent") || searchContent.includes("thermochromic")) {
+        features.push({
+          icon: "fa-atom",
+          title: "Prism Color Shift",
+          desc: "Interactive glass micro-spheres reflect light in a stunning spectrum, shifting color with environment and temperature."
+        });
+      }
+      
+      const matrixContainer = document.getElementById("nanotech-matrix-container");
+      const matrixGrid = document.getElementById("nanotech-grid");
+      
+      if (features.length > 0 && matrixContainer && matrixGrid) {
+        let featuresHTML = "";
+        features.forEach(f => {
+          featuresHTML += `
+            <div class="nanotech-card glass-card" style="padding: 25px; border: 1px solid var(--border-glass);">
+              <div style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"><i class="fa-solid ${f.icon}"></i></div>
+              <h4 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600; margin-bottom: 10px;">${f.title}</h4>
+              <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">${f.desc}</p>
+            </div>
+          `;
+        });
+        matrixGrid.innerHTML = featuresHTML;
+        matrixContainer.style.display = "block";
+      }
+    } catch (e) {
+      console.error("Failed to generate dynamic specifications cards:", e);
     }
   } catch (e) {
     console.error("Failed to parse specifications: ", e);
