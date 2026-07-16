@@ -466,3 +466,207 @@ function showToast(message, iconName = "fa-info-circle") {
         });
     }, 3500);
 }
+
+// --- GLAZE® Technology Lab Logic ---
+function initTechLab() {
+    const tabs = document.querySelectorAll(".lab-tab");
+    const panels = document.querySelectorAll(".lab-panel");
+    if (tabs.length === 0) return;
+
+    // Tab Switching Logic
+    tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            tabs.forEach(t => t.classList.remove("active"));
+            panels.forEach(p => p.classList.remove("active"));
+            
+            tab.classList.add("active");
+            const targetLab = tab.getAttribute("data-lab");
+            const targetPanel = document.getElementById(`panel-${targetLab}`);
+            if (targetPanel) {
+                targetPanel.classList.add("active");
+                if (targetLab === "hydrophobic") {
+                    startHydroCanvas();
+                }
+            }
+        });
+    });
+
+    // 1. Prism Color Shift Controller
+    const tempSlider = document.getElementById("temp-slider");
+    const tempDisplay = document.getElementById("temp-display");
+    const prismOrb = document.querySelector(".prism-orb-glow");
+
+    if (tempSlider && tempDisplay) {
+        tempSlider.addEventListener("input", (e) => {
+            const temp = parseInt(e.target.value);
+            tempDisplay.innerText = `${temp}°C`;
+
+            // Dynamic color logic based on temp slider value
+            let primaryColor, secondaryColor, orbColor;
+            if (temp < 15) {
+                // Cold - Ice Blue
+                primaryColor = "#a5f3fc";
+                secondaryColor = "#38bdf8";
+                orbColor = "radial-gradient(circle, #a5f3fc 0%, transparent 70%)";
+            } else if (temp >= 15 && temp < 35) {
+                // Neutral/Warm - Soft Lavender
+                primaryColor = "#d8b4fe";
+                secondaryColor = "#c084fc";
+                orbColor = "radial-gradient(circle, #d8b4fe 0%, transparent 70%)";
+            } else {
+                // Hot - Prism Neon Spectrum
+                primaryColor = "#a855f7";
+                secondaryColor = "#ec4899";
+                orbColor = "radial-gradient(circle, #f472b6 0%, transparent 70%)";
+            }
+
+            // Apply custom properties to document root to update entire storefront colors dynamically!
+            document.documentElement.style.setProperty("--primary", primaryColor);
+            document.documentElement.style.setProperty("--secondary", secondaryColor);
+            if (prismOrb) prismOrb.style.background = orbColor;
+        });
+    }
+
+    // 2. Hydrophobic Physics Canvas Simulation
+    let canvasStarted = false;
+
+    function startHydroCanvas() {
+        if (canvasStarted) return;
+        canvasStarted = true;
+
+        const canvas = document.getElementById("hydro-canvas");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+
+        // Resize Canvas to fit container bounds
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width || 400;
+            canvas.height = rect.height || 400;
+        }
+        resizeCanvas();
+        window.addEventListener("resize", resizeCanvas);
+
+        let droplets = [];
+        let mouseX = 0;
+        let mouseY = 0;
+
+        class Droplet {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 4;
+                this.vy = Math.random() * 6 + 4; // Moves downwards like rain
+                this.radius = Math.random() * 4 + 2;
+                this.alpha = 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vx += (Math.random() - 0.5) * 0.2;
+                this.vy += 0.1; // gravity
+                if (this.y > canvas.height - 20) {
+                    this.alpha -= 0.05;
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = "rgba(165, 243, 252, 0.6)"; // Ice blue glow
+                ctx.fill();
+                ctx.closePath();
+                ctx.restore();
+            }
+        }
+
+        function spawnDroplets(e) {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+            
+            for (let i = 0; i < 3; i++) {
+                droplets.push(new Droplet(mouseX, mouseY));
+            }
+        }
+
+        canvas.addEventListener("mousemove", spawnDroplets);
+        canvas.addEventListener("touchmove", (e) => {
+            if (e.touches.length > 0) {
+                spawnDroplets(e.touches[0]);
+            }
+        });
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.005)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            droplets.forEach((d, idx) => {
+                d.update();
+                d.draw();
+                if (d.alpha <= 0 || d.y > canvas.height) {
+                    droplets.splice(idx, 1);
+                }
+            });
+
+            if (droplets.length > 150) {
+                droplets.shift();
+            }
+
+            requestAnimationFrame(animate);
+        }
+        animate();
+    }
+
+    // 3. Oleophobic Touch Cleaner Demonstration
+    const fingerprintGlass = document.querySelector(".fingerprint-glass");
+    const oilStainsContainer = document.getElementById("oil-stains-container");
+    const btnWipe = document.getElementById("btn-wipe-glass");
+    const scannerSweep = document.querySelector(".scanner-sweep");
+
+    if (fingerprintGlass && oilStainsContainer) {
+        fingerprintGlass.addEventListener("click", (e) => {
+            const rect = fingerprintGlass.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const smudge = document.createElement("div");
+            if (Math.random() > 0.5) {
+                smudge.className = "oil-smudge";
+                smudge.style.left = `${x}px`;
+                smudge.style.top = `${y}px`;
+                smudge.style.width = `${Math.random() * 40 + 40}px`;
+                smudge.style.height = smudge.style.width;
+            } else {
+                smudge.className = "oil-fingerprint";
+                smudge.style.left = `${x}px`;
+                smudge.style.top = `${y}px`;
+                smudge.innerHTML = `<i class="fa-solid fa-fingerprint"></i>`;
+            }
+
+            oilStainsContainer.appendChild(smudge);
+            showToast("Grease stain applied. Fabric self-cleaning matrix engaged.", "fa-fingerprint");
+        });
+    }
+
+    if (btnWipe && oilStainsContainer && scannerSweep) {
+        btnWipe.addEventListener("click", () => {
+            if (scannerSweep.classList.contains("active")) return;
+            scannerSweep.classList.add("active");
+            showToast("Wavelength ultrasonic clean cycle active...", "fa-arrows-spin");
+
+            setTimeout(() => {
+                oilStainsContainer.innerHTML = "";
+                scannerSweep.classList.remove("active");
+                showToast("Ultrasonic clean cycle complete. Repelled all grease.", "fa-circle-check");
+            }, 1800);
+        });
+    }
+}
+
+// Call on startup
+document.addEventListener("DOMContentLoaded", initTechLab);

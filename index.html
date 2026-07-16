@@ -161,6 +161,83 @@
             </div>
         </section>
 
+        <!-- GLAZE® Technology Lab Section -->
+        <section id="tech-lab" class="tech-lab-section">
+            <div class="section-header">
+                <h2 class="section-title">GLAZE® Technology Lab</h2>
+                <p class="section-desc">Interact with the scientific properties of our advanced liquid-glass fibers in real time.</p>
+            </div>
+            
+            <div class="lab-grid">
+                <!-- Lab Navigation / Description -->
+                <div class="lab-sidebar glass-card">
+                    <div class="lab-tab active" data-lab="prism">
+                        <div class="lab-tab-icon"><i class="fa-solid fa-atom"></i></div>
+                        <div class="lab-tab-info">
+                            <h3>Prism Color Shift</h3>
+                            <p>Shift temperature to refract color.</p>
+                        </div>
+                    </div>
+                    <div class="lab-tab" data-lab="hydrophobic">
+                        <div class="lab-tab-icon"><i class="fa-solid fa-droplet"></i></div>
+                        <div class="lab-tab-info">
+                            <h3>Hydrophobic Physics</h3>
+                            <p>Simulate water repellency canvas.</p>
+                        </div>
+                    </div>
+                    <div class="lab-tab" data-lab="oleophobic">
+                        <div class="lab-tab-icon"><i class="fa-solid fa-fingerprint"></i></div>
+                        <div class="lab-tab-info">
+                            <h3>Oleophobic Shield</h3>
+                            <p>Repel fingerprint and oil stains.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lab Canvas / Visualization Area -->
+                <div class="lab-viewport glass-card">
+                    <!-- Tab 1: Prism Color Shift Simulator -->
+                    <div class="lab-panel active" id="panel-prism">
+                        <div class="prism-visualizer">
+                            <div class="prism-orb-glow"></div>
+                            <div class="prism-fabric-mock">
+                                <span class="logo-accent">GLA</span>ZE<span class="logo-tm">®</span>
+                            </div>
+                        </div>
+                        <div class="prism-controls">
+                            <div class="slider-header">
+                                <span>Ambient Temperature</span>
+                                <span id="temp-display">20°C</span>
+                            </div>
+                            <input type="range" id="temp-slider" min="0" max="50" value="20" class="temp-slider">
+                            <div class="slider-labels">
+                                <span>0°C (Ice Blue)</span>
+                                <span>25°C (Lavender)</span>
+                                <span>50°C (Prism Neon)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Hydrophobic Droplets Physics Simulator -->
+                    <div class="lab-panel" id="panel-hydrophobic">
+                        <canvas id="hydro-canvas"></canvas>
+                        <div class="canvas-hint">Move mouse or drag over the canvas to spray water droplets.</div>
+                    </div>
+
+                    <!-- Tab 3: Oleophobic Touch Cleaner Demonstration -->
+                    <div class="lab-panel" id="panel-oleophobic">
+                        <div class="fingerprint-glass">
+                            <div class="oil-stains-container" id="oil-stains-container"></div>
+                            <div class="scanner-sweep"></div>
+                        </div>
+                        <button class="btn btn-secondary" id="btn-wipe-glass" style="margin-top: 15px;">
+                            <i class="fa-solid fa-wind"></i> Trigger Ultrasonic Clean
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Newsletter Section -->
         <section id="newsletter" class="newsletter-section">
             <div class="newsletter-card glass-card">
