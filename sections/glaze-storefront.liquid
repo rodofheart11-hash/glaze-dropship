@@ -1823,6 +1823,347 @@ body {
 }
 .social-proof-item .sp-num .accent { color: var(--primary); }
 
+/* ==========================================================================
+   APP SHELL — full-screen stacked views, iOS-style slide navigation
+   ========================================================================== */
+
+/* No page scroll: the app owns the viewport, each view scrolls internally. */
+html, body { height: 100%; overflow: hidden; }
+
+.app-shell {
+    position: fixed;
+    inset: 0;
+    height: 100dvh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* Desktop top-nav (hidden on mobile; bottom tab bar is used there instead) */
+.app-bar-nav { display: none; }
+.app-bar-nav .nav-link {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    padding: 8px 4px;
+    transition: color 0.2s ease;
+}
+.app-bar-nav .nav-link:hover,
+.app-bar-nav .nav-link.active { color: var(--text-main); }
+.app-bar-nav .nav-link.active { border-bottom: 2px solid var(--primary); }
+
+/* ---- Top app bar ---- */
+.app-bar {
+    flex: 0 0 auto;
+    height: 56px;
+    padding: 0 8px 0 6px;
+    padding-top: env(safe-area-inset-top);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    z-index: 20;
+}
+.app-bar-back {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--text-main);
+    font-size: 1.1rem;
+    cursor: pointer;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+    flex: 0 0 auto;
+}
+.app-bar-back:hover { background: rgba(255,255,255,0.06); }
+.app-bar-back[hidden] { display: none; }
+.app-bar-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 6px;
+}
+.app-bar-title .logo { font-size: 1.35rem; letter-spacing: 3px; }
+.app-bar-actions {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+/* nav-btn kept from old header; ensure sizing here in case old rules retired */
+.app-bar-actions .nav-btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--text-main);
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+.app-bar-actions .nav-btn:hover { background: rgba(255,255,255,0.06); }
+.app-bar .cart-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    background: var(--primary);
+    color: var(--bg-dark);
+    font-size: 0.62rem;
+    font-weight: 800;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+/* ---- View stack ---- */
+.view-stack {
+    position: relative;
+    flex: 1 1 auto;
+    overflow: hidden;
+}
+.view {
+    position: absolute;
+    inset: 0;
+    transform: translateX(100%);
+    transition: transform 0.42s var(--transition-smooth), filter 0.42s var(--transition-smooth);
+    will-change: transform;
+    /* Opaque base so a pushed view fully covers the one beneath it (no bleed-through). */
+    background: var(--bg-dark);
+}
+/* The root/home view stays translucent so the fixed blob backdrop glows through it. */
+.view[data-view="home"] { background: transparent; }
+.view[data-view="home"] { transform: translateX(0); }  /* root at rest */
+.view.is-hidden { display: none; }
+.view.view-active { transform: translateX(0); }
+.view.view-exit-left { transform: translateX(-30%); filter: brightness(0.6); }
+.view.view-exit-right { transform: translateX(100%); }
+.view.is-animating { pointer-events: none; }
+
+.view-scroll {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 84px;           /* clear the bottom tab bar */
+}
+
+/* ---- Bottom tab bar ---- */
+.tab-bar {
+    flex: 0 0 auto;
+    height: 62px;
+    padding-bottom: env(safe-area-inset-bottom);
+    display: flex;
+    align-items: stretch;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    z-index: 20;
+}
+.tab-item {
+    flex: 1 1 0;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: color 0.2s ease;
+}
+.tab-item i { font-size: 1.15rem; }
+.tab-item.active { color: var(--primary); }
+.tab-icon-wrap { position: relative; display: inline-flex; }
+.tab-cart-badge {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 4px;
+    background: var(--primary);
+    color: var(--bg-dark);
+    font-size: 0.6rem;
+    font-weight: 800;
+    border-radius: 10px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.tab-cart-badge.active { display: flex; }
+
+/* ---- Search bar ---- */
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 16px;
+    padding: 12px 16px;
+    border-radius: 14px;
+}
+.search-bar i { color: var(--text-muted); }
+.search-bar input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    font-family: var(--font-body);
+}
+.search-bar input::placeholder { color: var(--text-muted); }
+
+/* ==========================================================================
+   Re-flow existing sections into the single-column app view
+   ========================================================================== */
+
+.view-home .hero-section {
+    display: block;
+    max-width: none;
+    min-height: auto;
+    padding: 20px 16px 8px;
+    grid-template-columns: none;
+}
+.view-home .hero-content { align-items: flex-start; }
+.view-home .hero-title { font-size: 2.4rem; }
+.view-home .hero-image-wrapper { margin-top: 24px; }
+.view-home .hero-glass-display { max-height: 360px; }
+.view-home .social-proof-bar {
+    gap: 18px 24px;
+    padding: 18px 16px;
+    max-width: none;
+}
+.view-home .features-section,
+.view-home .catalog-section,
+.view-home .newsletter-section {
+    max-width: none;
+    padding: 32px 16px;
+}
+.view-home .features-grid { grid-template-columns: 1fr; gap: 14px; }
+.view-home .product-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+.view-home .main-footer { max-width: none; border-radius: 0; }
+.view-home .footer-grid { grid-template-columns: 1fr 1fr; }
+
+/* Product view reuses the modal content classes in a single column */
+.view-product .view-scroll { padding: 0 0 84px; overflow-x: hidden; }
+.view-product .modal-img-wrapper { border-radius: 0; aspect-ratio: 1 / 1; width: 100%; height: auto; max-height: 70vh; }
+.view-product .modal-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+.view-product .modal-product-img { max-width: 100%; }
+.view-product .modal-details { padding: 20px 16px; max-height: none; overflow: visible; }
+
+/* Search grid */
+.view-search .product-grid { grid-template-columns: 1fr 1fr; gap: 14px; padding: 0 16px; }
+
+/* Bag view spacing */
+.view-bag .view-scroll { padding: 8px 0 84px; }
+.view-bag .cart-items { padding: 8px 16px; }
+.view-bag .cart-footer { padding: 16px; }
+
+/* ==========================================================================
+   Responsive: desktop becomes a full-width multi-column web app
+   ========================================================================== */
+@media (min-width: 768px) {
+    .view-home .product-grid,
+    .view-search .product-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+    .view-home .features-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 1024px) {
+    /* Chrome swap: hide bottom tabs, show top nav */
+    .tab-bar { display: none; }
+    .app-bar-nav { display: flex; gap: 28px; margin-left: 28px; }
+    .app-bar { height: 68px; padding: 0 40px; }
+    .app-bar-title { flex: 0 0 auto; padding-right: 8px; }
+    /* On desktop the app-bar title stays the brand; product view shows its own H1 */
+    .app-bar-actions { margin-left: auto; gap: 8px; }
+
+    .view-scroll { padding-bottom: 0; }
+
+    /* Center home content in a wide container, restore original multi-column layouts */
+    .view-home .hero-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 60px 40px 40px;
+        align-items: center;
+        gap: 48px;
+    }
+    .view-home .hero-title { font-size: 3.4rem; }
+    .view-home .hero-glass-display { max-height: 520px; }
+    .view-home .social-proof-bar { max-width: 1400px; margin: 0 auto; padding: 22px 40px; }
+    .view-home .features-section,
+    .view-home .catalog-section,
+    .view-home .newsletter-section { max-width: 1400px; margin: 0 auto; padding: 48px 40px; }
+    .view-home .product-grid,
+    .view-search .product-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; }
+    .view-home .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr; }
+
+    /* Product view: side-by-side image + details, centered.
+       #product-view-body IS the absolute .view-scroll (inset:0), so it can't be
+       margin-centered — instead lay out a centered grid track pair inside it. */
+    .view-product .view-scroll { padding: 40px 0; overflow-x: hidden; }
+    .view-product #product-view-body {
+        display: grid;
+        grid-template-columns: minmax(0, 520px) minmax(0, 520px);
+        justify-content: center;
+        gap: 48px;
+        padding: 40px;
+        align-items: start;
+    }
+    .view-product .modal-img-wrapper {
+        position: sticky;
+        top: 24px;
+        aspect-ratio: 1 / 1;
+        max-height: 520px;
+        width: 100%;
+    }
+    .view-product .modal-details { padding: 8px 0; max-width: 520px; }
+
+    /* Bag + Search readable centered columns */
+    .view-bag .view-scroll > * { max-width: 720px; margin: 0 auto; }
+    .view-search .search-bar { max-width: 900px; margin: 24px auto; }
+    .view-search .filter-tabs { max-width: 900px; margin: 0 auto 8px; }
+    .view-search .product-grid { max-width: 1400px; margin: 0 auto; padding: 16px 40px; }
+}
+
 </style>
 
 <div class="glaze-theme-wrapper" id="shopify-section-{{ section.id }}">
@@ -1862,35 +2203,38 @@ body {
         <div class="blob blob-indigo"></div>
     </div>
 
-    <!-- Navigation Header -->
-    <header class="main-header glass-card">
-        <div class="header-container">
-            <a href="#" class="logo">
-                <span class="logo-accent">GLA</span>ZE
-            </a>
-            <nav class="nav-menu">
-                <a href="#hero" class="nav-link active">Home</a>
-                <a href="#catalog" class="nav-link">Shop</a>
-                <a href="#about" class="nav-link">About</a>
-                <a href="#newsletter" class="nav-link">Join</a>
+    <!-- ==================== APP SHELL ==================== -->
+    <div class="app-shell" id="app-shell">
+
+        <!-- Top App Bar -->
+        <header class="app-bar glass-card" id="app-bar">
+            <button class="app-bar-back" id="app-bar-back" aria-label="Back" hidden>
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <div class="app-bar-title" id="app-bar-title">
+                <span class="logo"><span class="logo-accent">GLA</span>ZE</span>
+            </div>
+            <nav class="app-bar-nav" id="app-bar-nav">
+                <button class="nav-link active" data-tab="home">Home</button>
+                <button class="nav-link" data-tab="search">Shop</button>
             </nav>
-            <div class="nav-actions">
+            <div class="app-bar-actions">
                 <button class="nav-btn" id="search-btn" aria-label="Search">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
-                <button class="nav-btn" id="wishlist-btn" aria-label="Wishlist">
-                    <i class="fa-regular fa-heart"></i>
-                </button>
-                <button class="nav-btn cart-toggle-btn" id="cart-btn" aria-label="Shopping Cart">
+                <button class="nav-btn cart-toggle-btn" id="cart-btn" aria-label="Shopping Bag">
                     <i class="fa-solid fa-bag-shopping"></i>
                     <span class="cart-badge">0</span>
                 </button>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- Main Container -->
-    <main>
+        <!-- View Stack -->
+        <main class="view-stack" id="view-stack">
+
+        <!-- ==================== HOME VIEW ==================== -->
+        <section class="view view-home" id="view-home" data-view="home">
+          <div class="view-scroll">
         <!-- Hero Section -->
         <section id="hero" class="hero-section">
             <div class="hero-content">
@@ -2020,7 +2364,6 @@ body {
                 </div>
             </div>
         </section>
-    </main>
 
     <!-- Footer -->
     <footer class="main-footer glass-card">
@@ -2077,25 +2420,27 @@ body {
             <p>&copy; 2026 GLAZE. All rights reserved.</p>
         </div>
     </footer>
+          </div><!-- /.view-scroll -->
+        </section><!-- /#view-home -->
 
-    <!-- Shopping Cart Slide-out Drawer -->
-    <div class="cart-drawer-overlay" id="cart-drawer-overlay">
-        <div class="cart-drawer glass-card">
-            <div class="cart-header">
-                <h3>Shopping Bag (<span id="cart-count">0</span>)</h3>
-                <button class="close-cart-btn" id="close-cart-btn" aria-label="Close Cart">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
+        <!-- ==================== PRODUCT VIEW ==================== -->
+        <section class="view view-product is-hidden" id="view-product" data-view="product" aria-hidden="true">
+          <div class="view-scroll" id="product-view-body">
+            <!-- Injected by renderProductView() -->
+          </div>
+        </section>
+
+        <!-- ==================== BAG VIEW ==================== -->
+        <section class="view view-bag is-hidden" id="view-bag" data-view="bag" aria-hidden="true">
+          <div class="view-scroll">
             <div class="cart-items" id="cart-items-container">
-                <!-- Injected via JavaScript -->
                 <div class="cart-empty-message">
-                    <i class="fa-solid fa-wind"></i>
+                    <i class="fa-solid fa-bag-shopping"></i>
                     <p>Your bag is empty.</p>
-                    <a href="#catalog" class="btn btn-primary close-cart-btn-action">Browse Collection</a>
+                    <button class="btn btn-primary close-cart-btn-action">Browse Collection</button>
                 </div>
             </div>
-            <div class="cart-footer">
+            <div class="cart-footer" id="bag-footer">
                 <div class="cart-subtotal">
                     <span>Subtotal</span>
                     <span id="cart-subtotal-value">$0.00</span>
@@ -2110,20 +2455,52 @@ body {
                     <span><i class="fa-solid fa-rotate-left"></i> 30-day returns</span>
                 </div>
             </div>
-        </div>
-    </div>
+          </div>
+        </section>
 
-    <!-- Product Detail Modal -->
-    <div class="modal-overlay" id="product-modal">
-        <div class="modal-content glass-card">
-            <button class="close-modal-btn" id="close-modal-btn" aria-label="Close Modal">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div class="modal-body-grid" id="modal-product-details">
-                <!-- Injected via JavaScript -->
+        <!-- ==================== SEARCH VIEW ==================== -->
+        <section class="view view-search is-hidden" id="view-search" data-view="search" aria-hidden="true">
+          <div class="view-scroll">
+            <div class="search-bar glass-card">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="search-input" placeholder="Search products…" aria-label="Search products">
             </div>
-        </div>
-    </div>
+            <div class="filter-tabs glass-card" id="search-filter-tabs">
+                <button class="filter-tab active" data-category="all">Bestsellers</button>
+                <button class="filter-tab" data-category="dresses">Dresses</button>
+                <button class="filter-tab" data-category="activewear">Activewear</button>
+                <button class="filter-tab" data-category="shirts">Shirts</button>
+                <button class="filter-tab" data-category="pants">Pants</button>
+                <button class="filter-tab" data-category="tops">Tops</button>
+            </div>
+            <div class="product-grid" id="search-product-grid">
+                <!-- Injected by renderSearch() -->
+            </div>
+          </div>
+        </section>
+
+        </main><!-- /.view-stack -->
+
+        <!-- Bottom Tab Bar -->
+        <nav class="tab-bar glass-card" id="tab-bar">
+            <button class="tab-item active" data-tab="home" aria-label="Home">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </button>
+            <button class="tab-item" data-tab="search" aria-label="Search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>Search</span>
+            </button>
+            <button class="tab-item" data-tab="bag" aria-label="Bag">
+                <span class="tab-icon-wrap">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span class="tab-cart-badge">0</span>
+                </span>
+                <span>Bag</span>
+            </button>
+        </nav>
+
+    </div><!-- /.app-shell -->
 
     <!-- Checkout Success Notification/Modal -->
     <div class="modal-overlay" id="checkout-success-modal">
@@ -2567,19 +2944,32 @@ let cart = [];
 let activeCategory = "all";
 let activeModalProduct = null;
 
+// --- App router state ---
+const VIEWS = { home: "view-home", product: "view-product", bag: "view-bag", search: "view-search" };
+const VIEW_TITLES = { home: "", product: "", bag: "Shopping Bag", search: "Search" };
+let viewStack = ["home"];
+let searchQuery = "";
+let isAnimating = false;
+
 // --- DOM Elements ---
 const productGrid = document.getElementById("product-grid");
-const filterTabs = document.querySelectorAll(".filter-tab");
+const searchGrid = document.getElementById("search-product-grid");
+const filterTabs = document.querySelectorAll("#catalog .filter-tab");
+const searchFilterTabs = document.querySelectorAll("#search-filter-tabs .filter-tab");
+const searchInput = document.getElementById("search-input");
 const cartBtn = document.getElementById("cart-btn");
-const cartBadge = document.querySelector(".cart-badge");
-const cartDrawerOverlay = document.getElementById("cart-drawer-overlay");
-const closeCartBtn = document.getElementById("close-cart-btn");
+const cartBadge = document.querySelector(".app-bar .cart-badge");
+const tabCartBadge = document.querySelector(".tab-cart-badge");
 const cartItemsContainer = document.getElementById("cart-items-container");
 const cartSubtotalVal = document.getElementById("cart-subtotal-value");
 const checkoutBtn = document.getElementById("checkout-btn");
-const productModal = document.getElementById("product-modal");
-const closeModalBtn = document.getElementById("close-modal-btn");
-const modalProductDetails = document.getElementById("modal-product-details");
+const productViewBody = document.getElementById("product-view-body");
+const appBar = document.getElementById("app-bar");
+const appBarBack = document.getElementById("app-bar-back");
+const appBarTitle = document.getElementById("app-bar-title");
+const viewStackEl = document.getElementById("view-stack");
+const tabBar = document.getElementById("tab-bar");
+const searchBtn = document.getElementById("search-btn");
 const checkoutSuccessModal = document.getElementById("checkout-success-modal");
 const successCloseBtn = document.getElementById("success-close-btn");
 const orderRefCode = document.getElementById("order-ref-code");
@@ -2588,8 +2978,12 @@ const newsletterForm = document.getElementById("newsletter-form");
 
 // --- Initialization ---
 function initGlaze() {
+    // On (re-)init (incl. Shopify theme editor section reload) reset to Home root.
+    viewStack = ["home"];
+    resetViewsToHome();
     renderProducts();
     setupEventListeners();
+    initRouter();
     syncShopifyCart();
     if (window.AYSzvothEK) {
         window.AYSzvothEK.track('page_viewed');
@@ -2608,12 +3002,12 @@ function setupEventListeners() {
     if (window.glazeListenersAttached) return;
     window.glazeListenersAttached = true;
 
-    // Category Filtering
+    // Home category filtering
     filterTabs.forEach(tab => {
         tab.addEventListener("click", (e) => {
             filterTabs.forEach(t => t.classList.remove("active"));
-            e.target.classList.add("active");
-            activeCategory = e.target.getAttribute("data-category");
+            e.currentTarget.classList.add("active");
+            activeCategory = e.currentTarget.getAttribute("data-category");
             renderProducts();
             if (window.AYSzvothEK) {
                 window.AYSzvothEK.track('collection_viewed', { category: activeCategory });
@@ -2622,38 +3016,6 @@ function setupEventListeners() {
                 window.Shopify.analytics.publish('custom_collection_viewed', { category: activeCategory });
             }
         });
-    });
-
-    // Cart Drawer Toggle
-    cartBtn.addEventListener("click", () => {
-        cartDrawerOverlay.classList.add("active");
-        if (window.AYSzvothEK) {
-            window.AYSzvothEK.track('cart_viewed');
-        }
-        if (window.Shopify && window.Shopify.analytics) {
-            window.Shopify.analytics.publish('custom_cart_viewed', {});
-        }
-    });
-
-    closeCartBtn.addEventListener("click", () => {
-        cartDrawerOverlay.classList.remove("active");
-    });
-
-    cartDrawerOverlay.addEventListener("click", (e) => {
-        if (e.target === cartDrawerOverlay) {
-            cartDrawerOverlay.classList.remove("active");
-        }
-    });
-
-    // Modal Close
-    closeModalBtn.addEventListener("click", () => {
-        productModal.classList.remove("active");
-    });
-
-    productModal.addEventListener("click", (e) => {
-        if (e.target === productModal) {
-            productModal.classList.remove("active");
-        }
     });
 
     // Checkout Action -> verify the real Shopify cart has items, then redirect.
@@ -2698,6 +3060,250 @@ function setupEventListeners() {
     }
 }
 
+/* ==========================================================================
+   APP ROUTER — full-screen stacked views with iOS-style slide push/pop
+   ========================================================================== */
+
+function getViewEl(name) { return document.getElementById(VIEWS[name]); }
+
+function resetViewsToHome() {
+    Object.keys(VIEWS).forEach(name => {
+        const el = getViewEl(name);
+        if (!el) return;
+        el.classList.remove("view-active", "view-exit-left", "view-exit-right", "is-animating");
+        if (name === "home") {
+            el.classList.remove("is-hidden");
+            el.setAttribute("aria-hidden", "false");
+        } else {
+            el.classList.add("is-hidden");
+            el.setAttribute("aria-hidden", "true");
+        }
+    });
+    updateAppBar();
+}
+
+function updateAppBar() {
+    const top = viewStack[viewStack.length - 1];
+    if (appBarBack) appBarBack.hidden = viewStack.length <= 1;
+    if (appBarTitle) {
+        if (top === "home") {
+            appBarTitle.innerHTML = '<span class="logo"><span class="logo-accent">GLA</span>ZE</span>';
+        } else if (top === "product" && activeModalProduct) {
+            appBarTitle.textContent = activeModalProduct.name;
+        } else if (top === "bag") {
+            const count = cart.reduce((s, i) => s + i.quantity, 0);
+            appBarTitle.textContent = count > 0 ? `Shopping Bag (${count})` : "Shopping Bag";
+        } else {
+            appBarTitle.textContent = VIEW_TITLES[top] || "";
+        }
+    }
+    // Sync bottom tab + desktop nav active state to the current root-ish view.
+    const tabName = (top === "product") ? "home" : top;
+    if (tabBar) {
+        tabBar.querySelectorAll(".tab-item").forEach(t => {
+            t.classList.toggle("active", t.getAttribute("data-tab") === tabName);
+        });
+    }
+    document.querySelectorAll("#app-bar-nav .nav-link").forEach(t => {
+        t.classList.toggle("active", t.getAttribute("data-tab") === tabName);
+    });
+}
+
+// Build a view's content just before it becomes visible.
+function buildView(name, data) {
+    if (name === "product" && data) renderProductView(data);
+    else if (name === "bag") syncShopifyCart();
+    else if (name === "search") renderSearch();
+}
+
+function finishAnimation(cb) {
+    // transitionend + a safety timeout so state never gets stuck.
+    let done = false;
+    const finalize = () => { if (done) return; done = true; cb(); };
+    return { finalize };
+}
+
+// Push a new view onto the stack (records history).
+function pushView(name, data) {
+    if (isAnimating) return;
+    const fromName = viewStack[viewStack.length - 1];
+    if (name === "product") activeModalProduct = data || null;
+    buildView(name, data);
+
+    const fromEl = getViewEl(fromName);
+    const toEl = getViewEl(name);
+    if (!toEl) return;
+
+    isAnimating = true;
+    // Prepare incoming view off-screen to the right.
+    toEl.classList.remove("is-hidden", "view-exit-left", "view-exit-right");
+    toEl.setAttribute("aria-hidden", "false");
+    toEl.style.transform = "translateX(100%)";
+    // Reset incoming scroll to top.
+    const sc = toEl.querySelector(".view-scroll");
+    if (sc) sc.scrollTop = 0;
+    // Force reflow so the transform takes effect before we animate.
+    void toEl.offsetWidth;
+
+    toEl.classList.add("is-animating");
+    if (fromEl) fromEl.classList.add("is-animating");
+
+    toEl.style.transform = "";
+    toEl.classList.add("view-active");
+    if (fromEl) fromEl.classList.add("view-exit-left");
+
+    const { finalize } = finishAnimation(() => {
+        if (fromEl) fromEl.classList.remove("is-animating");
+        toEl.classList.remove("is-animating");
+    });
+    const onEnd = () => { toEl.removeEventListener("transitionend", onEnd); finalize(); isAnimating = false; };
+    toEl.addEventListener("transitionend", onEnd);
+    setTimeout(() => { finalize(); isAnimating = false; }, 500);
+
+    viewStack.push(name);
+    updateAppBar();
+    history.pushState({ view: name }, "");
+
+    // Analytics parity with the old overlays.
+    if (name === "bag") {
+        if (window.AYSzvothEK) window.AYSzvothEK.track('cart_viewed');
+        if (window.Shopify && window.Shopify.analytics) window.Shopify.analytics.publish('custom_cart_viewed', {});
+    }
+}
+
+// Pop the top view (driven by popstate only).
+function popView() {
+    if (viewStack.length <= 1) return;
+    if (isAnimating) return;
+    const fromName = viewStack[viewStack.length - 1];
+    const toName = viewStack[viewStack.length - 2];
+    const fromEl = getViewEl(fromName);
+    const toEl = getViewEl(toName);
+    if (!fromEl || !toEl) return;
+
+    isAnimating = true;
+    // Incoming (previous) view sits dimmed to the left; bring it back to 0.
+    toEl.classList.remove("is-hidden", "view-exit-left");
+    toEl.setAttribute("aria-hidden", "false");
+    void toEl.offsetWidth;
+    toEl.classList.add("is-animating");
+    fromEl.classList.add("is-animating");
+
+    toEl.classList.remove("view-exit-left");
+    toEl.classList.add("view-active");
+    fromEl.classList.remove("view-active");
+    fromEl.classList.add("view-exit-right");
+
+    const cleanup = () => {
+        fromEl.removeEventListener("transitionend", cleanup);
+        fromEl.classList.add("is-hidden");
+        fromEl.classList.remove("view-exit-right", "is-animating", "view-active");
+        fromEl.setAttribute("aria-hidden", "true");
+        toEl.classList.remove("is-animating");
+        if (toName === "home") toEl.classList.remove("view-active"); // home rests at translateX(0)
+        isAnimating = false;
+    };
+    fromEl.addEventListener("transitionend", cleanup);
+    setTimeout(cleanup, 500);
+
+    viewStack.pop();
+    if (fromName === "product") activeModalProduct = null;
+    updateAppBar();
+}
+
+// Bottom tab switch: reset the stack to a single view (cross-fade / instant swap).
+function switchTab(name) {
+    if (isAnimating) return;
+    const top = viewStack[viewStack.length - 1];
+    if (top === name) {
+        // Tapping the current tab: if we're deep in a stack, pop to root.
+        if (viewStack.length > 1) { history.go(-(viewStack.length - 1)); }
+        return;
+    }
+    buildView(name, null);
+    // Collapse history back to a single entry, then swap instantly.
+    if (viewStack.length > 1) { history.go(-(viewStack.length - 1)); }
+    // Defer the swap so the popstate unwinding settles first.
+    setTimeout(() => {
+        viewStack = [name];
+        Object.keys(VIEWS).forEach(v => {
+            const el = getViewEl(v);
+            if (!el) return;
+            el.classList.remove("view-active", "view-exit-left", "view-exit-right", "is-animating");
+            if (v === name) {
+                el.classList.remove("is-hidden");
+                el.setAttribute("aria-hidden", "false");
+                el.style.transform = (v === "home") ? "" : "translateX(0)";
+                if (v !== "home") el.classList.add("view-active");
+                const sc = el.querySelector(".view-scroll");
+                if (sc) sc.scrollTop = 0;
+            } else {
+                el.classList.add("is-hidden");
+                el.setAttribute("aria-hidden", "true");
+                el.style.transform = "";
+            }
+        });
+        history.replaceState({ view: name }, "");
+        updateAppBar();
+    }, isAnimating ? 60 : 0);
+}
+
+function initRouter() {
+    if (window.glazeRouterInit) return;
+    window.glazeRouterInit = true;
+
+    history.replaceState({ view: "home" }, "");
+
+    window.addEventListener("popstate", () => {
+        if (viewStack.length > 1) popView();
+    });
+
+    if (appBarBack) appBarBack.addEventListener("click", () => history.back());
+    if (searchBtn) searchBtn.addEventListener("click", () => switchTab("search"));
+    if (cartBtn) cartBtn.addEventListener("click", () => {
+        if (viewStack[viewStack.length - 1] !== "bag") pushView("bag");
+    });
+
+    if (tabBar) {
+        tabBar.querySelectorAll(".tab-item").forEach(tab => {
+            tab.addEventListener("click", () => switchTab(tab.getAttribute("data-tab")));
+        });
+    }
+
+    // Desktop top-nav links (shown at >=1024px) drive the same router.
+    document.querySelectorAll("#app-bar-nav .nav-link").forEach(link => {
+        link.addEventListener("click", () => switchTab(link.getAttribute("data-tab")));
+    });
+
+    // Search wiring
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            searchQuery = (e.target.value || "").toLowerCase().trim();
+            renderSearch();
+        });
+    }
+    searchFilterTabs.forEach(tab => {
+        tab.addEventListener("click", (e) => {
+            searchFilterTabs.forEach(t => t.classList.remove("active"));
+            e.currentTarget.classList.add("active");
+            activeCategory = e.currentTarget.getAttribute("data-category");
+            renderSearch();
+        });
+    });
+}
+
+// Render the search results grid (name + category filter).
+function renderSearch() {
+    if (!searchGrid) return;
+    let list = activeCategory === "all" ? PRODUCTS : PRODUCTS.filter(p => p.category === activeCategory);
+    if (searchQuery) {
+        list = list.filter(p => (p.name || "").toLowerCase().includes(searchQuery)
+            || (p.hook || "").toLowerCase().includes(searchQuery)
+            || (p.categoryLabel || "").toLowerCase().includes(searchQuery));
+    }
+    renderProducts(searchGrid, list);
+}
+
 // --- Sync with Shopify Cart (AJAX) ---
 function syncShopifyCart() {
     fetch('/cart.js')
@@ -2738,17 +3344,18 @@ function renderStars(rating) {
     return html;
 }
 
-// --- Render Product Grid ---
-function renderProducts() {
-    if (!productGrid) return;
-    productGrid.innerHTML = "";
+// --- Render Product Grid (into a target grid; optional pre-filtered list) ---
+function renderProducts(gridEl, list) {
+    gridEl = gridEl || productGrid;
+    if (!gridEl) return;
+    gridEl.innerHTML = "";
 
-    const filtered = activeCategory === "all" 
-        ? PRODUCTS 
-        : PRODUCTS.filter(p => p.category === activeCategory);
+    const filtered = list || (activeCategory === "all"
+        ? PRODUCTS
+        : PRODUCTS.filter(p => p.category === activeCategory));
 
     if (filtered.length === 0) {
-        productGrid.innerHTML = `<div class="empty-message">No items found in this category.</div>`;
+        gridEl.innerHTML = `<div class="empty-message">No items found.</div>`;
         return;
     }
 
@@ -2793,12 +3400,12 @@ function renderProducts() {
             addToCart(product, defaultSize);
         });
 
-        // Bind open details modal on card click
+        // Bind open full-screen product view on card click
         card.addEventListener("click", () => {
-            openProductModal(product);
+            pushView("product", product);
         });
 
-        productGrid.appendChild(card);
+        gridEl.appendChild(card);
     });
 }
 
@@ -2841,7 +3448,6 @@ function addToCart(product, size) {
     .then(() => {
         showToast("Added " + product.name + " to bag!", "fa-bag-shopping");
         syncShopifyCart();
-        cartDrawerOverlay.classList.add("active");
     })
     .catch(err => {
         console.error("Cart add error: ", err);
@@ -2874,7 +3480,7 @@ function updateCartUI(totalPrice = 0, itemCount = 0) {
     if (cart.length === 0) {
         cartItemsContainer.innerHTML = `
             <div class="cart-empty-message">
-                <i class="fa-solid fa-wind"></i>
+                <i class="fa-solid fa-bag-shopping"></i>
                 <p>Your bag is empty.</p>
                 <button class="btn btn-secondary close-cart-btn-action" style="font-size:0.85rem; padding:10px 20px;">Browse Collection</button>
             </div>
@@ -2882,15 +3488,13 @@ function updateCartUI(totalPrice = 0, itemCount = 0) {
 
         const browseBtn = cartItemsContainer.querySelector(".close-cart-btn-action");
         if (browseBtn) {
-            browseBtn.addEventListener("click", () => {
-                cartDrawerOverlay.classList.remove("active");
-            });
+            browseBtn.addEventListener("click", () => switchTab("home"));
         }
 
-        cartBadge.classList.remove("active");
-        cartBadge.innerText = "0";
+        setCartBadges(0);
         cartSubtotalVal.innerText = "$0.00";
         checkoutBtn.disabled = true;
+        if (viewStack[viewStack.length - 1] === "bag") updateAppBar();
         return;
     }
 
@@ -2940,14 +3544,28 @@ function updateCartUI(totalPrice = 0, itemCount = 0) {
     });
 
     // Update Badge & Totals
-    cartBadge.innerText = itemCount;
-    cartBadge.classList.add("active");
+    setCartBadges(itemCount);
     cartSubtotalVal.innerText = `$${totalPrice.toFixed(2)}`;
     checkoutBtn.disabled = false;
+    if (viewStack[viewStack.length - 1] === "bag") updateAppBar();
 }
 
-// --- Product Detail Modal ---
-function openProductModal(product) {
+// Sync both the app-bar cart badge and the bottom-tab bag badge.
+function setCartBadges(count) {
+    if (cartBadge) {
+        cartBadge.innerText = count;
+        cartBadge.classList.toggle("active", count > 0);
+        cartBadge.style.display = count > 0 ? "flex" : "none";
+    }
+    if (tabCartBadge) {
+        tabCartBadge.innerText = count;
+        tabCartBadge.classList.toggle("active", count > 0);
+    }
+}
+
+// --- Full-screen Product View ---
+function renderProductView(product) {
+    if (!productViewBody) return;
     if (window.AYSzvothEK) {
         window.AYSzvothEK.track('product_viewed', {
             id: product.id,
@@ -3002,7 +3620,7 @@ function openProductModal(product) {
     const rankRibbon = product.rankLabel
         ? `<div class="modal-rank"><i class="fa-solid fa-award"></i> ${product.rankLabel}</div>` : "";
 
-    modalProductDetails.innerHTML = `
+    productViewBody.innerHTML = `
         <div class="modal-img-wrapper glass-card">
             <div class="glass-reflection-shine"></div>
             <img src="${product.image}" alt="${product.name}" class="modal-product-img">
@@ -3061,8 +3679,8 @@ function openProductModal(product) {
     `;
 
     // Size Guide Toggle
-    const sizeGuideToggle = modalProductDetails.querySelector(".size-guide-toggle");
-    const sizeGuidePanel = modalProductDetails.querySelector(".size-guide-panel");
+    const sizeGuideToggle = productViewBody.querySelector(".size-guide-toggle");
+    const sizeGuidePanel = productViewBody.querySelector(".size-guide-panel");
     if (sizeGuideToggle && sizeGuidePanel) {
         sizeGuideToggle.addEventListener("click", () => {
             sizeGuidePanel.hidden = !sizeGuidePanel.hidden;
@@ -3070,7 +3688,7 @@ function openProductModal(product) {
     }
 
     // Size Selection Handlers
-    const sizeBtns = modalProductDetails.querySelectorAll(".size-btn");
+    const sizeBtns = productViewBody.querySelectorAll(".size-btn");
     sizeBtns.forEach(btn => {
         btn.addEventListener("click", (e) => {
             sizeBtns.forEach(b => b.classList.remove("active"));
@@ -3078,15 +3696,12 @@ function openProductModal(product) {
         });
     });
 
-    // Add To Bag in Modal Handler
-    modalProductDetails.querySelector(".modal-add-to-bag-btn").addEventListener("click", () => {
-        const activeSizeBtn = modalProductDetails.querySelector(".size-btn.active");
+    // Add To Bag — stay on the product view so the buyer can keep browsing.
+    productViewBody.querySelector(".modal-add-to-bag-btn").addEventListener("click", () => {
+        const activeSizeBtn = productViewBody.querySelector(".size-btn.active");
         const selectedSize = activeSizeBtn ? activeSizeBtn.getAttribute("data-size") : "M";
         addToCart(product, selectedSize);
-        productModal.classList.remove("active");
     });
-
-    productModal.classList.add("active");
 }
 
 // --- Toast notification ---

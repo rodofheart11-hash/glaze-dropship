@@ -218,19 +218,32 @@ let cart = [];
 let activeCategory = "all";
 let activeModalProduct = null;
 
+// --- App router state ---
+const VIEWS = { home: "view-home", product: "view-product", bag: "view-bag", search: "view-search" };
+const VIEW_TITLES = { home: "", product: "", bag: "Shopping Bag", search: "Search" };
+let viewStack = ["home"];
+let searchQuery = "";
+let isAnimating = false;
+
 // --- DOM Elements ---
 const productGrid = document.getElementById("product-grid");
-const filterTabs = document.querySelectorAll(".filter-tab");
+const searchGrid = document.getElementById("search-product-grid");
+const filterTabs = document.querySelectorAll("#catalog .filter-tab");
+const searchFilterTabs = document.querySelectorAll("#search-filter-tabs .filter-tab");
+const searchInput = document.getElementById("search-input");
 const cartBtn = document.getElementById("cart-btn");
-const cartBadge = document.querySelector(".cart-badge");
-const cartDrawerOverlay = document.getElementById("cart-drawer-overlay");
-const closeCartBtn = document.getElementById("close-cart-btn");
+const cartBadge = document.querySelector(".app-bar .cart-badge");
+const tabCartBadge = document.querySelector(".tab-cart-badge");
 const cartItemsContainer = document.getElementById("cart-items-container");
 const cartSubtotalVal = document.getElementById("cart-subtotal-value");
 const checkoutBtn = document.getElementById("checkout-btn");
-const productModal = document.getElementById("product-modal");
-const closeModalBtn = document.getElementById("close-modal-btn");
-const modalProductDetails = document.getElementById("modal-product-details");
+const productViewBody = document.getElementById("product-view-body");
+const appBar = document.getElementById("app-bar");
+const appBarBack = document.getElementById("app-bar-back");
+const appBarTitle = document.getElementById("app-bar-title");
+const viewStackEl = document.getElementById("view-stack");
+const tabBar = document.getElementById("tab-bar");
+const searchBtn = document.getElementById("search-btn");
 const checkoutSuccessModal = document.getElementById("checkout-success-modal");
 const successCloseBtn = document.getElementById("success-close-btn");
 const orderRefCode = document.getElementById("order-ref-code");
@@ -239,8 +252,12 @@ const newsletterForm = document.getElementById("newsletter-form");
 
 // --- Initialization ---
 function initGlaze() {
+    // On (re-)init (incl. Shopify theme editor section reload) reset to Home root.
+    viewStack = ["home"];
+    resetViewsToHome();
     renderProducts();
     setupEventListeners();
+    initRouter();
     syncShopifyCart();
     if (window.AYSzvothEK) {
         window.AYSzvothEK.track('page_viewed');
@@ -259,12 +276,12 @@ function setupEventListeners() {
     if (window.glazeListenersAttached) return;
     window.glazeListenersAttached = true;
 
-    // Category Filtering
+    // Home category filtering
     filterTabs.forEach(tab => {
         tab.addEventListener("click", (e) => {
             filterTabs.forEach(t => t.classList.remove("active"));
-            e.target.classList.add("active");
-            activeCategory = e.target.getAttribute("data-category");
+            e.currentTarget.classList.add("active");
+            activeCategory = e.currentTarget.getAttribute("data-category");
             renderProducts();
             if (window.AYSzvothEK) {
                 window.AYSzvothEK.track('collection_viewed', { category: activeCategory });
@@ -273,38 +290,6 @@ function setupEventListeners() {
                 window.Shopify.analytics.publish('custom_collection_viewed', { category: activeCategory });
             }
         });
-    });
-
-    // Cart Drawer Toggle
-    cartBtn.addEventListener("click", () => {
-        cartDrawerOverlay.classList.add("active");
-        if (window.AYSzvothEK) {
-            window.AYSzvothEK.track('cart_viewed');
-        }
-        if (window.Shopify && window.Shopify.analytics) {
-            window.Shopify.analytics.publish('custom_cart_viewed', {});
-        }
-    });
-
-    closeCartBtn.addEventListener("click", () => {
-        cartDrawerOverlay.classList.remove("active");
-    });
-
-    cartDrawerOverlay.addEventListener("click", (e) => {
-        if (e.target === cartDrawerOverlay) {
-            cartDrawerOverlay.classList.remove("active");
-        }
-    });
-
-    // Modal Close
-    closeModalBtn.addEventListener("click", () => {
-        productModal.classList.remove("active");
-    });
-
-    productModal.addEventListener("click", (e) => {
-        if (e.target === productModal) {
-            productModal.classList.remove("active");
-        }
     });
 
     // Checkout Action -> verify the real Shopify cart has items, then redirect.
@@ -349,6 +334,250 @@ function setupEventListeners() {
     }
 }
 
+/* ==========================================================================
+   APP ROUTER — full-screen stacked views with iOS-style slide push/pop
+   ========================================================================== */
+
+function getViewEl(name) { return document.getElementById(VIEWS[name]); }
+
+function resetViewsToHome() {
+    Object.keys(VIEWS).forEach(name => {
+        const el = getViewEl(name);
+        if (!el) return;
+        el.classList.remove("view-active", "view-exit-left", "view-exit-right", "is-animating");
+        if (name === "home") {
+            el.classList.remove("is-hidden");
+            el.setAttribute("aria-hidden", "false");
+        } else {
+            el.classList.add("is-hidden");
+            el.setAttribute("aria-hidden", "true");
+        }
+    });
+    updateAppBar();
+}
+
+function updateAppBar() {
+    const top = viewStack[viewStack.length - 1];
+    if (appBarBack) appBarBack.hidden = viewStack.length <= 1;
+    if (appBarTitle) {
+        if (top === "home") {
+            appBarTitle.innerHTML = '<span class="logo"><span class="logo-accent">GLA</span>ZE</span>';
+        } else if (top === "product" && activeModalProduct) {
+            appBarTitle.textContent = activeModalProduct.name;
+        } else if (top === "bag") {
+            const count = cart.reduce((s, i) => s + i.quantity, 0);
+            appBarTitle.textContent = count > 0 ? \`Shopping Bag (\${count})\` : "Shopping Bag";
+        } else {
+            appBarTitle.textContent = VIEW_TITLES[top] || "";
+        }
+    }
+    // Sync bottom tab + desktop nav active state to the current root-ish view.
+    const tabName = (top === "product") ? "home" : top;
+    if (tabBar) {
+        tabBar.querySelectorAll(".tab-item").forEach(t => {
+            t.classList.toggle("active", t.getAttribute("data-tab") === tabName);
+        });
+    }
+    document.querySelectorAll("#app-bar-nav .nav-link").forEach(t => {
+        t.classList.toggle("active", t.getAttribute("data-tab") === tabName);
+    });
+}
+
+// Build a view's content just before it becomes visible.
+function buildView(name, data) {
+    if (name === "product" && data) renderProductView(data);
+    else if (name === "bag") syncShopifyCart();
+    else if (name === "search") renderSearch();
+}
+
+function finishAnimation(cb) {
+    // transitionend + a safety timeout so state never gets stuck.
+    let done = false;
+    const finalize = () => { if (done) return; done = true; cb(); };
+    return { finalize };
+}
+
+// Push a new view onto the stack (records history).
+function pushView(name, data) {
+    if (isAnimating) return;
+    const fromName = viewStack[viewStack.length - 1];
+    if (name === "product") activeModalProduct = data || null;
+    buildView(name, data);
+
+    const fromEl = getViewEl(fromName);
+    const toEl = getViewEl(name);
+    if (!toEl) return;
+
+    isAnimating = true;
+    // Prepare incoming view off-screen to the right.
+    toEl.classList.remove("is-hidden", "view-exit-left", "view-exit-right");
+    toEl.setAttribute("aria-hidden", "false");
+    toEl.style.transform = "translateX(100%)";
+    // Reset incoming scroll to top.
+    const sc = toEl.querySelector(".view-scroll");
+    if (sc) sc.scrollTop = 0;
+    // Force reflow so the transform takes effect before we animate.
+    void toEl.offsetWidth;
+
+    toEl.classList.add("is-animating");
+    if (fromEl) fromEl.classList.add("is-animating");
+
+    toEl.style.transform = "";
+    toEl.classList.add("view-active");
+    if (fromEl) fromEl.classList.add("view-exit-left");
+
+    const { finalize } = finishAnimation(() => {
+        if (fromEl) fromEl.classList.remove("is-animating");
+        toEl.classList.remove("is-animating");
+    });
+    const onEnd = () => { toEl.removeEventListener("transitionend", onEnd); finalize(); isAnimating = false; };
+    toEl.addEventListener("transitionend", onEnd);
+    setTimeout(() => { finalize(); isAnimating = false; }, 500);
+
+    viewStack.push(name);
+    updateAppBar();
+    history.pushState({ view: name }, "");
+
+    // Analytics parity with the old overlays.
+    if (name === "bag") {
+        if (window.AYSzvothEK) window.AYSzvothEK.track('cart_viewed');
+        if (window.Shopify && window.Shopify.analytics) window.Shopify.analytics.publish('custom_cart_viewed', {});
+    }
+}
+
+// Pop the top view (driven by popstate only).
+function popView() {
+    if (viewStack.length <= 1) return;
+    if (isAnimating) return;
+    const fromName = viewStack[viewStack.length - 1];
+    const toName = viewStack[viewStack.length - 2];
+    const fromEl = getViewEl(fromName);
+    const toEl = getViewEl(toName);
+    if (!fromEl || !toEl) return;
+
+    isAnimating = true;
+    // Incoming (previous) view sits dimmed to the left; bring it back to 0.
+    toEl.classList.remove("is-hidden", "view-exit-left");
+    toEl.setAttribute("aria-hidden", "false");
+    void toEl.offsetWidth;
+    toEl.classList.add("is-animating");
+    fromEl.classList.add("is-animating");
+
+    toEl.classList.remove("view-exit-left");
+    toEl.classList.add("view-active");
+    fromEl.classList.remove("view-active");
+    fromEl.classList.add("view-exit-right");
+
+    const cleanup = () => {
+        fromEl.removeEventListener("transitionend", cleanup);
+        fromEl.classList.add("is-hidden");
+        fromEl.classList.remove("view-exit-right", "is-animating", "view-active");
+        fromEl.setAttribute("aria-hidden", "true");
+        toEl.classList.remove("is-animating");
+        if (toName === "home") toEl.classList.remove("view-active"); // home rests at translateX(0)
+        isAnimating = false;
+    };
+    fromEl.addEventListener("transitionend", cleanup);
+    setTimeout(cleanup, 500);
+
+    viewStack.pop();
+    if (fromName === "product") activeModalProduct = null;
+    updateAppBar();
+}
+
+// Bottom tab switch: reset the stack to a single view (cross-fade / instant swap).
+function switchTab(name) {
+    if (isAnimating) return;
+    const top = viewStack[viewStack.length - 1];
+    if (top === name) {
+        // Tapping the current tab: if we're deep in a stack, pop to root.
+        if (viewStack.length > 1) { history.go(-(viewStack.length - 1)); }
+        return;
+    }
+    buildView(name, null);
+    // Collapse history back to a single entry, then swap instantly.
+    if (viewStack.length > 1) { history.go(-(viewStack.length - 1)); }
+    // Defer the swap so the popstate unwinding settles first.
+    setTimeout(() => {
+        viewStack = [name];
+        Object.keys(VIEWS).forEach(v => {
+            const el = getViewEl(v);
+            if (!el) return;
+            el.classList.remove("view-active", "view-exit-left", "view-exit-right", "is-animating");
+            if (v === name) {
+                el.classList.remove("is-hidden");
+                el.setAttribute("aria-hidden", "false");
+                el.style.transform = (v === "home") ? "" : "translateX(0)";
+                if (v !== "home") el.classList.add("view-active");
+                const sc = el.querySelector(".view-scroll");
+                if (sc) sc.scrollTop = 0;
+            } else {
+                el.classList.add("is-hidden");
+                el.setAttribute("aria-hidden", "true");
+                el.style.transform = "";
+            }
+        });
+        history.replaceState({ view: name }, "");
+        updateAppBar();
+    }, isAnimating ? 60 : 0);
+}
+
+function initRouter() {
+    if (window.glazeRouterInit) return;
+    window.glazeRouterInit = true;
+
+    history.replaceState({ view: "home" }, "");
+
+    window.addEventListener("popstate", () => {
+        if (viewStack.length > 1) popView();
+    });
+
+    if (appBarBack) appBarBack.addEventListener("click", () => history.back());
+    if (searchBtn) searchBtn.addEventListener("click", () => switchTab("search"));
+    if (cartBtn) cartBtn.addEventListener("click", () => {
+        if (viewStack[viewStack.length - 1] !== "bag") pushView("bag");
+    });
+
+    if (tabBar) {
+        tabBar.querySelectorAll(".tab-item").forEach(tab => {
+            tab.addEventListener("click", () => switchTab(tab.getAttribute("data-tab")));
+        });
+    }
+
+    // Desktop top-nav links (shown at >=1024px) drive the same router.
+    document.querySelectorAll("#app-bar-nav .nav-link").forEach(link => {
+        link.addEventListener("click", () => switchTab(link.getAttribute("data-tab")));
+    });
+
+    // Search wiring
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            searchQuery = (e.target.value || "").toLowerCase().trim();
+            renderSearch();
+        });
+    }
+    searchFilterTabs.forEach(tab => {
+        tab.addEventListener("click", (e) => {
+            searchFilterTabs.forEach(t => t.classList.remove("active"));
+            e.currentTarget.classList.add("active");
+            activeCategory = e.currentTarget.getAttribute("data-category");
+            renderSearch();
+        });
+    });
+}
+
+// Render the search results grid (name + category filter).
+function renderSearch() {
+    if (!searchGrid) return;
+    let list = activeCategory === "all" ? PRODUCTS : PRODUCTS.filter(p => p.category === activeCategory);
+    if (searchQuery) {
+        list = list.filter(p => (p.name || "").toLowerCase().includes(searchQuery)
+            || (p.hook || "").toLowerCase().includes(searchQuery)
+            || (p.categoryLabel || "").toLowerCase().includes(searchQuery));
+    }
+    renderProducts(searchGrid, list);
+}
+
 // --- Sync with Shopify Cart (AJAX) ---
 function syncShopifyCart() {
     fetch('/cart.js')
@@ -389,17 +618,18 @@ function renderStars(rating) {
     return html;
 }
 
-// --- Render Product Grid ---
-function renderProducts() {
-    if (!productGrid) return;
-    productGrid.innerHTML = "";
+// --- Render Product Grid (into a target grid; optional pre-filtered list) ---
+function renderProducts(gridEl, list) {
+    gridEl = gridEl || productGrid;
+    if (!gridEl) return;
+    gridEl.innerHTML = "";
 
-    const filtered = activeCategory === "all" 
-        ? PRODUCTS 
-        : PRODUCTS.filter(p => p.category === activeCategory);
+    const filtered = list || (activeCategory === "all"
+        ? PRODUCTS
+        : PRODUCTS.filter(p => p.category === activeCategory));
 
     if (filtered.length === 0) {
-        productGrid.innerHTML = \`<div class="empty-message">No items found in this category.</div>\`;
+        gridEl.innerHTML = \`<div class="empty-message">No items found.</div>\`;
         return;
     }
 
@@ -444,12 +674,12 @@ function renderProducts() {
             addToCart(product, defaultSize);
         });
 
-        // Bind open details modal on card click
+        // Bind open full-screen product view on card click
         card.addEventListener("click", () => {
-            openProductModal(product);
+            pushView("product", product);
         });
 
-        productGrid.appendChild(card);
+        gridEl.appendChild(card);
     });
 }
 
@@ -492,7 +722,6 @@ function addToCart(product, size) {
     .then(() => {
         showToast("Added " + product.name + " to bag!", "fa-bag-shopping");
         syncShopifyCart();
-        cartDrawerOverlay.classList.add("active");
     })
     .catch(err => {
         console.error("Cart add error: ", err);
@@ -525,7 +754,7 @@ function updateCartUI(totalPrice = 0, itemCount = 0) {
     if (cart.length === 0) {
         cartItemsContainer.innerHTML = \`
             <div class="cart-empty-message">
-                <i class="fa-solid fa-wind"></i>
+                <i class="fa-solid fa-bag-shopping"></i>
                 <p>Your bag is empty.</p>
                 <button class="btn btn-secondary close-cart-btn-action" style="font-size:0.85rem; padding:10px 20px;">Browse Collection</button>
             </div>
@@ -533,15 +762,13 @@ function updateCartUI(totalPrice = 0, itemCount = 0) {
 
         const browseBtn = cartItemsContainer.querySelector(".close-cart-btn-action");
         if (browseBtn) {
-            browseBtn.addEventListener("click", () => {
-                cartDrawerOverlay.classList.remove("active");
-            });
+            browseBtn.addEventListener("click", () => switchTab("home"));
         }
 
-        cartBadge.classList.remove("active");
-        cartBadge.innerText = "0";
+        setCartBadges(0);
         cartSubtotalVal.innerText = "$0.00";
         checkoutBtn.disabled = true;
+        if (viewStack[viewStack.length - 1] === "bag") updateAppBar();
         return;
     }
 
@@ -591,14 +818,28 @@ function updateCartUI(totalPrice = 0, itemCount = 0) {
     });
 
     // Update Badge & Totals
-    cartBadge.innerText = itemCount;
-    cartBadge.classList.add("active");
+    setCartBadges(itemCount);
     cartSubtotalVal.innerText = \`\$\${totalPrice.toFixed(2)}\`;
     checkoutBtn.disabled = false;
+    if (viewStack[viewStack.length - 1] === "bag") updateAppBar();
 }
 
-// --- Product Detail Modal ---
-function openProductModal(product) {
+// Sync both the app-bar cart badge and the bottom-tab bag badge.
+function setCartBadges(count) {
+    if (cartBadge) {
+        cartBadge.innerText = count;
+        cartBadge.classList.toggle("active", count > 0);
+        cartBadge.style.display = count > 0 ? "flex" : "none";
+    }
+    if (tabCartBadge) {
+        tabCartBadge.innerText = count;
+        tabCartBadge.classList.toggle("active", count > 0);
+    }
+}
+
+// --- Full-screen Product View ---
+function renderProductView(product) {
+    if (!productViewBody) return;
     if (window.AYSzvothEK) {
         window.AYSzvothEK.track('product_viewed', {
             id: product.id,
@@ -653,7 +894,7 @@ function openProductModal(product) {
     const rankRibbon = product.rankLabel
         ? \`<div class="modal-rank"><i class="fa-solid fa-award"></i> \${product.rankLabel}</div>\` : "";
 
-    modalProductDetails.innerHTML = \`
+    productViewBody.innerHTML = \`
         <div class="modal-img-wrapper glass-card">
             <div class="glass-reflection-shine"></div>
             <img src="\${product.image}" alt="\${product.name}" class="modal-product-img">
@@ -712,8 +953,8 @@ function openProductModal(product) {
     \`;
 
     // Size Guide Toggle
-    const sizeGuideToggle = modalProductDetails.querySelector(".size-guide-toggle");
-    const sizeGuidePanel = modalProductDetails.querySelector(".size-guide-panel");
+    const sizeGuideToggle = productViewBody.querySelector(".size-guide-toggle");
+    const sizeGuidePanel = productViewBody.querySelector(".size-guide-panel");
     if (sizeGuideToggle && sizeGuidePanel) {
         sizeGuideToggle.addEventListener("click", () => {
             sizeGuidePanel.hidden = !sizeGuidePanel.hidden;
@@ -721,7 +962,7 @@ function openProductModal(product) {
     }
 
     // Size Selection Handlers
-    const sizeBtns = modalProductDetails.querySelectorAll(".size-btn");
+    const sizeBtns = productViewBody.querySelectorAll(".size-btn");
     sizeBtns.forEach(btn => {
         btn.addEventListener("click", (e) => {
             sizeBtns.forEach(b => b.classList.remove("active"));
@@ -729,15 +970,12 @@ function openProductModal(product) {
         });
     });
 
-    // Add To Bag in Modal Handler
-    modalProductDetails.querySelector(".modal-add-to-bag-btn").addEventListener("click", () => {
-        const activeSizeBtn = modalProductDetails.querySelector(".size-btn.active");
+    // Add To Bag — stay on the product view so the buyer can keep browsing.
+    productViewBody.querySelector(".modal-add-to-bag-btn").addEventListener("click", () => {
+        const activeSizeBtn = productViewBody.querySelector(".size-btn.active");
         const selectedSize = activeSizeBtn ? activeSizeBtn.getAttribute("data-size") : "M";
         addToCart(product, selectedSize);
-        productModal.classList.remove("active");
     });
-
-    productModal.classList.add("active");
 }
 
 // --- Toast notification ---

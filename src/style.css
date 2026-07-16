@@ -1814,3 +1814,344 @@ body {
     color: var(--text-muted);
 }
 .social-proof-item .sp-num .accent { color: var(--primary); }
+
+/* ==========================================================================
+   APP SHELL — full-screen stacked views, iOS-style slide navigation
+   ========================================================================== */
+
+/* No page scroll: the app owns the viewport, each view scrolls internally. */
+html, body { height: 100%; overflow: hidden; }
+
+.app-shell {
+    position: fixed;
+    inset: 0;
+    height: 100dvh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* Desktop top-nav (hidden on mobile; bottom tab bar is used there instead) */
+.app-bar-nav { display: none; }
+.app-bar-nav .nav-link {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    padding: 8px 4px;
+    transition: color 0.2s ease;
+}
+.app-bar-nav .nav-link:hover,
+.app-bar-nav .nav-link.active { color: var(--text-main); }
+.app-bar-nav .nav-link.active { border-bottom: 2px solid var(--primary); }
+
+/* ---- Top app bar ---- */
+.app-bar {
+    flex: 0 0 auto;
+    height: 56px;
+    padding: 0 8px 0 6px;
+    padding-top: env(safe-area-inset-top);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    z-index: 20;
+}
+.app-bar-back {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--text-main);
+    font-size: 1.1rem;
+    cursor: pointer;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+    flex: 0 0 auto;
+}
+.app-bar-back:hover { background: rgba(255,255,255,0.06); }
+.app-bar-back[hidden] { display: none; }
+.app-bar-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 6px;
+}
+.app-bar-title .logo { font-size: 1.35rem; letter-spacing: 3px; }
+.app-bar-actions {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+/* nav-btn kept from old header; ensure sizing here in case old rules retired */
+.app-bar-actions .nav-btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--text-main);
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+.app-bar-actions .nav-btn:hover { background: rgba(255,255,255,0.06); }
+.app-bar .cart-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    background: var(--primary);
+    color: var(--bg-dark);
+    font-size: 0.62rem;
+    font-weight: 800;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+/* ---- View stack ---- */
+.view-stack {
+    position: relative;
+    flex: 1 1 auto;
+    overflow: hidden;
+}
+.view {
+    position: absolute;
+    inset: 0;
+    transform: translateX(100%);
+    transition: transform 0.42s var(--transition-smooth), filter 0.42s var(--transition-smooth);
+    will-change: transform;
+    /* Opaque base so a pushed view fully covers the one beneath it (no bleed-through). */
+    background: var(--bg-dark);
+}
+/* The root/home view stays translucent so the fixed blob backdrop glows through it. */
+.view[data-view="home"] { background: transparent; }
+.view[data-view="home"] { transform: translateX(0); }  /* root at rest */
+.view.is-hidden { display: none; }
+.view.view-active { transform: translateX(0); }
+.view.view-exit-left { transform: translateX(-30%); filter: brightness(0.6); }
+.view.view-exit-right { transform: translateX(100%); }
+.view.is-animating { pointer-events: none; }
+
+.view-scroll {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 84px;           /* clear the bottom tab bar */
+}
+
+/* ---- Bottom tab bar ---- */
+.tab-bar {
+    flex: 0 0 auto;
+    height: 62px;
+    padding-bottom: env(safe-area-inset-bottom);
+    display: flex;
+    align-items: stretch;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    z-index: 20;
+}
+.tab-item {
+    flex: 1 1 0;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: color 0.2s ease;
+}
+.tab-item i { font-size: 1.15rem; }
+.tab-item.active { color: var(--primary); }
+.tab-icon-wrap { position: relative; display: inline-flex; }
+.tab-cart-badge {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 4px;
+    background: var(--primary);
+    color: var(--bg-dark);
+    font-size: 0.6rem;
+    font-weight: 800;
+    border-radius: 10px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.tab-cart-badge.active { display: flex; }
+
+/* ---- Search bar ---- */
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 16px;
+    padding: 12px 16px;
+    border-radius: 14px;
+}
+.search-bar i { color: var(--text-muted); }
+.search-bar input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    font-family: var(--font-body);
+}
+.search-bar input::placeholder { color: var(--text-muted); }
+
+/* ==========================================================================
+   Re-flow existing sections into the single-column app view
+   ========================================================================== */
+
+.view-home .hero-section {
+    display: block;
+    max-width: none;
+    min-height: auto;
+    padding: 20px 16px 8px;
+    grid-template-columns: none;
+}
+.view-home .hero-content { align-items: flex-start; }
+.view-home .hero-title { font-size: 2.4rem; }
+.view-home .hero-image-wrapper { margin-top: 24px; }
+.view-home .hero-glass-display { max-height: 360px; }
+.view-home .social-proof-bar {
+    gap: 18px 24px;
+    padding: 18px 16px;
+    max-width: none;
+}
+.view-home .features-section,
+.view-home .catalog-section,
+.view-home .newsletter-section {
+    max-width: none;
+    padding: 32px 16px;
+}
+.view-home .features-grid { grid-template-columns: 1fr; gap: 14px; }
+.view-home .product-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+.view-home .main-footer { max-width: none; border-radius: 0; }
+.view-home .footer-grid { grid-template-columns: 1fr 1fr; }
+
+/* Product view reuses the modal content classes in a single column */
+.view-product .view-scroll { padding: 0 0 84px; overflow-x: hidden; }
+.view-product .modal-img-wrapper { border-radius: 0; aspect-ratio: 1 / 1; width: 100%; height: auto; max-height: 70vh; }
+.view-product .modal-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+.view-product .modal-product-img { max-width: 100%; }
+.view-product .modal-details { padding: 20px 16px; max-height: none; overflow: visible; }
+
+/* Search grid */
+.view-search .product-grid { grid-template-columns: 1fr 1fr; gap: 14px; padding: 0 16px; }
+
+/* Bag view spacing */
+.view-bag .view-scroll { padding: 8px 0 84px; }
+.view-bag .cart-items { padding: 8px 16px; }
+.view-bag .cart-footer { padding: 16px; }
+
+/* ==========================================================================
+   Responsive: desktop becomes a full-width multi-column web app
+   ========================================================================== */
+@media (min-width: 768px) {
+    .view-home .product-grid,
+    .view-search .product-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+    .view-home .features-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 1024px) {
+    /* Chrome swap: hide bottom tabs, show top nav */
+    .tab-bar { display: none; }
+    .app-bar-nav { display: flex; gap: 28px; margin-left: 28px; }
+    .app-bar { height: 68px; padding: 0 40px; }
+    .app-bar-title { flex: 0 0 auto; padding-right: 8px; }
+    /* On desktop the app-bar title stays the brand; product view shows its own H1 */
+    .app-bar-actions { margin-left: auto; gap: 8px; }
+
+    .view-scroll { padding-bottom: 0; }
+
+    /* Center home content in a wide container, restore original multi-column layouts */
+    .view-home .hero-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 60px 40px 40px;
+        align-items: center;
+        gap: 48px;
+    }
+    .view-home .hero-title { font-size: 3.4rem; }
+    .view-home .hero-glass-display { max-height: 520px; }
+    .view-home .social-proof-bar { max-width: 1400px; margin: 0 auto; padding: 22px 40px; }
+    .view-home .features-section,
+    .view-home .catalog-section,
+    .view-home .newsletter-section { max-width: 1400px; margin: 0 auto; padding: 48px 40px; }
+    .view-home .product-grid,
+    .view-search .product-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; }
+    .view-home .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr; }
+
+    /* Product view: side-by-side image + details, centered.
+       #product-view-body IS the absolute .view-scroll (inset:0), so it can't be
+       margin-centered — instead lay out a centered grid track pair inside it. */
+    .view-product .view-scroll { padding: 40px 0; overflow-x: hidden; }
+    .view-product #product-view-body {
+        display: grid;
+        grid-template-columns: minmax(0, 520px) minmax(0, 520px);
+        justify-content: center;
+        gap: 48px;
+        padding: 40px;
+        align-items: start;
+    }
+    .view-product .modal-img-wrapper {
+        position: sticky;
+        top: 24px;
+        aspect-ratio: 1 / 1;
+        max-height: 520px;
+        width: 100%;
+    }
+    .view-product .modal-details { padding: 8px 0; max-width: 520px; }
+
+    /* Bag + Search readable centered columns */
+    .view-bag .view-scroll > * { max-width: 720px; margin: 0 auto; }
+    .view-search .search-bar { max-width: 900px; margin: 24px auto; }
+    .view-search .filter-tabs { max-width: 900px; margin: 0 auto 8px; }
+    .view-search .product-grid { max-width: 1400px; margin: 0 auto; padding: 16px 40px; }
+}

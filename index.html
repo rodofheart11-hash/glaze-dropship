@@ -39,35 +39,38 @@
         <div class="blob blob-indigo"></div>
     </div>
 
-    <!-- Navigation Header -->
-    <header class="main-header glass-card">
-        <div class="header-container">
-            <a href="#" class="logo">
-                <span class="logo-accent">GLA</span>ZE
-            </a>
-            <nav class="nav-menu">
-                <a href="#hero" class="nav-link active">Home</a>
-                <a href="#catalog" class="nav-link">Shop</a>
-                <a href="#about" class="nav-link">About</a>
-                <a href="#newsletter" class="nav-link">Join</a>
+    <!-- ==================== APP SHELL ==================== -->
+    <div class="app-shell" id="app-shell">
+
+        <!-- Top App Bar -->
+        <header class="app-bar glass-card" id="app-bar">
+            <button class="app-bar-back" id="app-bar-back" aria-label="Back" hidden>
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <div class="app-bar-title" id="app-bar-title">
+                <span class="logo"><span class="logo-accent">GLA</span>ZE</span>
+            </div>
+            <nav class="app-bar-nav" id="app-bar-nav">
+                <button class="nav-link active" data-tab="home">Home</button>
+                <button class="nav-link" data-tab="search">Shop</button>
             </nav>
-            <div class="nav-actions">
+            <div class="app-bar-actions">
                 <button class="nav-btn" id="search-btn" aria-label="Search">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
-                <button class="nav-btn" id="wishlist-btn" aria-label="Wishlist">
-                    <i class="fa-regular fa-heart"></i>
-                </button>
-                <button class="nav-btn cart-toggle-btn" id="cart-btn" aria-label="Shopping Cart">
+                <button class="nav-btn cart-toggle-btn" id="cart-btn" aria-label="Shopping Bag">
                     <i class="fa-solid fa-bag-shopping"></i>
                     <span class="cart-badge">0</span>
                 </button>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- Main Container -->
-    <main>
+        <!-- View Stack -->
+        <main class="view-stack" id="view-stack">
+
+        <!-- ==================== HOME VIEW ==================== -->
+        <section class="view view-home" id="view-home" data-view="home">
+          <div class="view-scroll">
         <!-- Hero Section -->
         <section id="hero" class="hero-section">
             <div class="hero-content">
@@ -197,7 +200,6 @@
                 </div>
             </div>
         </section>
-    </main>
 
     <!-- Footer -->
     <footer class="main-footer glass-card">
@@ -254,25 +256,27 @@
             <p>&copy; 2026 GLAZE. All rights reserved.</p>
         </div>
     </footer>
+          </div><!-- /.view-scroll -->
+        </section><!-- /#view-home -->
 
-    <!-- Shopping Cart Slide-out Drawer -->
-    <div class="cart-drawer-overlay" id="cart-drawer-overlay">
-        <div class="cart-drawer glass-card">
-            <div class="cart-header">
-                <h3>Shopping Bag (<span id="cart-count">0</span>)</h3>
-                <button class="close-cart-btn" id="close-cart-btn" aria-label="Close Cart">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
+        <!-- ==================== PRODUCT VIEW ==================== -->
+        <section class="view view-product is-hidden" id="view-product" data-view="product" aria-hidden="true">
+          <div class="view-scroll" id="product-view-body">
+            <!-- Injected by renderProductView() -->
+          </div>
+        </section>
+
+        <!-- ==================== BAG VIEW ==================== -->
+        <section class="view view-bag is-hidden" id="view-bag" data-view="bag" aria-hidden="true">
+          <div class="view-scroll">
             <div class="cart-items" id="cart-items-container">
-                <!-- Injected via JavaScript -->
                 <div class="cart-empty-message">
-                    <i class="fa-solid fa-wind"></i>
+                    <i class="fa-solid fa-bag-shopping"></i>
                     <p>Your bag is empty.</p>
-                    <a href="#catalog" class="btn btn-primary close-cart-btn-action">Browse Collection</a>
+                    <button class="btn btn-primary close-cart-btn-action">Browse Collection</button>
                 </div>
             </div>
-            <div class="cart-footer">
+            <div class="cart-footer" id="bag-footer">
                 <div class="cart-subtotal">
                     <span>Subtotal</span>
                     <span id="cart-subtotal-value">$0.00</span>
@@ -287,20 +291,52 @@
                     <span><i class="fa-solid fa-rotate-left"></i> 30-day returns</span>
                 </div>
             </div>
-        </div>
-    </div>
+          </div>
+        </section>
 
-    <!-- Product Detail Modal -->
-    <div class="modal-overlay" id="product-modal">
-        <div class="modal-content glass-card">
-            <button class="close-modal-btn" id="close-modal-btn" aria-label="Close Modal">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div class="modal-body-grid" id="modal-product-details">
-                <!-- Injected via JavaScript -->
+        <!-- ==================== SEARCH VIEW ==================== -->
+        <section class="view view-search is-hidden" id="view-search" data-view="search" aria-hidden="true">
+          <div class="view-scroll">
+            <div class="search-bar glass-card">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="search-input" placeholder="Search products…" aria-label="Search products">
             </div>
-        </div>
-    </div>
+            <div class="filter-tabs glass-card" id="search-filter-tabs">
+                <button class="filter-tab active" data-category="all">Bestsellers</button>
+                <button class="filter-tab" data-category="dresses">Dresses</button>
+                <button class="filter-tab" data-category="activewear">Activewear</button>
+                <button class="filter-tab" data-category="shirts">Shirts</button>
+                <button class="filter-tab" data-category="pants">Pants</button>
+                <button class="filter-tab" data-category="tops">Tops</button>
+            </div>
+            <div class="product-grid" id="search-product-grid">
+                <!-- Injected by renderSearch() -->
+            </div>
+          </div>
+        </section>
+
+        </main><!-- /.view-stack -->
+
+        <!-- Bottom Tab Bar -->
+        <nav class="tab-bar glass-card" id="tab-bar">
+            <button class="tab-item active" data-tab="home" aria-label="Home">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </button>
+            <button class="tab-item" data-tab="search" aria-label="Search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>Search</span>
+            </button>
+            <button class="tab-item" data-tab="bag" aria-label="Bag">
+                <span class="tab-icon-wrap">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span class="tab-cart-badge">0</span>
+                </span>
+                <span>Bag</span>
+            </button>
+        </nav>
+
+    </div><!-- /.app-shell -->
 
     <!-- Checkout Success Notification/Modal -->
     <div class="modal-overlay" id="checkout-success-modal">
