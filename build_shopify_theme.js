@@ -316,7 +316,7 @@ if (PRODUCTS.length === 0) {
       price: 35.98,
       rating: 4.5,
       reviewsCount: 2745,
-      image: "https://files.catbox.moe/br8636.jpg",
+      image: "https://files.catbox.moe/ivmew0.jpg",
       tag: "Imported Palazzo",
       description: "Flowy palazzo drawstring pants woven with light-transmitting silica micro-threads. Behaves like fluid crystal while keeping you completely cool.",
       specs: {
