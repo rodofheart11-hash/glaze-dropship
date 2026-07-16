@@ -55,6 +55,12 @@ function setupEventListeners() {
             e.target.classList.add("active");
             activeCategory = e.target.getAttribute("data-category");
             renderProducts();
+            if (window.AYSzvothEK) {
+                window.AYSzvothEK.track('collection_viewed', { category: activeCategory });
+            }
+            if (window.Shopify && window.Shopify.analytics) {
+                window.Shopify.analytics.publish('custom_collection_viewed', { category: activeCategory });
+            }
         });
     });
 
@@ -63,6 +69,9 @@ function setupEventListeners() {
         cartDrawerOverlay.classList.add("active");
         if (window.AYSzvothEK) {
             window.AYSzvothEK.track('cart_viewed');
+        }
+        if (window.Shopify && window.Shopify.analytics) {
+            window.Shopify.analytics.publish('custom_cart_viewed', {});
         }
     });
 
@@ -216,6 +225,13 @@ function renderProducts() {
 function openModal(product) {
     if (window.AYSzvothEK) {
         window.AYSzvothEK.track('product_viewed', {
+            id: product.id,
+            name: product.name,
+            price: product.price
+        });
+    }
+    if (window.Shopify && window.Shopify.analytics) {
+        window.Shopify.analytics.publish('custom_product_viewed', {
             id: product.id,
             name: product.name,
             price: product.price

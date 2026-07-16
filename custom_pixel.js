@@ -82,3 +82,8 @@ analytics.subscribe("page_viewed", (event) => trackHeartbeat(event, "page_viewed
 analytics.subscribe("product_viewed", (event) => trackHeartbeat(event, "product_viewed"));
 analytics.subscribe("collection_viewed", (event) => trackHeartbeat(event, "collection_viewed"));
 analytics.subscribe("cart_viewed", (event) => trackHeartbeat(event, "cart_viewed"));
+
+// Custom event fallback handlers for AJAX single-page storefront actions
+analytics.subscribe("custom_cart_viewed", (event) => trackHeartbeat(event, "cart_viewed"));
+analytics.subscribe("custom_product_viewed", (event) => trackHeartbeat(event, "product_viewed"));
+analytics.subscribe("custom_collection_viewed", (event) => trackHeartbeat(event, "collection_viewed"));
