@@ -354,7 +354,7 @@ if (PRODUCTS.length === 0) {
       price: 50.00,
       rating: 4.6,
       reviewsCount: 25950,
-      image: "https://files.catbox.moe/edsndc.jpg",
+      image: "https://files.catbox.moe/5whik4.jpg",
       tag: "Performance Tech",
       description: "Futuristic short-sleeve athletic active tee. Woven with translucent, quick-drying silica threads that reflect heat away.",
       specs: {
