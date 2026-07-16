@@ -1,5 +1,5 @@
 {% comment %}
-  GLAZE® Standalone Product Page Template
+  GLAZE Standalone Product Page Template
 {% endcomment %}
 
 {{ 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css' | stylesheet_tag }}
@@ -36,14 +36,6 @@
   .product-page-container {
       margin-top: 10px;
   }
-  .nanotech-card {
-      transition: var(--transition-smooth) !important;
-  }
-  .nanotech-card:hover {
-      border-color: var(--primary) !important;
-      transform: translateY(-5px);
-      box-shadow: 0 10px 30px rgba(165, 243, 252, 0.15);
-  }
 </style>
 
 <div class="glaze-theme-wrapper">
@@ -57,7 +49,7 @@
   <!-- Header -->
   <header class="main-header" style="background: rgba(7, 8, 13, 0.75); top: 10px; height: 65px;">
     <a href="/" class="logo">
-      <span class="logo-accent">GLA</span>ZE<span class="logo-tm">®</span>
+      <span class="logo-accent">GLA</span>ZE
     </a>
     <button class="cart-btn" id="cart-btn" aria-label="Open Cart">
       <i class="fa-solid fa-bag-shopping"></i>
@@ -120,16 +112,6 @@
             <i class="fa-solid fa-bag-shopping"></i>
           </button>
         </div>
-      </div>
-    </div>
-
-    <!-- GLAZE® Nanotech Matrix Showcase -->
-    <div class="nanotech-matrix-container glass-card" id="nanotech-matrix-container" style="margin-top: 30px; padding: 40px; border-radius: 24px; display: none;">
-      <h3 style="font-family: var(--font-heading); font-size: 1.3rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px; color: var(--primary);">
-        <i class="fa-solid fa-microchip"></i> GLAZE® Nanotech Matrix
-      </h3>
-      <div class="nanotech-grid" id="nanotech-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;">
-        <!-- Dynamically injected matching specs -->
       </div>
     </div>
   </main>
@@ -221,57 +203,6 @@ if (currentProduct.description.includes('Specifications')) {
         const parts = rawHtml.split(/<h[23]>/i);
         descContainer.innerHTML = parts[0].trim();
       }
-    }
-    }
-    
-    // Dynamically generate matching specifications cards
-    try {
-      const features = [];
-      const searchContent = (currentProduct.name + " " + currentProduct.description + " " + JSON.stringify(currentProduct.specs)).toLowerCase();
-      
-      if (searchContent.includes("oleophobic") || searchContent.includes("grease") || searchContent.includes("fingerprint")) {
-        features.push({
-          icon: "fa-fingerprint",
-          title: "Oleophobic Fiber",
-          desc: "Repels oil, grease, dirt, and fingerprints. Maintain a clean, pristine look without washing under heavy wear."
-        });
-      }
-      
-      if (searchContent.includes("hydrophobic") || searchContent.includes("water") || searchContent.includes("rain") || searchContent.includes("splash") || searchContent.includes("sundress")) {
-        features.push({
-          icon: "fa-droplet",
-          title: "Hydrophobic Shell",
-          desc: "Advanced silica bond forces water to slide off instantly. Keeps you dry and lightweight in any torrential rain."
-        });
-      }
-      
-      if (searchContent.includes("prism") || searchContent.includes("color-shift") || searchContent.includes("color-shifting") || searchContent.includes("iridescent") || searchContent.includes("thermochromic")) {
-        features.push({
-          icon: "fa-atom",
-          title: "Prism Color Shift",
-          desc: "Interactive glass micro-spheres reflect light in a stunning spectrum, shifting color with environment and temperature."
-        });
-      }
-      
-      const matrixContainer = document.getElementById("nanotech-matrix-container");
-      const matrixGrid = document.getElementById("nanotech-grid");
-      
-      if (features.length > 0 && matrixContainer && matrixGrid) {
-        let featuresHTML = "";
-        features.forEach(f => {
-          featuresHTML += `
-            <div class="nanotech-card glass-card" style="padding: 25px; border: 1px solid var(--border-glass);">
-              <div style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"><i class="fa-solid ${f.icon}"></i></div>
-              <h4 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600; margin-bottom: 10px;">${f.title}</h4>
-              <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">${f.desc}</p>
-            </div>
-          `;
-        });
-        matrixGrid.innerHTML = featuresHTML;
-        matrixContainer.style.display = "block";
-      }
-    } catch (e) {
-      console.error("Failed to generate dynamic specifications cards:", e);
     }
   } catch (e) {
     console.error("Failed to parse specifications: ", e);
@@ -405,7 +336,7 @@ function updateCartUI(totalPrice = 0, itemCount = 0) {
             <div class="cart-empty-message">
                 <i class="fa-solid fa-wind"></i>
                 <p>Your bag is empty.</p>
-                <button class="btn btn-secondary close-cart-btn-action" style="font-size:0.85rem; padding:10px 20px;">Browse Runway</button>
+                <button class="btn btn-secondary close-cart-btn-action" style="font-size:0.85rem; padding:10px 20px;">Browse Collection</button>
             </div>
         `;
 

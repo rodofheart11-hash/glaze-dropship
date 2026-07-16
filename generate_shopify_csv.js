@@ -1,5 +1,5 @@
 /**
- * GLAZE® Shopify CSV Exporter
+ * GLAZE Shopify CSV Exporter
  * 
  * Generates a standard, multi-variant Shopify Product Import CSV file from src/products.js.
  * Automatically expands sizes into Variant options so Shopify creates size dropdowns.

@@ -1,12 +1,12 @@
 {% comment %}
-  GLAZE® Standalone Product Page Template
+  GLAZE Standalone Product Page Template
 {% endcomment %}
 
 {{ 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css' | stylesheet_tag }}
 
 <style>
   /* ==========================================================================
-   GLAZE® Liquid Glass Clothing - Architectural Fashion Styling System
+   GLAZE Clothing - Architectural Fashion Styling System
    ========================================================================== */
 
 /* --- Custom Properties & Theme Setup --- */
@@ -1546,306 +1546,6 @@ body {
     opacity: 1;
 }
 
-/* ==========================================================================
-   GLAZE® Technology Lab Section Styles
-   ========================================================================== */
-.tech-lab-section {
-    padding: 100px 80px;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.lab-grid {
-    display: grid;
-    grid-template-columns: 350px 1fr;
-    gap: 30px;
-    margin-top: 40px;
-}
-
-.lab-sidebar {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    background: rgba(10, 11, 14, 0.5);
-    border: 1px solid var(--border-glass);
-}
-
-.lab-tab {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 20px;
-    cursor: pointer;
-    background: rgba(255, 255, 255, 0.01);
-    border: 1px solid transparent;
-    transition: var(--transition-smooth);
-}
-
-.lab-tab:hover {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.05);
-}
-
-.lab-tab.active {
-    background: rgba(165, 243, 252, 0.03);
-    border-color: rgba(165, 243, 252, 0.2);
-    box-shadow: inset 0 0 15px rgba(165, 243, 252, 0.05);
-}
-
-.lab-tab-icon {
-    font-size: 1.5rem;
-    color: var(--text-muted);
-    transition: var(--transition-smooth);
-}
-
-.lab-tab.active .lab-tab-icon {
-    color: var(--primary);
-    text-shadow: 0 0 10px rgba(165, 243, 252, 0.5);
-}
-
-.lab-tab-info h3 {
-    font-family: var(--font-heading);
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 4px;
-    color: var(--text-main);
-}
-
-.lab-tab-info p {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-}
-
-.lab-viewport {
-    background: rgba(6, 7, 9, 0.8);
-    border: 1px solid var(--border-glass);
-    position: relative;
-    overflow: hidden;
-    min-height: 450px;
-    display: flex;
-    flex-direction: column;
-}
-
-.lab-panel {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    inset: 0;
-    padding: 40px;
-}
-
-.lab-panel.active {
-    display: flex;
-    position: relative;
-}
-
-/* Tab 1: Prism Color Shift Simulator */
-#panel-prism {
-    justify-content: space-between;
-}
-
-.prism-visualizer {
-    flex-grow: 1;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    min-height: 250px;
-}
-
-.prism-orb-glow {
-    position: absolute;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
-    opacity: 0.6;
-    filter: var(--blur-heavy);
-    transition: background 0.3s ease;
-}
-
-.prism-fabric-mock {
-    font-family: var(--font-heading);
-    font-size: 4rem;
-    font-weight: 800;
-    letter-spacing: 5px;
-    position: relative;
-    z-index: 2;
-    background: var(--gradient-liquid);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    transition: background 0.3s ease;
-    text-shadow: 0 0 40px rgba(255, 255, 255, 0.05);
-}
-
-.prism-controls {
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-.slider-header {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    font-weight: 500;
-    margin-bottom: 10px;
-    color: var(--text-muted);
-}
-
-#temp-display {
-    color: var(--primary);
-    font-weight: 600;
-}
-
-.temp-slider {
-    width: 100%;
-    -webkit-appearance: none;
-    height: 6px;
-    border-radius: 3px;
-    background: rgba(255, 255, 255, 0.1);
-    outline: none;
-    margin-bottom: 8px;
-    border: none;
-}
-
-.temp-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--primary);
-    cursor: pointer;
-    box-shadow: 0 0 10px var(--primary);
-    transition: var(--transition-smooth);
-}
-
-.temp-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
-}
-
-.slider-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-}
-
-/* Tab 2: Hydrophobic Droplets Physics Simulator */
-#panel-hydrophobic {
-    padding: 0;
-}
-
-#hydro-canvas {
-    width: 100%;
-    height: 100%;
-    min-height: 400px;
-    cursor: crosshair;
-    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
-}
-
-.canvas-hint {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    pointer-events: none;
-    background: rgba(10, 11, 14, 0.8);
-    padding: 6px 14px;
-    border: 1px solid var(--border-glass);
-}
-
-/* Tab 3: Oleophobic Touch Cleaner Demonstration */
-.fingerprint-glass {
-    width: 320px;
-    height: 320px;
-    background: rgba(255, 255, 255, 0.01);
-    border: 1px solid var(--border-glass);
-    border-radius: 20px;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02);
-}
-
-.oil-stains-container {
-    position: absolute;
-    inset: 0;
-}
-
-.oil-smudge {
-    position: absolute;
-    width: 60px;
-    height: 60px;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
-    border-radius: 50%;
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-    mix-blend-mode: overlay;
-    animation: smudgeFadeIn 0.3s ease forwards;
-}
-
-.oil-fingerprint {
-    position: absolute;
-    font-size: 2.2rem;
-    color: rgba(255, 255, 255, 0.08);
-    pointer-events: none;
-    transform: translate(-50%, -50%) rotate(15deg);
-    mix-blend-mode: overlay;
-    filter: blur(0.5px);
-    user-select: none;
-    animation: smudgeFadeIn 0.3s ease forwards;
-}
-
-@keyframes smudgeFadeIn {
-    from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-}
-
-.scanner-sweep {
-    position: absolute;
-    top: -10px;
-    left: 0;
-    width: 100%;
-    height: 6px;
-    background: linear-gradient(180deg, var(--primary) 0%, transparent 100%);
-    opacity: 0;
-    pointer-events: none;
-    box-shadow: 0 0 15px var(--primary);
-}
-
-.scanner-sweep.active {
-    animation: scanAnimation 1.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-}
-
-@keyframes scanAnimation {
-    0% { top: -10px; opacity: 0.8; }
-    50% { top: 320px; opacity: 0.8; }
-    100% { top: 320px; opacity: 0; }
-}
-
-/* Responsiveness for Technology Lab */
-@media (max-width: 1024px) {
-    .tech-lab-section {
-        padding: 60px 20px;
-    }
-    
-    .lab-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-
-  
   /* Additional layout styling for product page centering */
   .product-page-main {
       max-width: 1200px;
@@ -1875,14 +1575,6 @@ body {
   .product-page-container {
       margin-top: 10px;
   }
-  .nanotech-card {
-      transition: var(--transition-smooth) !important;
-  }
-  .nanotech-card:hover {
-      border-color: var(--primary) !important;
-      transform: translateY(-5px);
-      box-shadow: 0 10px 30px rgba(165, 243, 252, 0.15);
-  }
 </style>
 
 <div class="glaze-theme-wrapper">
@@ -1896,7 +1588,7 @@ body {
   <!-- Header -->
   <header class="main-header" style="background: rgba(7, 8, 13, 0.75); top: 10px; height: 65px;">
     <a href="/" class="logo">
-      <span class="logo-accent">GLA</span>ZE<span class="logo-tm">®</span>
+      <span class="logo-accent">GLA</span>ZE
     </a>
     <button class="cart-btn" id="cart-btn" aria-label="Open Cart">
       <i class="fa-solid fa-bag-shopping"></i>
@@ -1959,16 +1651,6 @@ body {
             <i class="fa-solid fa-bag-shopping"></i>
           </button>
         </div>
-      </div>
-    </div>
-
-    <!-- GLAZE® Nanotech Matrix Showcase -->
-    <div class="nanotech-matrix-container glass-card" id="nanotech-matrix-container" style="margin-top: 30px; padding: 40px; border-radius: 24px; display: none;">
-      <h3 style="font-family: var(--font-heading); font-size: 1.3rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px; color: var(--primary);">
-        <i class="fa-solid fa-microchip"></i> GLAZE® Nanotech Matrix
-      </h3>
-      <div class="nanotech-grid" id="nanotech-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;">
-        <!-- Dynamically injected matching specs -->
       </div>
     </div>
   </main>
@@ -2060,57 +1742,6 @@ if (currentProduct.description.includes('Specifications')) {
         const parts = rawHtml.split(/<h[23]>/i);
         descContainer.innerHTML = parts[0].trim();
       }
-    }
-    }
-    
-    // Dynamically generate matching specifications cards
-    try {
-      const features = [];
-      const searchContent = (currentProduct.name + " " + currentProduct.description + " " + JSON.stringify(currentProduct.specs)).toLowerCase();
-      
-      if (searchContent.includes("oleophobic") || searchContent.includes("grease") || searchContent.includes("fingerprint")) {
-        features.push({
-          icon: "fa-fingerprint",
-          title: "Oleophobic Fiber",
-          desc: "Repels oil, grease, dirt, and fingerprints. Maintain a clean, pristine look without washing under heavy wear."
-        });
-      }
-      
-      if (searchContent.includes("hydrophobic") || searchContent.includes("water") || searchContent.includes("rain") || searchContent.includes("splash") || searchContent.includes("sundress")) {
-        features.push({
-          icon: "fa-droplet",
-          title: "Hydrophobic Shell",
-          desc: "Advanced silica bond forces water to slide off instantly. Keeps you dry and lightweight in any torrential rain."
-        });
-      }
-      
-      if (searchContent.includes("prism") || searchContent.includes("color-shift") || searchContent.includes("color-shifting") || searchContent.includes("iridescent") || searchContent.includes("thermochromic")) {
-        features.push({
-          icon: "fa-atom",
-          title: "Prism Color Shift",
-          desc: "Interactive glass micro-spheres reflect light in a stunning spectrum, shifting color with environment and temperature."
-        });
-      }
-      
-      const matrixContainer = document.getElementById("nanotech-matrix-container");
-      const matrixGrid = document.getElementById("nanotech-grid");
-      
-      if (features.length > 0 && matrixContainer && matrixGrid) {
-        let featuresHTML = "";
-        features.forEach(f => {
-          featuresHTML += `
-            <div class="nanotech-card glass-card" style="padding: 25px; border: 1px solid var(--border-glass);">
-              <div style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"><i class="fa-solid ${f.icon}"></i></div>
-              <h4 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600; margin-bottom: 10px;">${f.title}</h4>
-              <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">${f.desc}</p>
-            </div>
-          `;
-        });
-        matrixGrid.innerHTML = featuresHTML;
-        matrixContainer.style.display = "block";
-      }
-    } catch (e) {
-      console.error("Failed to generate dynamic specifications cards:", e);
     }
   } catch (e) {
     console.error("Failed to parse specifications: ", e);
@@ -2244,7 +1875,7 @@ function updateCartUI(totalPrice = 0, itemCount = 0) {
             <div class="cart-empty-message">
                 <i class="fa-solid fa-wind"></i>
                 <p>Your bag is empty.</p>
-                <button class="btn btn-secondary close-cart-btn-action" style="font-size:0.85rem; padding:10px 20px;">Browse Runway</button>
+                <button class="btn btn-secondary close-cart-btn-action" style="font-size:0.85rem; padding:10px 20px;">Browse Collection</button>
             </div>
         `;
 

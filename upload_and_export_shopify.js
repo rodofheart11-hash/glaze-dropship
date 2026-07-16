@@ -1,5 +1,5 @@
 /**
- * GLAZE® Shopify Public Exporter (via Tmpfiles.org Direct Links)
+ * GLAZE Shopify Public Exporter (via Tmpfiles.org Direct Links)
  * 
  * Automatically uploads local product images to tmpfiles.org, retrieves direct,
  * restriction-free download links, and compiles a shopify_import.csv sheet.

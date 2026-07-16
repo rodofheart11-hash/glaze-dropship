@@ -7,7 +7,7 @@ import requests
 ASINS = [
     "B0FT4QF9D5",  # Flow-Midi Dress
     "B0CSDK2C3P",  # UV-Shield Longsleeve
-    "B0BV241H3F",  # Prism-Linen Shirt
+    "B0BV241H3F",  # Linen-blend button-down
     "B09P3RHNSY"   # Aero-Active Shorts
 ]
 
