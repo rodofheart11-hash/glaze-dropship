@@ -962,6 +962,7 @@ const liquidSectionCode = `{% comment %}
 `;
 
 writeFileSync('./temp-shopify-theme/sections/glaze-storefront.liquid', liquidSectionCode, 'utf-8');
+writeFileSync('./glaze-storefront.liquid', liquidSectionCode, 'utf-8');
 
 // Write theme.liquid boilerplate
 const themeLiquid = `<!DOCTYPE html>
