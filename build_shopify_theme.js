@@ -359,6 +359,9 @@ function initGlaze() {
     renderProducts();
     setupEventListeners();
     syncShopifyCart();
+    if (window.AYSzvothEK) {
+        window.AYSzvothEK.track('PageView');
+    }
 }
 
 // Run immediately as elements are already loaded in the DOM
@@ -386,6 +389,9 @@ function setupEventListeners() {
     // Cart Drawer Toggle
     cartBtn.addEventListener("click", () => {
         cartDrawerOverlay.classList.add("active");
+        if (window.AYSzvothEK) {
+            window.AYSzvothEK.track('ViewCart');
+        }
     });
 
     closeCartBtn.addEventListener("click", () => {
@@ -411,6 +417,9 @@ function setupEventListeners() {
 
     // Checkout Action -> Redirect directly to Shopify Checkout!
     checkoutBtn.addEventListener("click", () => {
+        if (window.AYSzvothEK) {
+            window.AYSzvothEK.track('InitiateCheckout');
+        }
         window.location.href = '/checkout';
     });
 
@@ -520,6 +529,14 @@ function renderProducts() {
 
 // --- Add Item to Shopify Cart (AJAX) ---
 function addToCart(product, size) {
+    if (window.AYSzvothEK) {
+        window.AYSzvothEK.track('AddToCart', {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            size: size
+        });
+    }
     const variantId = product.variantsMap ? product.variantsMap[size] : null;
     
     // Detect if this is a mock product (non-Shopify numerical ID)
@@ -682,6 +699,13 @@ function updateCartUI(totalPrice = 0, itemCount = 0) {
 
 // --- Product Detail Modal ---
 function openProductModal(product) {
+    if (window.AYSzvothEK) {
+        window.AYSzvothEK.track('ViewContent', {
+            id: product.id,
+            name: product.name,
+            price: product.price
+        });
+    }
     activeModalProduct = product;
     
     // Format specifications

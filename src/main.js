@@ -31,17 +31,19 @@ const toastContainer = document.getElementById("toast-container");
 const newsletterForm = document.getElementById("newsletter-form");
 
 // --- Initialization ---
-document.addEventListener("DOMContentLoaded", () => {
+function init() {
+    if (window.glazeInitialized) return;
+    window.glazeInitialized = true;
     renderProducts();
     setupEventListeners();
     updateCartUI();
-});
-
-// Polyfill in case DOMContentLoaded has already fired in Vite dev
+    if (window.AYSzvothEK) {
+        window.AYSzvothEK.track('PageView');
+    }
+}
+document.addEventListener("DOMContentLoaded", init);
 if (document.readyState === "interactive" || document.readyState === "complete") {
-    renderProducts();
-    setupEventListeners();
-    updateCartUI();
+    init();
 }
 
 // --- Event Listeners Setup ---
@@ -59,6 +61,9 @@ function setupEventListeners() {
     // Cart Drawer Toggle
     cartBtn.addEventListener("click", () => {
         cartDrawerOverlay.classList.add("active");
+        if (window.AYSzvothEK) {
+            window.AYSzvothEK.track('ViewCart');
+        }
     });
 
     closeCartBtn.addEventListener("click", () => {
@@ -84,6 +89,9 @@ function setupEventListeners() {
 
     // Checkout Action
     checkoutBtn.addEventListener("click", () => {
+        if (window.AYSzvothEK) {
+            window.AYSzvothEK.track('InitiateCheckout');
+        }
         window.location.href = '/checkout';
     });
 
@@ -206,6 +214,13 @@ function renderProducts() {
 
 // --- Open Product Detail Modal ---
 function openModal(product) {
+    if (window.AYSzvothEK) {
+        window.AYSzvothEK.track('ViewContent', {
+            id: product.id,
+            name: product.name,
+            price: product.price
+        });
+    }
     activeModalProduct = product;
     
     // Generate Sizing Buttons HTML
@@ -281,6 +296,14 @@ function openModal(product) {
 
 // --- Cart Logic ---
 function addToCart(product, size) {
+    if (window.AYSzvothEK) {
+        window.AYSzvothEK.track('AddToCart', {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            size: size
+        });
+    }
     const existingIndex = cart.findIndex(item => item.product.id === product.id && item.size === size);
 
     if (existingIndex > -1) {
