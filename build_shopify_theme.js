@@ -65,12 +65,8 @@ let PRODUCTS = [
     reviewsCount: 124,
     image: "{% if product.featured_image %}{{ product.featured_image | image_url: width: 800 }}{% else %}https://files.catbox.moe/hgn95m.jpg{% endif %}",
     tag: "{% if product.available %}Bestseller{% else %}Sold Out{% endif %}",
-    description: "{{ product.description | strip_html | escape | strip_newlines }}",
-    specs: {
-      material: "Shopify Managed Fabric",
-      care: "Standard Care instructions",
-      fit: "Tailored fit"
-    },
+    description: "{{ product.description | escape | strip_newlines }}",
+    specs: {},
     sizes: [
       {% for variant in product.variants %}
         "{{ variant.title | escape }}"{% unless forloop.last %},{% endunless %}
@@ -84,6 +80,40 @@ let PRODUCTS = [
   }{% unless forloop.last %},{% endunless %}
   {% endfor %}
 ];
+
+// Post-process PRODUCTS to extract specs from description HTML and clean up description text
+PRODUCTS.forEach(product => {
+  if (product.description.includes('Specifications')) {
+    try {
+      const txt = document.createElement("textarea");
+      txt.innerHTML = product.description;
+      const rawHtml = txt.value;
+      
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(rawHtml, 'text/html');
+      
+      const liElements = doc.querySelectorAll('li');
+      liElements.forEach(li => {
+        const strong = li.querySelector('strong');
+        if (strong) {
+          const key = strong.textContent.replace(':', '').trim();
+          const value = li.textContent.replace(strong.textContent, '').trim();
+          product.specs[key] = value;
+        }
+      });
+      
+      const pElements = doc.querySelectorAll('p');
+      if (pElements.length > 0) {
+        product.description = Array.from(pElements).map(p => p.outerHTML).join('');
+      } else {
+        const parts = rawHtml.split(/<h[23]>/i);
+        product.description = parts[0].trim();
+      }
+    } catch (e) {
+      console.error("Failed to parse product specifications:", e);
+    }
+  }
+});
 
 // Fallback to static catalog if Shopify returns 0 products (collection not configured yet)
 if (PRODUCTS.length === 0) {

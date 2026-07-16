@@ -209,11 +209,12 @@ function renderProducts() {
         card.querySelector(".product-name").addEventListener("click", () => openModal(product));
         card.querySelector(".view-details-btn").addEventListener("click", () => openModal(product));
 
-        // 3. Add to Cart with Default Size "M"
+        // 3. Add to Cart with default size (M, or first available)
         card.querySelectorAll(".direct-add-btn").forEach(btn => {
             btn.addEventListener("click", (e) => {
                 e.stopPropagation();
-                addToCart(product, "M");
+                const defaultSize = product.sizes.includes("M") ? "M" : product.sizes[0];
+                addToCart(product, defaultSize);
             });
         });
 
@@ -240,10 +241,11 @@ function openModal(product) {
     activeModalProduct = product;
     
     // Generate Sizing Buttons HTML
+    const defaultSize = product.sizes.includes("M") ? "M" : (product.sizes[1] || product.sizes[0]);
     let sizesHTML = "";
-    product.sizes.forEach((size, index) => {
+    product.sizes.forEach((size) => {
         sizesHTML += `
-            <button class="size-btn ${index === 1 ? 'active' : ''}" data-size="${size}">
+            <button class="size-btn ${size === defaultSize ? 'active' : ''}" data-size="${size}">
                 ${size}
             </button>
         `;
@@ -291,7 +293,7 @@ function openModal(product) {
 
     // Hook size button selections
     const sizeBtns = modalProductDetails.querySelectorAll(".size-btn");
-    let selectedSize = product.sizes[1]; // default size index 1 ("M")
+    let selectedSize = product.sizes.includes("M") ? "M" : (product.sizes[1] || product.sizes[0]);
 
     sizeBtns.forEach(btn => {
         btn.addEventListener("click", () => {
