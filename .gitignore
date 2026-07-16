@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Shopify credentials — never commit
+.env
+.env.local
+shopify_creds.*

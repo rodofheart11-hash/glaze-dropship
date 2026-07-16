@@ -383,6 +383,13 @@ function renderStars(rating) {
     return html;
 }
 
+// Rating label: include the review count only when we actually have reviews.
+function ratingText(product) {
+    const n = Number(product.reviewsCount) || 0;
+    if (n > 0) return `<strong>${product.rating}</strong> · ${n.toLocaleString()} reviews`;
+    return `<strong>${product.rating}</strong>`;
+}
+
 // --- Render Product Grid (into a target grid; optional pre-filtered list) ---
 function renderProducts(gridEl, list) {
     gridEl = gridEl || productGrid;
@@ -425,7 +432,7 @@ function renderProducts(gridEl, list) {
             <div class="product-info">
                 <div class="product-rating">
                     <span class="stars-inline">${renderStars(product.rating)}</span>
-                    <span class="rating-count"><strong>${product.rating}</strong> · ${Number(product.reviewsCount).toLocaleString()} reviews</span>
+                    <span class="rating-count">${ratingText(product)}</span>
                 </div>
                 <h3 class="product-name">${product.name}</h3>
                 ${product.hook ? `<p class="product-hook">${product.hook}</p>` : ""}
@@ -530,7 +537,7 @@ function renderProductView(product) {
             <h2 class="modal-product-name">${product.name}</h2>
             <div class="modal-rating-row">
                 <div class="stars">${renderStars(product.rating)}</div>
-                <span class="reviews-count"><strong>${product.rating}</strong> · ${Number(product.reviewsCount).toLocaleString()} reviews</span>
+                <span class="reviews-count">${ratingText(product)}</span>
             </div>
             ${product.hook ? `<p class="modal-hook">${product.hook}</p>` : ""}
             <div class="modal-product-price">$${product.price.toFixed(2)}</div>
