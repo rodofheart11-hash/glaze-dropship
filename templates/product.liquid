@@ -1875,6 +1875,14 @@ body {
   .product-page-container {
       margin-top: 10px;
   }
+  .nanotech-card {
+      transition: var(--transition-smooth) !important;
+  }
+  .nanotech-card:hover {
+      border-color: var(--primary) !important;
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(165, 243, 252, 0.15);
+  }
 </style>
 
 <div class="glaze-theme-wrapper">
@@ -1950,6 +1958,35 @@ body {
             <span>Add to Shopping Bag</span>
             <i class="fa-solid fa-bag-shopping"></i>
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GLAZE® Nanotech Matrix Showcase -->
+    <div class="nanotech-matrix-container glass-card" style="margin-top: 30px; padding: 40px; border-radius: 24px;">
+      <h3 style="font-family: var(--font-heading); font-size: 1.3rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px; color: var(--primary);">
+        <i class="fa-solid fa-microchip"></i> GLAZE® Nanotech Matrix
+      </h3>
+      <div class="nanotech-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;">
+        <!-- Feature 1 -->
+        <div class="nanotech-card glass-card" style="padding: 25px; border: 1px solid var(--border-glass);">
+          <div style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"><i class="fa-solid fa-fingerprint"></i></div>
+          <h4 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600; margin-bottom: 10px;">Oleophobic Fiber</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">Repels oil, grease, dirt, and fingerprints. Maintain a clean, pristine look without washing under heavy wear.</p>
+        </div>
+        
+        <!-- Feature 2 -->
+        <div class="nanotech-card glass-card" style="padding: 25px; border: 1px solid var(--border-glass);">
+          <div style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"><i class="fa-solid fa-droplet"></i></div>
+          <h4 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600; margin-bottom: 10px;">Hydrophobic Shell</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">Advanced silica bond forces water to slide off instantly. Keeps you dry and lightweight in any torrential rain.</p>
+        </div>
+        
+        <!-- Feature 3 -->
+        <div class="nanotech-card glass-card" style="padding: 25px; border: 1px solid var(--border-glass);">
+          <div style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"><i class="fa-solid fa-atom"></i></div>
+          <h4 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600; margin-bottom: 10px;">Prism Color Shift</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">Interactive glass micro-spheres reflect light in a stunning spectrum, shifting color with environment and temperature.</p>
         </div>
       </div>
     </div>
