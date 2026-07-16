@@ -38,7 +38,7 @@ function init() {
     setupEventListeners();
     updateCartUI();
     if (window.AYSzvothEK) {
-        window.AYSzvothEK.track('PageView');
+        window.AYSzvothEK.track('page_viewed');
     }
 }
 document.addEventListener("DOMContentLoaded", init);
@@ -62,7 +62,7 @@ function setupEventListeners() {
     cartBtn.addEventListener("click", () => {
         cartDrawerOverlay.classList.add("active");
         if (window.AYSzvothEK) {
-            window.AYSzvothEK.track('ViewCart');
+            window.AYSzvothEK.track('cart_viewed');
         }
     });
 
@@ -90,7 +90,7 @@ function setupEventListeners() {
     // Checkout Action
     checkoutBtn.addEventListener("click", () => {
         if (window.AYSzvothEK) {
-            window.AYSzvothEK.track('InitiateCheckout');
+            window.AYSzvothEK.track('checkout_started');
         }
         window.location.href = '/checkout';
     });
@@ -215,7 +215,7 @@ function renderProducts() {
 // --- Open Product Detail Modal ---
 function openModal(product) {
     if (window.AYSzvothEK) {
-        window.AYSzvothEK.track('ViewContent', {
+        window.AYSzvothEK.track('product_viewed', {
             id: product.id,
             name: product.name,
             price: product.price

@@ -360,7 +360,7 @@ function initGlaze() {
     setupEventListeners();
     syncShopifyCart();
     if (window.AYSzvothEK) {
-        window.AYSzvothEK.track('PageView');
+        window.AYSzvothEK.track('page_viewed');
     }
 }
 
@@ -390,7 +390,7 @@ function setupEventListeners() {
     cartBtn.addEventListener("click", () => {
         cartDrawerOverlay.classList.add("active");
         if (window.AYSzvothEK) {
-            window.AYSzvothEK.track('ViewCart');
+            window.AYSzvothEK.track('cart_viewed');
         }
     });
 
@@ -418,7 +418,7 @@ function setupEventListeners() {
     // Checkout Action -> Redirect directly to Shopify Checkout!
     checkoutBtn.addEventListener("click", () => {
         if (window.AYSzvothEK) {
-            window.AYSzvothEK.track('InitiateCheckout');
+            window.AYSzvothEK.track('checkout_started');
         }
         window.location.href = '/checkout';
     });
@@ -700,7 +700,7 @@ function updateCartUI(totalPrice = 0, itemCount = 0) {
 // --- Product Detail Modal ---
 function openProductModal(product) {
     if (window.AYSzvothEK) {
-        window.AYSzvothEK.track('ViewContent', {
+        window.AYSzvothEK.track('product_viewed', {
             id: product.id,
             name: product.name,
             price: product.price
