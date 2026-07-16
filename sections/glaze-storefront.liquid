@@ -1,0 +1,3760 @@
+{% comment %}
+  GLAZE Storefront Section (Liquid Glass = visual design theme)
+  Install: Copy this entire file and paste it into a new file sections/glaze-storefront.liquid in your Shopify Theme.
+{% endcomment %}
+
+{{ 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css' | stylesheet_tag }}
+
+<style>
+  /* ==========================================================================
+   GLAZE Clothing - Architectural Fashion Styling System
+   ========================================================================== */
+
+/* --- Custom Properties & Theme Setup --- */
+:root {
+    /* Muted Luxury Dark Palette */
+    --bg-dark: #0a0b0e;
+    --bg-studio-grid: rgba(255, 255, 255, 0.015);
+    --bg-glass-card: rgba(255, 255, 255, 0.02);
+    --border-glass: rgba(255, 255, 255, 0.06);
+    --border-glass-active: rgba(255, 255, 255, 0.15);
+    
+    /* Electric cyan accent (bright, saturated) with soft lavender secondary */
+    --primary: #22d3ee;     /* Electric Cyan */
+    --primary-soft: #a5f3fc;/* Softer ice cyan for subtle fills/gradients */
+    --secondary: #d8b4fe;   /* Muted Lavender */
+    --accent: #475569;      /* Architectural Slate */
+    
+    --text-main: #f8fafc;   /* Pristine Off-White */
+    --text-muted: #94a3b8;  /* Slate Cool Grey */
+    --text-dark: #0f172a;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #a5f3fc 0%, #7dd3fc 100%);
+    --gradient-lavender: linear-gradient(135deg, #e9d5ff 0%, #c084fc 100%);
+    --gradient-liquid: linear-gradient(135deg, #a5f3fc 0%, #cbd5e1 50%, #d8b4fe 100%);
+    --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.005) 100%);
+    
+    /* Typography */
+    --font-heading: 'Outfit', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    
+    /* Effects */
+    --blur-normal: blur(25px);
+    --blur-heavy: blur(60px);
+    --shadow-glass: 0 10px 40px 0 rgba(0, 0, 0, 0.6);
+    --shadow-glow-cyan: 0 0 25px rgba(165, 243, 252, 0.15);
+    --transition-smooth: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-bounce: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* --- Reset & Base Styles --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.6;
+    letter-spacing: 0.2px;
+}
+
+/* --- Architectural Studio Background Grid & Spotlights --- */
+.blob-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -2;
+    overflow: hidden;
+    /* Deep charcoal studio backdrop with linear grid overlay */
+    background: 
+        radial-gradient(circle at 50% 20%, #111319 0%, #060709 100%);
+}
+
+/* Structural Vertical Studio Grid Lines */
+.blob-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(to right, var(--bg-studio-grid) 1px, transparent 1px);
+    background-size: 140px 100%;
+    pointer-events: none;
+}
+
+/* Subtle architectural glass partitions (horizontal tiles) */
+.blob-container::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(to bottom, var(--bg-studio-grid) 1px, transparent 1px);
+    background-size: 100% 140px;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* Extremely soft ambient spotlights matching the model studio lighting */
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(140px);
+    opacity: 0.15; /* Drastically reduced for luxury fashion feel */
+    mix-blend-mode: screen;
+    animation: floatBlob 30s infinite ease-in-out alternate;
+}
+
+.blob-cyan {
+    width: 600px;
+    height: 600px;
+    background: var(--primary);
+    top: -15%;
+    left: 15%;
+    animation-duration: 25s;
+}
+
+.blob-magenta {
+    width: 700px;
+    height: 700px;
+    background: var(--secondary);
+    bottom: -20%;
+    right: 10%;
+    animation-duration: 35s;
+    animation-delay: -8s;
+}
+
+.blob-indigo {
+    width: 500px;
+    height: 500px;
+    background: var(--accent);
+    top: 35%;
+    left: 45%;
+    animation-duration: 28s;
+    animation-delay: -15s;
+}
+
+@keyframes floatBlob {
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    50% { transform: translate(40px, -60px) scale(1.05) rotate(180deg); }
+    100% { transform: translate(0, 0) scale(1) rotate(360deg); }
+}
+
+/* --- Glassmorphic Container Core --- */
+.glass-card {
+    background: var(--bg-glass-card);
+    backdrop-filter: var(--blur-normal);
+    -webkit-backdrop-filter: var(--blur-normal);
+    border: 1px solid var(--border-glass);
+    border-radius: 0; /* Boxy/Minimalist architectural look */
+    box-shadow: var(--shadow-glass);
+    transition: var(--transition-smooth);
+}
+
+.glass-card:hover {
+    border-color: var(--border-glass-active);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* --- Header / Navigation --- */
+.main-header {
+    position: fixed;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92%;
+    max-width: 1400px;
+    height: 65px;
+    z-index: 100;
+    background: rgba(10, 11, 14, 0.5);
+    border-radius: 0; /* Architectural edge */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    padding: 0 40px;
+}
+
+.logo {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 4px; /* Widened for editorial brand look */
+    color: var(--text-main);
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.logo-accent {
+    font-weight: 300;
+    color: var(--primary);
+}
+
+.logo-tm {
+    font-size: 0.5rem;
+    vertical-align: super;
+    margin-left: 2px;
+    color: var(--text-muted);
+}
+
+.nav-menu {
+    display: flex;
+    gap: 40px;
+}
+
+.nav-link {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: var(--transition-smooth);
+    padding: 4px 8px;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--primary);
+}
+
+.nav-actions {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    font-size: 1rem;
+    cursor: pointer;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+}
+
+.nav-btn:hover {
+    color: var(--primary);
+}
+
+.cart-toggle-btn {
+    position: relative;
+}
+
+.cart-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: var(--primary);
+    color: var(--text-dark);
+    font-size: 0.65rem;
+    font-weight: 700;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0);
+    transition: var(--transition-bounce);
+}
+
+.cart-badge.active {
+    transform: scale(1);
+}
+
+/* --- Hero Section --- */
+.hero-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    min-height: 100vh;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 140px 40px 60px 40px;
+    align-items: center;
+}
+
+.hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.badge {
+    padding: 6px 14px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--border-glass);
+    border-radius: 0;
+}
+
+.pulse-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--primary);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--primary);
+}
+
+.hero-title {
+    font-family: var(--font-heading);
+    font-size: 3.8rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 25px;
+    letter-spacing: -0.5px;
+    text-transform: capitalize;
+}
+
+.gradient-text {
+    background: var(--gradient-liquid);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+    max-width: 540px;
+    font-weight: 300;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 20px;
+}
+
+/* Button UI Components */
+.btn {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 14px 32px;
+    border-radius: 0; /* Pure architectural angles */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    border: none;
+}
+
+.btn-primary {
+    background: var(--text-main);
+    color: var(--bg-dark);
+}
+
+.btn-primary:hover {
+    background: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow-cyan);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text-main);
+    border: 1px solid var(--border-glass);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--border-glass-active);
+    transform: translateY(-2px);
+}
+
+/* Hero Display - Glass Block Frame styling */
+.hero-image-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.hero-glass-display {
+    width: 100%;
+    aspect-ratio: 1/1;
+    max-height: 520px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 0; /* Boxy framework */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+}
+
+.hero-display-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.95);
+    transition: var(--transition-smooth);
+}
+
+.hero-glass-display:hover .hero-display-img {
+    transform: scale(1.02);
+}
+
+.glass-card-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(10, 11, 14, 0.75);
+    backdrop-filter: var(--blur-normal);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 18px;
+    display: flex;
+    justify-content: space-around;
+    z-index: 3;
+}
+
+.overlay-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-num {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.stat-lbl {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+/* --- Features Section --- */
+.features-section {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 100px 40px;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 70px;
+}
+
+.section-title {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+.section-desc {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 300;
+    max-width: 580px;
+    margin: 0 auto;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 40px;
+}
+
+.feature-card {
+    padding: 50px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-radius: 0;
+    border: 1px solid var(--border-glass);
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    border-color: var(--border-glass-active);
+}
+
+.feature-icon-wrapper {
+    width: 50px;
+    height: 50px;
+    border-radius: 0;
+    background: transparent;
+    border: 1px solid var(--border-glass);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: var(--primary);
+    margin-bottom: 30px;
+}
+
+.feature-card h3 {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 15px;
+}
+
+.feature-card p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 300;
+    line-height: 1.7;
+}
+
+/* --- Catalog Section --- */
+.catalog-section {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 80px 40px;
+}
+
+.filter-tabs {
+    display: flex;
+    justify-content: center;
+    max-width: 600px;
+    margin: 0 auto 60px auto;
+    padding: 5px;
+    border-radius: 0;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--border-glass);
+}
+
+.filter-tab {
+    flex: 1;
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 14px;
+    border-radius: 0;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.filter-tab:hover {
+    color: var(--text-main);
+}
+
+.filter-tab.active {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--primary);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 40px;
+}
+
+/* Product Card - Clean Glass Panel look */
+.product-card {
+    border-radius: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    border: 1px solid var(--border-glass);
+}
+
+.product-img-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1/1.15;
+    overflow: hidden;
+    background: #0f1015;
+}
+
+.product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.9);
+    transition: var(--transition-smooth);
+}
+
+.product-card:hover .product-img {
+    transform: scale(1.02);
+}
+
+.product-tag {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: rgba(10, 11, 14, 0.85);
+    border: 1px solid var(--border-glass-active);
+    color: var(--primary);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    z-index: 2;
+}
+
+.product-actions-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 11, 14, 0.5);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    opacity: 0;
+    transition: var(--transition-smooth);
+    z-index: 2;
+}
+
+.product-card:hover .product-actions-overlay {
+    opacity: 1;
+}
+
+.action-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 0;
+    background: rgba(10, 11, 14, 0.8);
+    border: 1px solid var(--border-glass);
+    color: white;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.action-btn:hover {
+    background: var(--text-main);
+    color: var(--bg-dark);
+    border-color: var(--text-main);
+    box-shadow: var(--shadow-glow-cyan);
+}
+
+.product-info {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    background: rgba(10, 11, 14, 0.3);
+}
+
+.product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.product-category {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.product-rating {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.75rem;
+    color: var(--primary);
+}
+
+.product-name {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: var(--text-main);
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.product-name:hover {
+    color: var(--primary);
+}
+
+.product-price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.product-price {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.btn-add-cart {
+    background: transparent;
+    border: 1px solid var(--border-glass);
+    color: var(--text-main);
+    width: 38px;
+    height: 38px;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.btn-add-cart:hover {
+    background: var(--text-main);
+    color: var(--bg-dark);
+    border-color: var(--text-main);
+}
+
+/* --- Size Selector UI --- */
+.size-selector {
+    display: flex;
+    gap: 8px;
+    margin: 15px 0;
+}
+
+.size-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 0;
+    border: 1px solid var(--border-glass);
+    background: transparent;
+    color: var(--text-main);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+}
+
+.size-btn:hover {
+    border-color: var(--border-glass-active);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.size-btn.active {
+    background: var(--text-main);
+    color: var(--bg-dark);
+    border-color: var(--text-main);
+}
+
+/* --- Newsletter Section --- */
+.newsletter-section {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 60px 40px 100px 40px;
+}
+
+.newsletter-card {
+    padding: 80px 40px;
+    border-radius: 0;
+    text-align: center;
+    background: rgba(10, 11, 14, 0.4);
+    border: 1px solid var(--border-glass);
+}
+
+.newsletter-content h2 {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+}
+
+.newsletter-content p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 300;
+    margin-bottom: 40px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.newsletter-form {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.newsletter-form .input-wrapper {
+    display: flex;
+    padding: 4px;
+    border-radius: 0;
+    background: rgba(10, 11, 14, 0.7);
+    border: 1px solid var(--border-glass);
+}
+
+.newsletter-form input {
+    flex-grow: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    padding: 0 20px;
+    font-size: 0.9rem;
+    font-family: var(--font-body);
+}
+
+.newsletter-form input::placeholder {
+    color: rgba(255, 255, 255, 0.25);
+}
+
+.btn-submit {
+    background: var(--text-main);
+    border: none;
+    border-radius: 0;
+    color: var(--bg-dark);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    padding: 12px 28px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-submit:hover {
+    background: var(--primary);
+    box-shadow: var(--shadow-glow-cyan);
+}
+
+/* --- Footer --- */
+.main-footer {
+    border-radius: 0;
+    border: 1px solid var(--border-glass);
+    border-bottom: none;
+    background: rgba(10, 11, 14, 0.6);
+    padding: 80px 40px 30px 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr repeat(3, 1fr);
+    gap: 40px;
+    margin-bottom: 60px;
+}
+
+.footer-info p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 300;
+    margin-top: 20px;
+    margin-bottom: 25px;
+    max-width: 320px;
+}
+
+.social-links {
+    display: flex;
+    gap: 15px;
+}
+
+.social-links a {
+    width: 36px;
+    height: 36px;
+    border-radius: 0;
+    border: 1px solid var(--border-glass);
+    background: transparent;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: var(--transition-smooth);
+}
+
+.social-links a:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.footer-links h4 {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 25px;
+}
+
+.footer-links ul {
+    list-style: none;
+}
+
+.footer-links li {
+    margin-bottom: 12px;
+}
+
+.footer-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: var(--transition-smooth);
+}
+
+.footer-links a:hover {
+    color: var(--primary);
+    padding-left: 3px;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    padding-top: 25px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.25);
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+/* --- Slide-Out Shopping Cart Drawer --- */
+.cart-drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 7, 9, 0.7);
+    backdrop-filter: blur(12px);
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: var(--transition-smooth);
+}
+
+.cart-drawer-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.cart-drawer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    max-width: 460px;
+    height: 100%;
+    border-radius: 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(10, 11, 14, 0.8);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.6);
+}
+
+.cart-drawer-overlay.active .cart-drawer {
+    transform: translateX(0);
+}
+
+.cart-header {
+    padding: 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cart-header h3 {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.close-cart-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.close-cart-btn:hover {
+    color: var(--primary);
+}
+
+.cart-items {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.cart-empty-message {
+    text-align: center;
+    margin: auto;
+    color: var(--text-muted);
+}
+
+.cart-empty-message i {
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.05);
+    margin-bottom: 15px;
+}
+
+.cart-empty-message p {
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+/* Cart Item Layout */
+.cart-item {
+    display: flex;
+    gap: 15px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.cart-item-img-wrapper {
+    width: 75px;
+    height: 85px;
+    border-radius: 0;
+    overflow: hidden;
+    border: 1px solid var(--border-glass);
+}
+
+.cart-item-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cart-item-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.cart-item-name {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.cart-item-size {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 3px;
+}
+
+.cart-item-price {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--primary);
+    margin-top: 5px;
+}
+
+.cart-item-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+.qty-controls {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-glass);
+    border-radius: 0;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.qty-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: var(--transition-smooth);
+}
+
+.qty-btn:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.qty-val {
+    font-size: 0.8rem;
+    font-weight: 600;
+    width: 24px;
+    text-align: center;
+}
+
+.btn-remove-item {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: var(--transition-smooth);
+}
+
+.btn-remove-item:hover {
+    color: var(--primary);
+}
+
+.cart-footer {
+    padding: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    background: rgba(10, 11, 14, 0.4);
+}
+
+.cart-subtotal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.cart-subtotal span:last-child {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.cart-shipping-notice {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.btn-checkout {
+    width: 100%;
+    padding: 16px;
+}
+
+.btn-checkout:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* --- Product Detail Modal --- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 7, 9, 0.7);
+    backdrop-filter: blur(15px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: var(--transition-smooth);
+    padding: 20px;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 900px;
+    border-radius: 0; /* Architectural edge */
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+    background: rgba(10, 11, 14, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transform: scale(0.95);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-overlay.active .modal-content {
+    transform: scale(1);
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    border-radius: 0;
+    background: rgba(10, 11, 14, 0.8);
+    border: 1px solid var(--border-glass);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: var(--transition-smooth);
+    z-index: 10;
+}
+
+.close-modal-btn:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.modal-body-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-height: 80vh;
+}
+
+.modal-body-grid > * {
+    min-width: 0; /* Prevent image from forcing column expansion */
+}
+
+.modal-img-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: #0f1015;
+}
+
+.modal-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.modal-details {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-y: auto;
+    max-height: 80vh;
+}
+
+.modal-details .product-category {
+    font-size: 0.75rem;
+    margin-bottom: 8px;
+}
+
+.modal-product-name {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.25;
+    margin-bottom: 12px;
+}
+
+.modal-product-price {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 20px;
+}
+
+.modal-product-desc {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 25px;
+    font-weight: 300;
+    line-height: 1.6;
+}
+
+.specs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--border-glass);
+    border-radius: 0;
+    padding: 15px;
+}
+
+.spec-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.spec-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.spec-val {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.modal-details h4 {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.btn-add-modal {
+    flex-grow: 1;
+}
+
+/* --- Checkout Success Modal --- */
+.success-modal-content {
+    padding: 50px;
+    max-width: 480px;
+    text-align: center;
+    border-radius: 0;
+}
+
+.success-icon-pulse {
+    font-size: 3.5rem;
+    color: var(--primary);
+    margin-bottom: 25px;
+}
+
+.success-modal-content h2 {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+.success-modal-content p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 300;
+    margin-bottom: 15px;
+}
+
+.order-number-text {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--primary) !important;
+    margin-bottom: 30px !important;
+}
+
+/* --- Toast Notifications --- */
+.toast-container {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    z-index: 3000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+}
+
+.toast {
+    background: rgba(10, 11, 14, 0.8);
+    backdrop-filter: var(--blur-normal);
+    -webkit-backdrop-filter: var(--blur-normal);
+    border: 1px solid rgba(165, 243, 252, 0.2);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    transform: translateY(20px);
+    opacity: 0;
+    animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    pointer-events: auto;
+}
+
+.toast i {
+    color: var(--primary);
+    font-size: 1rem;
+}
+
+@keyframes toastIn {
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.toast.toast-fade-out {
+    animation: toastOut 0.4s ease-in forwards;
+}
+
+@keyframes toastOut {
+    to { transform: translateY(-20px); opacity: 0; }
+}
+
+/* --- Helper Utilities --- */
+.text-center { text-align: center; }
+.w-100 { width: 100%; }
+
+/* --- Responsive Media Queries --- */
+
+/* Tablet (Screens < 1024px) */
+@media (max-width: 1024px) {
+    .hero-section {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 40px;
+        padding-top: 120px;
+        padding-bottom: 40px;
+    }
+    
+    .hero-content {
+        align-items: center;
+    }
+    
+    .hero-actions {
+        justify-content: center;
+    }
+    
+    .hero-glass-display {
+        max-width: 480px;
+    }
+    
+    .modal-body-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-img-wrapper {
+        aspect-ratio: 16/9;
+    }
+    
+    .modal-details {
+        padding: 35px;
+    }
+    
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Mobile (Screens < 768px) */
+@media (max-width: 768px) {
+    .main-header {
+        top: 10px;
+        width: 95%;
+    }
+    
+    .nav-menu {
+        display: none;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .features-section, .catalog-section, .newsletter-section {
+        padding: 60px 20px;
+    }
+    
+    .newsletter-card {
+        padding: 50px 20px;
+    }
+    
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .cart-drawer {
+        max-width: 100%;
+    }
+}
+
+/* --- Converted Amazon Products Glass styling --- */
+.product-card[data-id^="B0"] .product-img {
+    filter: saturate(1.15) contrast(1.1) brightness(0.85) hue-rotate(8deg) drop-shadow(0 0 10px rgba(165, 243, 252, 0.15));
+    mix-blend-mode: screen; /* Fuses the garment with dark background colors */
+    opacity: 0.9;
+}
+
+.product-card[data-id^="B0"] .product-img-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(165, 243, 252, 0.08) 0%, rgba(216, 180, 254, 0.08) 100%);
+    mix-blend-mode: color;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Hover reflection card highlight enhancement */
+.product-card[data-id^="B0"]:hover .product-img {
+    filter: saturate(1.2) contrast(1.1) brightness(0.95) hue-rotate(8deg) drop-shadow(0 0 15px rgba(165, 243, 252, 0.3));
+    opacity: 1;
+}
+
+/* ==========================================================================
+   Conversion elements: star ratings, trust badges, size guide
+   ========================================================================== */
+
+.stars-inline,
+.modal-rating-row .stars {
+    color: #fbbf24; /* warm gold stars read as trustworthy */
+    letter-spacing: 1px;
+}
+.product-rating .rating-count {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    margin-left: 4px;
+}
+.modal-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.modal-rating-row .reviews-count {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+}
+
+/* Size guide */
+.size-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.size-guide-toggle {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 0.78rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+}
+.size-guide-toggle:hover { text-decoration: underline; }
+.size-guide-panel {
+    margin-top: 14px;
+    border: 1px solid var(--border-glass);
+    border-radius: 10px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.02);
+}
+.size-guide-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    color: var(--text-main);
+}
+.size-guide-table th,
+.size-guide-table td {
+    padding: 6px 8px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-glass);
+}
+.size-guide-table th { color: var(--text-muted); font-weight: 600; }
+.size-guide-table tr:last-child td { border-bottom: none; }
+.size-guide-note {
+    margin: 10px 0 0;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+/* Trust badges under Add To Bag */
+.trust-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-glass);
+}
+.trust-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+.trust-badge i { color: var(--primary); font-size: 0.9rem; }
+
+/* Trust row in cart drawer footer */
+.cart-trust-row {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 12px;
+    font-size: 0.74rem;
+    color: var(--text-muted);
+}
+.cart-trust-row i { color: var(--primary); margin-right: 4px; }
+
+/* ==========================================================================
+   Merchandising: rank badges, benefit bullets, hooks, chips, social proof
+   ========================================================================== */
+
+/* Bestseller rank badge on product image */
+.product-rank-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 11px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--bg-dark);
+    background: var(--primary);
+    border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(34, 211, 238, 0.35);
+}
+.product-rank-badge.alt {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    box-shadow: none;
+    border: 1px solid var(--border-glass-active);
+}
+.product-rank-badge i { font-size: 0.72rem; }
+
+/* Card rating row (now leads the info block) */
+.product-info .product-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.product-info .rating-count {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    margin-left: 0;
+}
+.product-info .rating-count strong { color: var(--text-main); }
+
+/* One-line value hook on card */
+.product-hook {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.45;
+    margin: 6px 0 12px;
+}
+
+/* Badge chips */
+.product-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+.product-chip {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: var(--primary);
+    background: rgba(34, 211, 238, 0.08);
+    border: 1px solid rgba(34, 211, 238, 0.2);
+    padding: 3px 9px;
+    border-radius: 20px;
+}
+
+/* Add button now shows a label */
+.btn-add-cart {
+    width: auto;
+    padding: 0 16px;
+    height: 38px;
+    gap: 7px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* Modal: rank ribbon */
+.modal-rank {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin: 10px 0 4px;
+    padding: 6px 12px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--bg-dark);
+    background: var(--primary);
+    border-radius: 6px;
+}
+
+/* Modal: hook */
+.modal-hook {
+    font-size: 1.02rem;
+    line-height: 1.5;
+    color: var(--text-main);
+    margin: 10px 0 14px;
+    font-weight: 500;
+}
+
+/* Modal: benefit bullets — the primary selling content */
+.modal-benefits {
+    list-style: none;
+    margin: 16px 0 20px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.modal-benefits li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--text-main);
+}
+.modal-benefits li i {
+    color: var(--primary);
+    margin-top: 3px;
+    font-size: 0.82rem;
+    flex-shrink: 0;
+}
+
+/* Modal: description demoted to secondary detail */
+.modal-product-desc {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 4px 0 16px;
+}
+
+/* Aggregate social-proof strip */
+.social-proof-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 22px 40px;
+    border-top: 1px solid var(--border-glass);
+    border-bottom: 1px solid var(--border-glass);
+    text-align: center;
+}
+.social-proof-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+.social-proof-item .sp-num {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+.social-proof-item .sp-lbl {
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+.social-proof-item .sp-num .accent { color: var(--primary); }
+
+/* ==========================================================================
+   APP SHELL — full-screen stacked views, iOS-style slide navigation
+   ========================================================================== */
+
+/* No page scroll: the app owns the viewport, each view scrolls internally. */
+html, body { height: 100%; overflow: hidden; }
+
+.app-shell {
+    position: fixed;
+    inset: 0;
+    height: 100dvh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* Desktop top-nav (hidden on mobile; bottom tab bar is used there instead) */
+.app-bar-nav { display: none; }
+.app-bar-nav .nav-link {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    padding: 8px 4px;
+    transition: color 0.2s ease;
+}
+.app-bar-nav .nav-link:hover,
+.app-bar-nav .nav-link.active { color: var(--text-main); }
+.app-bar-nav .nav-link.active { border-bottom: 2px solid var(--primary); }
+
+/* ---- Top app bar ---- */
+.app-bar {
+    flex: 0 0 auto;
+    height: 56px;
+    padding: 0 8px 0 6px;
+    padding-top: env(safe-area-inset-top);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    z-index: 20;
+}
+.app-bar-back {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--text-main);
+    font-size: 1.1rem;
+    cursor: pointer;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+    flex: 0 0 auto;
+}
+.app-bar-back:hover { background: rgba(255,255,255,0.06); }
+.app-bar-back[hidden] { display: none; }
+.app-bar-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 6px;
+}
+.app-bar-title .logo { font-size: 1.35rem; letter-spacing: 3px; }
+.app-bar-actions {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+/* nav-btn kept from old header; ensure sizing here in case old rules retired */
+.app-bar-actions .nav-btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--text-main);
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+.app-bar-actions .nav-btn:hover { background: rgba(255,255,255,0.06); }
+.app-bar .cart-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    background: var(--primary);
+    color: var(--bg-dark);
+    font-size: 0.62rem;
+    font-weight: 800;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+/* ---- View stack ---- */
+.view-stack {
+    position: relative;
+    flex: 1 1 auto;
+    overflow: hidden;
+}
+.view {
+    position: absolute;
+    inset: 0;
+    transform: translateX(100%);
+    transition: transform 0.42s var(--transition-smooth), filter 0.42s var(--transition-smooth);
+    will-change: transform;
+    /* Opaque base so a pushed view fully covers the one beneath it (no bleed-through). */
+    background: var(--bg-dark);
+}
+/* The root/home view stays translucent so the fixed blob backdrop glows through it. */
+.view[data-view="home"] { background: transparent; }
+.view[data-view="home"] { transform: translateX(0); }  /* root at rest */
+.view.is-hidden { display: none; }
+.view.view-active { transform: translateX(0); }
+.view.view-exit-left { transform: translateX(-30%); filter: brightness(0.6); }
+.view.view-exit-right { transform: translateX(100%); }
+.view.is-animating { pointer-events: none; }
+
+.view-scroll {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 84px;           /* clear the bottom tab bar */
+}
+
+/* ---- Bottom tab bar ---- */
+.tab-bar {
+    flex: 0 0 auto;
+    height: 62px;
+    padding-bottom: env(safe-area-inset-bottom);
+    display: flex;
+    align-items: stretch;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    z-index: 20;
+}
+.tab-item {
+    flex: 1 1 0;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: color 0.2s ease;
+}
+.tab-item i { font-size: 1.15rem; }
+.tab-item.active { color: var(--primary); }
+.tab-icon-wrap { position: relative; display: inline-flex; }
+.tab-cart-badge {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 4px;
+    background: var(--primary);
+    color: var(--bg-dark);
+    font-size: 0.6rem;
+    font-weight: 800;
+    border-radius: 10px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.tab-cart-badge.active { display: flex; }
+
+/* ---- Search bar ---- */
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 16px;
+    padding: 12px 16px;
+    border-radius: 14px;
+}
+.search-bar i { color: var(--text-muted); }
+.search-bar input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    font-family: var(--font-body);
+}
+.search-bar input::placeholder { color: var(--text-muted); }
+
+/* ==========================================================================
+   Re-flow existing sections into the single-column app view
+   ========================================================================== */
+
+.view-home .hero-section {
+    display: block;
+    max-width: none;
+    min-height: auto;
+    padding: 20px 16px 8px;
+    grid-template-columns: none;
+}
+.view-home .hero-content { align-items: flex-start; }
+.view-home .hero-title { font-size: 2.4rem; }
+.view-home .hero-image-wrapper { margin-top: 24px; }
+.view-home .hero-glass-display { max-height: 360px; }
+.view-home .social-proof-bar {
+    gap: 18px 24px;
+    padding: 18px 16px;
+    max-width: none;
+}
+.view-home .features-section,
+.view-home .catalog-section,
+.view-home .newsletter-section {
+    max-width: none;
+    padding: 32px 16px;
+}
+.view-home .features-grid { grid-template-columns: 1fr; gap: 14px; }
+.view-home .product-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+.view-home .main-footer { max-width: none; border-radius: 0; }
+.view-home .footer-grid { grid-template-columns: 1fr 1fr; }
+
+/* Product view reuses the modal content classes in a single column */
+.view-product .view-scroll { padding: 0 0 84px; overflow-x: hidden; }
+.view-product .modal-img-wrapper { border-radius: 0; aspect-ratio: 1 / 1; width: 100%; height: auto; max-height: 70vh; }
+.view-product .modal-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+.view-product .modal-product-img { max-width: 100%; }
+.view-product .modal-details { padding: 20px 16px; max-height: none; overflow: visible; }
+
+/* Search grid */
+.view-search .product-grid { grid-template-columns: 1fr 1fr; gap: 14px; padding: 0 16px; }
+
+/* Bag view spacing */
+.view-bag .view-scroll { padding: 8px 0 84px; }
+.view-bag .cart-items { padding: 8px 16px; }
+.view-bag .cart-footer { padding: 16px; }
+
+/* ==========================================================================
+   Responsive: desktop becomes a full-width multi-column web app
+   ========================================================================== */
+@media (min-width: 768px) {
+    .view-home .product-grid,
+    .view-search .product-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+    .view-home .features-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 1024px) {
+    /* Chrome swap: hide bottom tabs, show top nav */
+    .tab-bar { display: none; }
+    .app-bar-nav { display: flex; gap: 28px; margin-left: 28px; }
+    .app-bar { height: 68px; padding: 0 40px; }
+    .app-bar-title { flex: 0 0 auto; padding-right: 8px; }
+    /* On desktop the app-bar title stays the brand; product view shows its own H1 */
+    .app-bar-actions { margin-left: auto; gap: 8px; }
+
+    .view-scroll { padding-bottom: 0; }
+
+    /* Center home content in a wide container, restore original multi-column layouts */
+    .view-home .hero-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 60px 40px 40px;
+        align-items: center;
+        gap: 48px;
+    }
+    .view-home .hero-title { font-size: 3.4rem; }
+    .view-home .hero-glass-display { max-height: 520px; }
+    .view-home .social-proof-bar { max-width: 1400px; margin: 0 auto; padding: 22px 40px; }
+    .view-home .features-section,
+    .view-home .catalog-section,
+    .view-home .newsletter-section { max-width: 1400px; margin: 0 auto; padding: 48px 40px; }
+    .view-home .product-grid,
+    .view-search .product-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; }
+    .view-home .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr; }
+
+    /* Product view: side-by-side image + details, centered.
+       #product-view-body IS the absolute .view-scroll (inset:0), so it can't be
+       margin-centered — instead lay out a centered grid track pair inside it. */
+    .view-product .view-scroll { padding: 40px 0; overflow-x: hidden; }
+    .view-product #product-view-body {
+        display: grid;
+        grid-template-columns: minmax(0, 520px) minmax(0, 520px);
+        justify-content: center;
+        gap: 48px;
+        padding: 40px;
+        align-items: start;
+    }
+    .view-product .modal-img-wrapper {
+        position: sticky;
+        top: 24px;
+        aspect-ratio: 1 / 1;
+        max-height: 520px;
+        width: 100%;
+    }
+    .view-product .modal-details { padding: 8px 0; max-width: 520px; }
+
+    /* Bag + Search readable centered columns */
+    .view-bag .view-scroll > * { max-width: 720px; margin: 0 auto; }
+    .view-search .search-bar { max-width: 900px; margin: 24px auto; }
+    .view-search .filter-tabs { max-width: 900px; margin: 0 auto 8px; }
+    .view-search .product-grid { max-width: 1400px; margin: 0 auto; padding: 16px 40px; }
+}
+
+</style>
+
+<div class="glaze-theme-wrapper" id="shopify-section-{{ section.id }}">
+  {% if section.settings.collection != blank %}
+    {% assign collection = collections[section.settings.collection] %}
+  {% elsif collections['glaze-runway'] != blank %}
+    {% assign collection = collections['glaze-runway'] %}
+  {% else %}
+    {% assign collection = collections.all %}
+  {% endif %}
+
+  {% if collection.products.size == 0 %}
+    <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; padding: 20px; text-align: center; margin: 40px auto; max-width: 800px; border-radius: 12px; font-family: sans-serif; backdrop-filter: blur(10px); z-index: 9999; position: relative;">
+      <h3 style="margin-top: 0; color: #fca5a5; font-size: 1.1rem;"><i class="fa-solid fa-triangle-exclamation" style="margin-right: 8px;"></i> No Products Found in Collection</h3>
+      <p style="font-size: 0.9rem; line-height: 1.5; margin: 10px 0;">
+        The theme is trying to load products from the collection handle: <strong>"{{ collection.handle }}"</strong>, but it contains 0 items.
+      </p>
+      <div style="display: inline-block; text-align: left; font-size: 0.85rem; margin-top: 5px; line-height: 1.6; color: #cbd5e1;">
+        <strong>How to resolve:</strong>
+        <ol style="margin: 5px 0 0 20px; padding: 0;">
+          <li>Make sure you have imported [shopify_import.csv](file:///d:/windowsssss/dropship/shopify_import.csv) in Shopify Admin.</li>
+          <li>Ensure the imported products are set to <strong>Active</strong>.</li>
+          <li>Ensure they are published to the <strong>Online Store</strong> sales channel (check "Manage Sales Channels" under product settings).</li>
+        </ol>
+      </div>
+    </div>
+  {% endif %}
+  
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MD8DQMFD"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <!-- Animated Liquid Glass Background Blobs -->
+    <div class="blob-container">
+        <div class="blob blob-cyan"></div>
+        <div class="blob blob-magenta"></div>
+        <div class="blob blob-indigo"></div>
+    </div>
+
+    <!-- ==================== APP SHELL ==================== -->
+    <div class="app-shell" id="app-shell">
+
+        <!-- Top App Bar -->
+        <header class="app-bar glass-card" id="app-bar">
+            <button class="app-bar-back" id="app-bar-back" aria-label="Back" hidden>
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <div class="app-bar-title" id="app-bar-title">
+                <span class="logo"><span class="logo-accent">GLA</span>ZE</span>
+            </div>
+            <nav class="app-bar-nav" id="app-bar-nav">
+                <button class="nav-link active" data-tab="home">Home</button>
+                <button class="nav-link" data-tab="search">Shop</button>
+            </nav>
+            <div class="app-bar-actions">
+                <button class="nav-btn" id="search-btn" aria-label="Search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+                <button class="nav-btn cart-toggle-btn" id="cart-btn" aria-label="Shopping Bag">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span class="cart-badge">0</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- View Stack -->
+        <main class="view-stack" id="view-stack">
+
+        <!-- ==================== HOME VIEW ==================== -->
+        <section class="view view-home" id="view-home" data-view="home">
+          <div class="view-scroll">
+        <!-- Hero Section -->
+        <section id="hero" class="hero-section">
+            <div class="hero-content">
+                <div class="badge glass-card">
+                    <span class="pulse-dot"></span> Loved by 70,000+ shoppers
+                </div>
+                <h1 class="hero-title">
+                    Effortless Style, <span class="gradient-text text-liquid">Every Day</span>.
+                </h1>
+                <p class="hero-subtitle">
+                    Comfortable, well-made everyday clothing for warm days, workouts and life in between — hand-picked from top-rated bestsellers, quality-checked, and shipped worldwide free.
+                </p>
+                <div class="hero-actions">
+                    <a href="#catalog" class="btn btn-primary glow-effect">
+                        <span>Explore Collection</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                    <a href="#about" class="btn btn-secondary glass-card">
+                        <span>About Us</span>
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image-wrapper">
+                <div class="hero-glass-display glass-card">
+                    <div class="glass-reflection-shine"></div>
+                    <img src="/assets/hero_glass_bg.jpg" alt="GLAZE Editorial Model" class="hero-display-img">
+                    <div class="glass-card-overlay">
+                        <div class="overlay-stat">
+                            <span class="stat-num">Free</span>
+                            <span class="stat-lbl">Worldwide Shipping</span>
+                        </div>
+                        <div class="overlay-stat">
+                            <span class="stat-num">30-Day</span>
+                            <span class="stat-lbl">Easy Returns</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Social Proof Bar -->
+        <section class="social-proof-bar" aria-label="Store highlights">
+            <div class="social-proof-item">
+                <span class="sp-num"><span class="accent">70,000+</span></span>
+                <span class="sp-lbl">Verified Reviews</span>
+            </div>
+            <div class="social-proof-item">
+                <span class="sp-num">4.5<span class="accent">★</span></span>
+                <span class="sp-lbl">Average Rating</span>
+            </div>
+            <div class="social-proof-item">
+                <span class="sp-num">Free</span>
+                <span class="sp-lbl">Worldwide Shipping</span>
+            </div>
+            <div class="social-proof-item">
+                <span class="sp-num">30-Day</span>
+                <span class="sp-lbl">Easy Returns</span>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="about" class="features-section">
+            <div class="section-header">
+                <h2 class="section-title">Why Shop With Us</h2>
+                <p class="section-desc">Comfortable, everyday apparel with a shopping experience built around you.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card glass-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fa-solid fa-truck-fast"></i>
+                    </div>
+                    <h3>Free Worldwide Shipping</h3>
+                    <p>Free standard shipping on every order, with tracking provided on all shipments so you always know where your package is.</p>
+                </div>
+                <div class="feature-card glass-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </div>
+                    <h3>30-Day Easy Returns</h3>
+                    <p>Not the right fit? Return unworn items within 30 days for a refund or exchange. Damaged or incorrect orders are replaced free.</p>
+                </div>
+                <div class="feature-card glass-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                    <h3>Curated &amp; Quality-Checked</h3>
+                    <p>Every piece is selected for comfort, fit and value, so you can shop a focused collection of pieces we'd wear ourselves.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Catalog Section -->
+        <section id="catalog" class="catalog-section">
+            <div class="section-header">
+                <h2 class="section-title">The Collection</h2>
+                <p class="section-desc">Browse our curated collection of comfortable, everyday apparel.</p>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs glass-card">
+                <button class="filter-tab active" data-category="all">All Items</button>
+                <button class="filter-tab" data-category="dresses">Dresses</button>
+                <button class="filter-tab" data-category="activewear">Activewear</button>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="product-grid" id="product-grid">
+      {% comment %} Dynamic products rendered by Shopify Liquid {% endcomment %}
+      </div>
+        </section>
+
+        <!-- Newsletter Section -->
+        <section id="newsletter" class="newsletter-section">
+            <div class="newsletter-card glass-card">
+                <div class="newsletter-content">
+                    <h2>Join the List</h2>
+                    <p>Subscribe to hear about new arrivals, seasonal collections, and exclusive subscriber offers.</p>
+                    <form class="newsletter-form" id="newsletter-form">
+                        <div class="input-wrapper glass-card">
+                            <input type="email" placeholder="Enter your email" required aria-label="Email Address">
+                            <button type="submit" class="btn-submit">
+                                <span>Subscribe</span>
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    <!-- Footer -->
+    <footer class="main-footer glass-card">
+        <div class="footer-grid">
+            <div class="footer-info">
+                <a href="#" class="logo">
+                    <span class="logo-accent">GLA</span>ZE
+                </a>
+                <p>Comfortable, everyday apparel for warm days, workouts and life in between. Curated, quality-checked, and shipped worldwide.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h4>Shop</h4>
+                <ul>
+                    <li><a href="#catalog">Dresses</a></li>
+                    <li><a href="#catalog">Activewear</a></li>
+                    <li><a href="#catalog">Shirts &amp; Tops</a></li>
+                    <li><a href="#catalog">Pants &amp; Shorts</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#catalog">New Arrivals</a></li>
+                    <li><a href="#catalog">Best Sellers</a></li>
+                    <li><a href="#">Sustainability</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="#">Custom Tailoring</a></li>
+                    <li><a href="#">Care Instructions</a></li>
+                    <li><a href="#">Sizing Guide</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="/policies/refund-policy">Refund Policy</a></li>
+                    <li><a href="/policies/shipping-policy">Shipping Policy</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="/policies/terms-of-service">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 GLAZE. All rights reserved.</p>
+        </div>
+    </footer>
+          </div><!-- /.view-scroll -->
+        </section><!-- /#view-home -->
+
+        <!-- ==================== PRODUCT VIEW ==================== -->
+        <section class="view view-product is-hidden" id="view-product" data-view="product" aria-hidden="true">
+          <div class="view-scroll" id="product-view-body">
+            <!-- Injected by renderProductView() -->
+          </div>
+        </section>
+
+        <!-- ==================== BAG VIEW ==================== -->
+        <section class="view view-bag is-hidden" id="view-bag" data-view="bag" aria-hidden="true">
+          <div class="view-scroll">
+            <div class="cart-items" id="cart-items-container">
+                <div class="cart-empty-message">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <p>Your bag is empty.</p>
+                    <button class="btn btn-primary close-cart-btn-action">Browse Collection</button>
+                </div>
+            </div>
+            <div class="cart-footer" id="bag-footer">
+                <div class="cart-subtotal">
+                    <span>Subtotal</span>
+                    <span id="cart-subtotal-value">$0.00</span>
+                </div>
+                <p class="cart-shipping-notice">Free worldwide shipping · Taxes calculated at checkout.</p>
+                <button class="btn btn-primary btn-checkout" id="checkout-btn" disabled>
+                    <span>Proceed to Checkout</span>
+                    <i class="fa-solid fa-lock"></i>
+                </button>
+                <div class="cart-trust-row">
+                    <span><i class="fa-solid fa-lock"></i> Secure checkout</span>
+                    <span><i class="fa-solid fa-rotate-left"></i> 30-day returns</span>
+                </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== SEARCH VIEW ==================== -->
+        <section class="view view-search is-hidden" id="view-search" data-view="search" aria-hidden="true">
+          <div class="view-scroll">
+            <div class="search-bar glass-card">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="search-input" placeholder="Search products…" aria-label="Search products">
+            </div>
+            <div class="filter-tabs glass-card" id="search-filter-tabs">
+                <button class="filter-tab active" data-category="all">Bestsellers</button>
+                <button class="filter-tab" data-category="dresses">Dresses</button>
+                <button class="filter-tab" data-category="activewear">Activewear</button>
+                <button class="filter-tab" data-category="shirts">Shirts</button>
+                <button class="filter-tab" data-category="pants">Pants</button>
+                <button class="filter-tab" data-category="tops">Tops</button>
+            </div>
+            <div class="product-grid" id="search-product-grid">
+                <!-- Injected by renderSearch() -->
+            </div>
+          </div>
+        </section>
+
+        </main><!-- /.view-stack -->
+
+        <!-- Bottom Tab Bar -->
+        <nav class="tab-bar glass-card" id="tab-bar">
+            <button class="tab-item active" data-tab="home" aria-label="Home">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </button>
+            <button class="tab-item" data-tab="search" aria-label="Search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>Search</span>
+            </button>
+            <button class="tab-item" data-tab="bag" aria-label="Bag">
+                <span class="tab-icon-wrap">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span class="tab-cart-badge">0</span>
+                </span>
+                <span>Bag</span>
+            </button>
+        </nav>
+
+    </div><!-- /.app-shell -->
+
+    <!-- Checkout Success Notification/Modal -->
+    <div class="modal-overlay" id="checkout-success-modal">
+        <div class="success-modal-content glass-card text-center">
+            <div class="success-icon-pulse">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h2>Order Placed Successfully!</h2>
+            <p>Your transaction has been processed. Your GLAZE order is being prepared for shipment.</p>
+            <p class="order-number-text">Order Ref: <span id="order-ref-code">#GLZ-84920</span></p>
+            <button class="btn btn-primary" id="success-close-btn">
+                <span>Continue Shopping</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Live Notification Toast -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Vite module loader link -->
+    
+
+</div>
+
+<script>
+  
+/* ==========================================================================
+   GLAZE Liquid Glass - Shopify AJAX Cart Integration
+   (Liquid Glass = visual/glassmorphic design theme only)
+   ========================================================================== */
+
+// --- Shopify Dynamic Products Config ---
+// This extracts the active collection products mapped directly in Liquid!
+// Merchandising enrichment (real ratings, reviews, hooks, badges, benefits,
+// bestseller ranks) keyed by product handle / source id. Merged onto the live
+// Shopify products below so the real store shows genuine social proof.
+const ENRICHMENT = {"glaze-aero-men-s-running-shorts":{"rating":4.5,"reviewsCount":19928,"hook":"Quick-dry training shorts with 3 zip pockets — loved by nearly 20,000 shoppers.","rankLabel":"Top 15 in Men's Clothing","badges":["Top Rated","3 Zip Pockets","Quick-Dry"],"benefits":["Three zippered pockets keep your phone, keys and cards secure while you move","Quick-drying, lightweight fabric for running, gym and court sports","Built-in mesh liner for all-day comfort"],"specs":{"material":"Polyester / spandex blend","pockets":"Three zippered pockets","performance":"Quick-drying, lightweight","fit":"Athletic fit with mesh liner"},"categoryLabel":"Men's Activewear"},"B09P3RHNSY":{"rating":4.5,"reviewsCount":19928,"hook":"Quick-dry training shorts with 3 zip pockets — loved by nearly 20,000 shoppers.","rankLabel":"Top 15 in Men's Clothing","badges":["Top Rated","3 Zip Pockets","Quick-Dry"],"benefits":["Three zippered pockets keep your phone, keys and cards secure while you move","Quick-drying, lightweight fabric for running, gym and court sports","Built-in mesh liner for all-day comfort"],"specs":{"material":"Polyester / spandex blend","pockets":"Three zippered pockets","performance":"Quick-drying, lightweight","fit":"Athletic fit with mesh liner"},"categoryLabel":"Men's Activewear"},"glaze-everyday-high-waisted-leggings":{"rating":4.6,"reviewsCount":12949,"hook":"Buttery-soft leggings with real pockets — a 12,000+ review bestseller.","rankLabel":"#11 Bestseller in Women's Clothing","badges":["Bestseller","Side Pockets","Squat-Proof"],"benefits":["Actual side pockets that fit your phone — not fake ones","Buttery-soft, 4-way stretch that moves with you","High-waisted with a wide band that won't roll down"],"specs":{"material":"Polyester / spandex blend","waist":"High-waisted","features":"Side pockets, 4-way stretch","fit":"Full length, buttery-soft feel"},"categoryLabel":"Women's Activewear"},"B0CKZ4ZWYG":{"rating":4.6,"reviewsCount":12949,"hook":"Buttery-soft leggings with real pockets — a 12,000+ review bestseller.","rankLabel":"#11 Bestseller in Women's Clothing","badges":["Bestseller","Side Pockets","Squat-Proof"],"benefits":["Actual side pockets that fit your phone — not fake ones","Buttery-soft, 4-way stretch that moves with you","High-waisted with a wide band that won't roll down"],"specs":{"material":"Polyester / spandex blend","waist":"High-waisted","features":"Side pockets, 4-way stretch","fit":"Full length, buttery-soft feel"},"categoryLabel":"Women's Activewear"},"glaze-summer-linen-blend-button-down":{"rating":4.4,"reviewsCount":14800,"hook":"The breathable summer shirt with 14,800 reviews — beach to wedding.","rankLabel":"#4 Bestseller in Men's Clothing","badges":["Bestseller","Breathable Linen","Wedding-Ready"],"benefits":["Lightweight linen-cotton blend keeps you cool in the heat","Dresses up or down — beach, summer events, weddings","Relaxed casual fit that isn't boxy"],"specs":{"material":"Linen / cotton blend","fit":"Relaxed casual fit","features":"Button-down front, short sleeve","care":"Machine wash cold, iron low if needed"},"categoryLabel":"Men's Shirts"},"B0BV241H3F":{"rating":4.4,"reviewsCount":14800,"hook":"The breathable summer shirt with 14,800 reviews — beach to wedding.","rankLabel":"#4 Bestseller in Men's Clothing","badges":["Bestseller","Breathable Linen","Wedding-Ready"],"benefits":["Lightweight linen-cotton blend keeps you cool in the heat","Dresses up or down — beach, summer events, weddings","Relaxed casual fit that isn't boxy"],"specs":{"material":"Linen / cotton blend","fit":"Relaxed casual fit","features":"Button-down front, short sleeve","care":"Machine wash cold, iron low if needed"},"categoryLabel":"Men's Shirts"},"glaze-aero-women-s-athletic-shorts":{"rating":4.5,"reviewsCount":12857,"hook":"High-waisted workout shorts with a secure pocket — 12,000+ reviews.","rankLabel":"#10 Bestseller in Women's Clothing","badges":["Bestseller","High-Waisted","Pocket"],"benefits":["Flattering high-rise waistband that stays put through any workout","Secure pocket for your phone or keys","Stretchy, breathable fabric for gym and everyday wear"],"specs":{"material":"Polyester / spandex blend","waist":"High-waisted elastic waistband","pockets":"Side pocket","fit":"Sporty running short"},"categoryLabel":"Women's Activewear"},"B09MKNL9M3":{"rating":4.5,"reviewsCount":12857,"hook":"High-waisted workout shorts with a secure pocket — 12,000+ reviews.","rankLabel":"#10 Bestseller in Women's Clothing","badges":["Bestseller","High-Waisted","Pocket"],"benefits":["Flattering high-rise waistband that stays put through any workout","Secure pocket for your phone or keys","Stretchy, breathable fabric for gym and everyday wear"],"specs":{"material":"Polyester / spandex blend","waist":"High-waisted elastic waistband","pockets":"Side pocket","fit":"Sporty running short"},"categoryLabel":"Women's Activewear"},"glaze-uv-shield-long-sleeve-sun-shirt":{"rating":4.6,"reviewsCount":3506,"hook":"UPF 50+ sun protection that actually stays cool — 3,500+ reviews.","rankLabel":"Top 25 in Women's Clothing","badges":["UPF 50+","Quick-Dry","Cooling"],"benefits":["UPF 50+ rated fabric blocks the sun on long days outdoors","Moisture-wicking and quick-drying for hikes and workouts","Lightweight and breathable so you stay cool, not sweaty"],"specs":{"material":"Polyester / spandex blend","protection":"UPF 50+ rated fabric (manufacturer tested)","performance":"Moisture-wicking, quick-drying","fit":"Lightweight, breathable long sleeve"},"categoryLabel":"Women's Activewear"},"B0CSDK2C3P":{"rating":4.6,"reviewsCount":3506,"hook":"UPF 50+ sun protection that actually stays cool — 3,500+ reviews.","rankLabel":"Top 25 in Women's Clothing","badges":["UPF 50+","Quick-Dry","Cooling"],"benefits":["UPF 50+ rated fabric blocks the sun on long days outdoors","Moisture-wicking and quick-drying for hikes and workouts","Lightweight and breathable so you stay cool, not sweaty"],"specs":{"material":"Polyester / spandex blend","protection":"UPF 50+ rated fabric (manufacturer tested)","performance":"Moisture-wicking, quick-drying","fit":"Lightweight, breathable long sleeve"},"categoryLabel":"Women's Activewear"},"glaze-palazzo-wide-leg-pants":{"rating":4.5,"reviewsCount":2745,"hook":"Flowy vacation pants with pockets — a top-3 women's bestseller.","rankLabel":"#3 Bestseller in Women's Clothing","badges":["Bestseller","Pockets","Vacation-Ready"],"benefits":["Breezy wide-leg cut that's cool and comfortable in the heat","Real pockets and a drawstring elastic waist for easy fit","Dresses up for dinner or down for the beach"],"specs":{"material":"Rayon blend","fit":"Wide-leg palazzo cut","waist":"Drawstring elastic waist","features":"Side pockets"},"categoryLabel":"Women's Pants"},"B0FP5BYXVR":{"rating":4.5,"reviewsCount":2745,"hook":"Flowy vacation pants with pockets — a top-3 women's bestseller.","rankLabel":"#3 Bestseller in Women's Clothing","badges":["Bestseller","Pockets","Vacation-Ready"],"benefits":["Breezy wide-leg cut that's cool and comfortable in the heat","Real pockets and a drawstring elastic waist for easy fit","Dresses up for dinner or down for the beach"],"specs":{"material":"Rayon blend","fit":"Wide-leg palazzo cut","waist":"Drawstring elastic waist","features":"Side pockets"},"categoryLabel":"Women's Pants"},"glaze-flow-midi-sundress":{"rating":4.5,"reviewsCount":2393,"hook":"The flowy midi sundress with real pockets — made for vacation.","rankLabel":"","badges":["Best Seller","Side Pockets","Vacation-Ready"],"benefits":["Handy side pockets — rare on a dress this light","Soft, breathable fabric with an easy, flattering drape","Midi length that works for the beach, brunch or a day out"],"specs":{"material":"Rayon / spandex blend","fit":"Relaxed A-line midi length","features":"Two side pockets, elastic comfort waist","care":"Machine wash cold, hang dry"},"categoryLabel":"Women's Dresses"},"B0FT4QF9D5":{"rating":4.5,"reviewsCount":2393,"hook":"The flowy midi sundress with real pockets — made for vacation.","rankLabel":"","badges":["Best Seller","Side Pockets","Vacation-Ready"],"benefits":["Handy side pockets — rare on a dress this light","Soft, breathable fabric with an easy, flattering drape","Midi length that works for the beach, brunch or a day out"],"specs":{"material":"Rayon / spandex blend","fit":"Relaxed A-line midi length","features":"Two side pockets, elastic comfort waist","care":"Machine wash cold, hang dry"},"categoryLabel":"Women's Dresses"},"glaze-ribbed-knit-tank-top":{"rating":4.6,"reviewsCount":2032,"hook":"The soft ribbed layering tank that goes with everything.","rankLabel":"#5 Bestseller in Women's Clothing","badges":["Bestseller","Layerable","Soft Stretch"],"benefits":["Slim V-neck fit that layers cleanly under anything","Soft ribbed knit with comfortable stretch","An everyday basic you'll reach for all summer"],"specs":{"material":"Ribbed cotton blend","neckline":"V-neck","fit":"Slim, fitted sleeveless","care":"Machine wash cold"},"categoryLabel":"Women's Tops"},"B0FTSVKP9B":{"rating":4.6,"reviewsCount":2032,"hook":"The soft ribbed layering tank that goes with everything.","rankLabel":"#5 Bestseller in Women's Clothing","badges":["Bestseller","Layerable","Soft Stretch"],"benefits":["Slim V-neck fit that layers cleanly under anything","Soft ribbed knit with comfortable stretch","An everyday basic you'll reach for all summer"],"specs":{"material":"Ribbed cotton blend","neckline":"V-neck","fit":"Slim, fitted sleeveless","care":"Machine wash cold"},"categoryLabel":"Women's Tops"}};
+
+let PRODUCTS = [
+  {% for product in collection.products %}
+  {
+    id: "{{ product.id }}",
+    handle: "{{ product.handle }}",
+    name: "{{ product.title | escape }}",
+    category: "{{ product.type | handleize }}",
+    categoryLabel: "{{ product.type | escape }}",
+    price: {{ product.price | divided_by: 100.0 }},
+    available: {% if product.available %}true{% else %}false{% endif %},
+    image: "{% if product.featured_image %}{{ product.featured_image | image_url: width: 800 }}{% else %}https://files.catbox.moe/hgn95m.jpg{% endif %}",
+    description: "{{ product.description | escape | strip_newlines }}",
+    specs: {},
+    sizes: [
+      {% for variant in product.variants %}
+        "{{ variant.title | escape }}"{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ],
+    variantsMap: {
+      {% for variant in product.variants %}
+        "{{ variant.title | escape }}": "{{ variant.id }}"{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    }
+  }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+];
+
+// Merge merchandising enrichment onto each live product (match by handle, then id).
+PRODUCTS.forEach(product => {
+  const e = ENRICHMENT[product.handle] || ENRICHMENT[product.id] || null;
+  if (e) {
+    product.rating = e.rating;
+    product.reviewsCount = e.reviewsCount;
+    product.hook = e.hook;
+    product.rankLabel = e.rankLabel;
+    product.badges = e.badges;
+    product.benefits = e.benefits;
+    if (e.specs && Object.keys(e.specs).length) product.specs = e.specs;
+    if (e.categoryLabel) product.categoryLabel = e.categoryLabel;
+  }
+  // Sensible fallbacks so the UI never breaks on an unmatched product.
+  if (product.rating == null) product.rating = 4.6;
+  if (product.reviewsCount == null) product.reviewsCount = 0;
+  if (!product.badges) product.badges = product.available ? ["New"] : ["Sold Out"];
+  if (!product.benefits) product.benefits = [];
+  if (product.hook == null) product.hook = "";
+  if (product.rankLabel == null) product.rankLabel = "";
+});
+
+// Bestsellers first: order by review count so the most-proven items lead.
+PRODUCTS.sort((a, b) => (b.reviewsCount || 0) - (a.reviewsCount || 0));
+
+// Post-process: clean the Shopify description into plain prose, and (only as a
+// fallback, when enrichment didn't supply them) parse specs from the description.
+// Shopify escapes the description (| escape), so it arrives as "&lt;p&gt;..."; the
+// textarea trick below decodes those entities back to real HTML before parsing.
+PRODUCTS.forEach(product => {
+  // Detect real tags OR HTML-escaped tags (&lt;p&gt;, &lt;h3&gt; ...).
+  const looksLikeHtml = product.description &&
+    (/<[a-z]/i.test(product.description) || /&lt;[a-z]/i.test(product.description));
+  if (looksLikeHtml) {
+    try {
+      const txt = document.createElement("textarea");
+      txt.innerHTML = product.description;   // decodes &lt; -> <
+      const rawHtml = txt.value;
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(rawHtml, 'text/html');
+
+      // Fallback spec extraction only if enrichment gave us nothing.
+      if (!product.specs || Object.keys(product.specs).length === 0) {
+        product.specs = product.specs || {};
+        doc.querySelectorAll('li').forEach(li => {
+          const strong = li.querySelector('strong');
+          if (strong) {
+            const key = strong.textContent.replace(':', '').trim();
+            const value = li.textContent.replace(strong.textContent, '').trim();
+            product.specs[key] = value;
+          }
+        });
+      }
+
+      // Use just the intro paragraph(s) as the prose description.
+      const pElements = doc.querySelectorAll('p');
+      if (pElements.length > 0) {
+        product.description = Array.from(pElements).map(p => p.textContent.trim()).join(' ');
+      } else {
+        product.description = (doc.body.textContent || '').trim();
+      }
+    } catch (e) {
+      console.error("Failed to parse product description:", e);
+    }
+  }
+});
+
+// Fallback to static catalog if Shopify returns 0 products (collection not configured yet).
+// Generated from src/products.js (single source of truth) with the real image URLs.
+if (PRODUCTS.length === 0) {
+  PRODUCTS = [
+  {
+    "id": "B09P3RHNSY",
+    "name": "GLAZE Aero Men's Running Shorts",
+    "category": "activewear",
+    "categoryLabel": "Men's Activewear",
+    "price": 26.99,
+    "rating": 4.5,
+    "reviewsCount": 19928,
+    "image": "https://files.catbox.moe/oms6xl.jpg",
+    "hook": "Quick-dry training shorts with 3 zip pockets — loved by nearly 20,000 shoppers.",
+    "rankLabel": "Top 15 in Men's Clothing",
+    "badges": [
+      "Top Rated",
+      "3 Zip Pockets",
+      "Quick-Dry"
+    ],
+    "benefits": [
+      "Three zippered pockets keep your phone, keys and cards secure while you move",
+      "Quick-drying, lightweight fabric for running, gym and court sports",
+      "Built-in mesh liner for all-day comfort"
+    ],
+    "description": "Lightweight athletic shorts built for running, gym and court sports. Quick-drying fabric with three zippered pockets to keep your essentials secure while you move.",
+    "specs": {
+      "material": "Polyester / spandex blend",
+      "pockets": "Three zippered pockets",
+      "performance": "Quick-drying, lightweight",
+      "fit": "Athletic fit with mesh liner"
+    },
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "variantsMap": {
+      "S": "1"
+    }
+  },
+  {
+    "id": "B0CKZ4ZWYG",
+    "name": "GLAZE Everyday High-Waisted Leggings",
+    "category": "activewear",
+    "categoryLabel": "Women's Activewear",
+    "price": 15.99,
+    "rating": 4.6,
+    "reviewsCount": 12949,
+    "image": "https://files.catbox.moe/rrpwrx.jpg",
+    "hook": "Buttery-soft leggings with real pockets — a 12,000+ review bestseller.",
+    "rankLabel": "#11 Bestseller in Women's Clothing",
+    "badges": [
+      "Bestseller",
+      "Side Pockets",
+      "Squat-Proof"
+    ],
+    "benefits": [
+      "Actual side pockets that fit your phone — not fake ones",
+      "Buttery-soft, 4-way stretch that moves with you",
+      "High-waisted with a wide band that won't roll down"
+    ],
+    "description": "Buttery-soft high-waisted leggings with side pockets. A stretchy, comfortable everyday layer for yoga, workouts and lounging.",
+    "specs": {
+      "material": "Polyester / spandex blend",
+      "waist": "High-waisted",
+      "features": "Side pockets, 4-way stretch",
+      "fit": "Full length, buttery-soft feel"
+    },
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "variantsMap": {
+      "S": "1"
+    }
+  },
+  {
+    "id": "B0BV241H3F",
+    "name": "GLAZE Summer Linen-Blend Button-Down",
+    "category": "shirts",
+    "categoryLabel": "Men's Shirts",
+    "price": 34.99,
+    "rating": 4.4,
+    "reviewsCount": 14800,
+    "image": "https://files.catbox.moe/h64bqu.jpg",
+    "hook": "The breathable summer shirt with 14,800 reviews — beach to wedding.",
+    "rankLabel": "#4 Bestseller in Men's Clothing",
+    "badges": [
+      "Bestseller",
+      "Breathable Linen",
+      "Wedding-Ready"
+    ],
+    "benefits": [
+      "Lightweight linen-cotton blend keeps you cool in the heat",
+      "Dresses up or down — beach, summer events, weddings",
+      "Relaxed casual fit that isn't boxy"
+    ],
+    "description": "A relaxed short-sleeve button-down in a breathable linen-cotton blend. A lightweight staple for the beach, summer events and everyday warm-weather wear.",
+    "specs": {
+      "material": "Linen / cotton blend",
+      "fit": "Relaxed casual fit",
+      "features": "Button-down front, short sleeve",
+      "care": "Machine wash cold, iron low if needed"
+    },
+    "sizes": [
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "variantsMap": {
+      "M": "1"
+    }
+  },
+  {
+    "id": "B09MKNL9M3",
+    "name": "GLAZE Aero Women's Athletic Shorts",
+    "category": "activewear",
+    "categoryLabel": "Women's Activewear",
+    "price": 24.99,
+    "rating": 4.5,
+    "reviewsCount": 12857,
+    "image": "https://files.catbox.moe/r4s2lf.jpg",
+    "hook": "High-waisted workout shorts with a secure pocket — 12,000+ reviews.",
+    "rankLabel": "#10 Bestseller in Women's Clothing",
+    "badges": [
+      "Bestseller",
+      "High-Waisted",
+      "Pocket"
+    ],
+    "benefits": [
+      "Flattering high-rise waistband that stays put through any workout",
+      "Secure pocket for your phone or keys",
+      "Stretchy, breathable fabric for gym and everyday wear"
+    ],
+    "description": "High-waisted running shorts with a secure pocket, made for gym workouts and everyday active wear. Stretchy, comfortable fabric with a flattering high-rise waistband.",
+    "specs": {
+      "material": "Polyester / spandex blend",
+      "waist": "High-waisted elastic waistband",
+      "pockets": "Side pocket",
+      "fit": "Sporty running short"
+    },
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "variantsMap": {
+      "XS": "1"
+    }
+  },
+  {
+    "id": "B0CSDK2C3P",
+    "name": "GLAZE UV-Shield Long Sleeve Sun Shirt",
+    "category": "activewear",
+    "categoryLabel": "Women's Activewear",
+    "price": 27.99,
+    "rating": 4.6,
+    "reviewsCount": 3506,
+    "image": "https://files.catbox.moe/17e114.jpg",
+    "hook": "UPF 50+ sun protection that actually stays cool — 3,500+ reviews.",
+    "rankLabel": "Top 25 in Women's Clothing",
+    "badges": [
+      "UPF 50+",
+      "Quick-Dry",
+      "Cooling"
+    ],
+    "benefits": [
+      "UPF 50+ rated fabric blocks the sun on long days outdoors",
+      "Moisture-wicking and quick-drying for hikes and workouts",
+      "Lightweight and breathable so you stay cool, not sweaty"
+    ],
+    "description": "A lightweight, quick-drying long sleeve shirt with UPF 50+ rated sun protection. Made for hiking, workouts and long days outdoors, with a breathable feel that helps keep you cool.",
+    "specs": {
+      "material": "Polyester / spandex blend",
+      "protection": "UPF 50+ rated fabric (manufacturer tested)",
+      "performance": "Moisture-wicking, quick-drying",
+      "fit": "Lightweight, breathable long sleeve"
+    },
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "variantsMap": {
+      "S": "1"
+    }
+  },
+  {
+    "id": "B0FP5BYXVR",
+    "name": "GLAZE Palazzo Wide-Leg Pants",
+    "category": "pants",
+    "categoryLabel": "Women's Pants",
+    "price": 32.99,
+    "rating": 4.5,
+    "reviewsCount": 2745,
+    "image": "https://files.catbox.moe/ivmew0.jpg",
+    "hook": "Flowy vacation pants with pockets — a top-3 women's bestseller.",
+    "rankLabel": "#3 Bestseller in Women's Clothing",
+    "badges": [
+      "Bestseller",
+      "Pockets",
+      "Vacation-Ready"
+    ],
+    "benefits": [
+      "Breezy wide-leg cut that's cool and comfortable in the heat",
+      "Real pockets and a drawstring elastic waist for easy fit",
+      "Dresses up for dinner or down for the beach"
+    ],
+    "description": "Flowy wide-leg palazzo pants with a drawstring elastic waist and pockets. Lightweight and breezy for summer, the beach and vacation.",
+    "specs": {
+      "material": "Rayon blend",
+      "fit": "Wide-leg palazzo cut",
+      "waist": "Drawstring elastic waist",
+      "features": "Side pockets"
+    },
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "variantsMap": {
+      "S": "1"
+    }
+  },
+  {
+    "id": "B0FT4QF9D5",
+    "name": "GLAZE Flow Midi Sundress",
+    "category": "dresses",
+    "categoryLabel": "Women's Dresses",
+    "price": 32.99,
+    "rating": 4.5,
+    "reviewsCount": 2393,
+    "image": "https://files.catbox.moe/rabxm9.jpg",
+    "hook": "The flowy midi sundress with real pockets — made for vacation.",
+    "rankLabel": "",
+    "badges": [
+      "Best Seller",
+      "Side Pockets",
+      "Vacation-Ready"
+    ],
+    "benefits": [
+      "Handy side pockets — rare on a dress this light",
+      "Soft, breathable fabric with an easy, flattering drape",
+      "Midi length that works for the beach, brunch or a day out"
+    ],
+    "description": "A lightweight, flowy midi sundress cut for warm-weather days and vacations. Soft, breathable fabric with a relaxed drape and handy side pockets.",
+    "specs": {
+      "material": "Rayon / spandex blend",
+      "fit": "Relaxed A-line midi length",
+      "features": "Two side pockets, elastic comfort waist",
+      "care": "Machine wash cold, hang dry"
+    },
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "variantsMap": {
+      "S": "1"
+    }
+  },
+  {
+    "id": "B0FTSVKP9B",
+    "name": "GLAZE Ribbed Knit Tank Top",
+    "category": "tops",
+    "categoryLabel": "Women's Tops",
+    "price": 14.99,
+    "rating": 4.6,
+    "reviewsCount": 2032,
+    "image": "https://files.catbox.moe/u8xrnb.jpg",
+    "hook": "The soft ribbed layering tank that goes with everything.",
+    "rankLabel": "#5 Bestseller in Women's Clothing",
+    "badges": [
+      "Bestseller",
+      "Layerable",
+      "Soft Stretch"
+    ],
+    "benefits": [
+      "Slim V-neck fit that layers cleanly under anything",
+      "Soft ribbed knit with comfortable stretch",
+      "An everyday basic you'll reach for all summer"
+    ],
+    "description": "A slim-fitting V-neck ribbed knit tank top. A soft, stretchy basic that layers easily and works for everyday summer wear.",
+    "specs": {
+      "material": "Ribbed cotton blend",
+      "neckline": "V-neck",
+      "fit": "Slim, fitted sleeveless",
+      "care": "Machine wash cold"
+    },
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "variantsMap": {
+      "XS": "1"
+    }
+  }
+];
+}
+
+let cart = [];
+let activeCategory = "all";
+let activeModalProduct = null;
+
+// --- App router state ---
+const VIEWS = { home: "view-home", product: "view-product", bag: "view-bag", search: "view-search" };
+const VIEW_TITLES = { home: "", product: "", bag: "Shopping Bag", search: "Search" };
+let viewStack = ["home"];
+let searchQuery = "";
+let isAnimating = false;
+
+// --- DOM Elements ---
+const productGrid = document.getElementById("product-grid");
+const searchGrid = document.getElementById("search-product-grid");
+const filterTabs = document.querySelectorAll("#catalog .filter-tab");
+const searchFilterTabs = document.querySelectorAll("#search-filter-tabs .filter-tab");
+const searchInput = document.getElementById("search-input");
+const cartBtn = document.getElementById("cart-btn");
+const cartBadge = document.querySelector(".app-bar .cart-badge");
+const tabCartBadge = document.querySelector(".tab-cart-badge");
+const cartItemsContainer = document.getElementById("cart-items-container");
+const cartSubtotalVal = document.getElementById("cart-subtotal-value");
+const checkoutBtn = document.getElementById("checkout-btn");
+const productViewBody = document.getElementById("product-view-body");
+const appBar = document.getElementById("app-bar");
+const appBarBack = document.getElementById("app-bar-back");
+const appBarTitle = document.getElementById("app-bar-title");
+const viewStackEl = document.getElementById("view-stack");
+const tabBar = document.getElementById("tab-bar");
+const searchBtn = document.getElementById("search-btn");
+const checkoutSuccessModal = document.getElementById("checkout-success-modal");
+const successCloseBtn = document.getElementById("success-close-btn");
+const orderRefCode = document.getElementById("order-ref-code");
+const toastContainer = document.getElementById("toast-container");
+const newsletterForm = document.getElementById("newsletter-form");
+
+// --- Initialization ---
+function initGlaze() {
+    // On (re-)init (incl. Shopify theme editor section reload) reset to Home root.
+    viewStack = ["home"];
+    resetViewsToHome();
+    renderProducts();
+    setupEventListeners();
+    initRouter();
+    syncShopifyCart();
+    if (window.AYSzvothEK) {
+        window.AYSzvothEK.track('page_viewed');
+    }
+}
+
+// Run immediately as elements are already loaded in the DOM
+initGlaze();
+
+// Fallbacks for standard page loads and Shopify theme editor updates
+document.addEventListener("DOMContentLoaded", initGlaze);
+document.addEventListener("shopify:section:load", initGlaze);
+
+// --- Event Listeners Setup ---
+function setupEventListeners() {
+    if (window.glazeListenersAttached) return;
+    window.glazeListenersAttached = true;
+
+    // Home category filtering
+    filterTabs.forEach(tab => {
+        tab.addEventListener("click", (e) => {
+            filterTabs.forEach(t => t.classList.remove("active"));
+            e.currentTarget.classList.add("active");
+            activeCategory = e.currentTarget.getAttribute("data-category");
+            renderProducts();
+            if (window.AYSzvothEK) {
+                window.AYSzvothEK.track('collection_viewed', { category: activeCategory });
+            }
+            if (window.Shopify && window.Shopify.analytics) {
+                window.Shopify.analytics.publish('custom_collection_viewed', { category: activeCategory });
+            }
+        });
+    });
+
+    // Checkout Action -> verify the real Shopify cart has items, then redirect.
+    checkoutBtn.addEventListener("click", () => {
+        checkoutBtn.disabled = true;
+        // Re-check the authoritative Shopify cart right before sending to checkout,
+        // so we never redirect the buyer to an empty /checkout.
+        fetch('/cart.js')
+            .then(res => res.json())
+            .then(data => {
+                if (!data || data.item_count === 0) {
+                    checkoutBtn.disabled = false;
+                    showToast("Your bag is empty. Add an item before checking out.", "fa-circle-exclamation");
+                    return;
+                }
+                if (window.AYSzvothEK) {
+                    window.AYSzvothEK.track('checkout_started');
+                }
+                window.location.href = '/checkout';
+            })
+            .catch(() => {
+                checkoutBtn.disabled = false;
+                showToast("Couldn't reach checkout. Please try again.", "fa-circle-exclamation");
+            });
+    });
+
+    // Success Modal Close
+    if (successCloseBtn) {
+        successCloseBtn.addEventListener("click", () => {
+            checkoutSuccessModal.classList.remove("active");
+        });
+    }
+
+    // Newsletter Submission
+    if (newsletterForm) {
+        newsletterForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const emailInput = newsletterForm.querySelector("input");
+            showToast(`Successfully subscribed: ${emailInput.value}!`, "fa-circle-check");
+            emailInput.value = "";
+        });
+    }
+}
+
+/* ==========================================================================
+   APP ROUTER — full-screen stacked views with iOS-style slide push/pop
+   ========================================================================== */
+
+function getViewEl(name) { return document.getElementById(VIEWS[name]); }
+
+function resetViewsToHome() {
+    Object.keys(VIEWS).forEach(name => {
+        const el = getViewEl(name);
+        if (!el) return;
+        el.classList.remove("view-active", "view-exit-left", "view-exit-right", "is-animating");
+        if (name === "home") {
+            el.classList.remove("is-hidden");
+            el.setAttribute("aria-hidden", "false");
+        } else {
+            el.classList.add("is-hidden");
+            el.setAttribute("aria-hidden", "true");
+        }
+    });
+    updateAppBar();
+}
+
+function updateAppBar() {
+    const top = viewStack[viewStack.length - 1];
+    if (appBarBack) appBarBack.hidden = viewStack.length <= 1;
+    if (appBarTitle) {
+        if (top === "home") {
+            appBarTitle.innerHTML = '<span class="logo"><span class="logo-accent">GLA</span>ZE</span>';
+        } else if (top === "product" && activeModalProduct) {
+            appBarTitle.textContent = activeModalProduct.name;
+        } else if (top === "bag") {
+            const count = cart.reduce((s, i) => s + i.quantity, 0);
+            appBarTitle.textContent = count > 0 ? `Shopping Bag (${count})` : "Shopping Bag";
+        } else {
+            appBarTitle.textContent = VIEW_TITLES[top] || "";
+        }
+    }
+    // Sync bottom tab + desktop nav active state to the current root-ish view.
+    const tabName = (top === "product") ? "home" : top;
+    if (tabBar) {
+        tabBar.querySelectorAll(".tab-item").forEach(t => {
+            t.classList.toggle("active", t.getAttribute("data-tab") === tabName);
+        });
+    }
+    document.querySelectorAll("#app-bar-nav .nav-link").forEach(t => {
+        t.classList.toggle("active", t.getAttribute("data-tab") === tabName);
+    });
+}
+
+// Build a view's content just before it becomes visible.
+function buildView(name, data) {
+    if (name === "product" && data) renderProductView(data);
+    else if (name === "bag") syncShopifyCart();
+    else if (name === "search") renderSearch();
+}
+
+function finishAnimation(cb) {
+    // transitionend + a safety timeout so state never gets stuck.
+    let done = false;
+    const finalize = () => { if (done) return; done = true; cb(); };
+    return { finalize };
+}
+
+// Push a new view onto the stack (records history).
+function pushView(name, data) {
+    if (isAnimating) return;
+    const fromName = viewStack[viewStack.length - 1];
+    if (name === "product") activeModalProduct = data || null;
+    buildView(name, data);
+
+    const fromEl = getViewEl(fromName);
+    const toEl = getViewEl(name);
+    if (!toEl) return;
+
+    isAnimating = true;
+    // Prepare incoming view off-screen to the right.
+    toEl.classList.remove("is-hidden", "view-exit-left", "view-exit-right");
+    toEl.setAttribute("aria-hidden", "false");
+    toEl.style.transform = "translateX(100%)";
+    // Reset incoming scroll to top.
+    const sc = toEl.querySelector(".view-scroll");
+    if (sc) sc.scrollTop = 0;
+    // Force reflow so the transform takes effect before we animate.
+    void toEl.offsetWidth;
+
+    toEl.classList.add("is-animating");
+    if (fromEl) fromEl.classList.add("is-animating");
+
+    toEl.style.transform = "";
+    toEl.classList.add("view-active");
+    if (fromEl) fromEl.classList.add("view-exit-left");
+
+    const { finalize } = finishAnimation(() => {
+        if (fromEl) fromEl.classList.remove("is-animating");
+        toEl.classList.remove("is-animating");
+    });
+    const onEnd = () => { toEl.removeEventListener("transitionend", onEnd); finalize(); isAnimating = false; };
+    toEl.addEventListener("transitionend", onEnd);
+    setTimeout(() => { finalize(); isAnimating = false; }, 500);
+
+    viewStack.push(name);
+    updateAppBar();
+    history.pushState({ view: name }, "");
+
+    // Analytics parity with the old overlays.
+    if (name === "bag") {
+        if (window.AYSzvothEK) window.AYSzvothEK.track('cart_viewed');
+        if (window.Shopify && window.Shopify.analytics) window.Shopify.analytics.publish('custom_cart_viewed', {});
+    }
+}
+
+// Pop the top view (driven by popstate only).
+function popView() {
+    if (viewStack.length <= 1) return;
+    if (isAnimating) return;
+    const fromName = viewStack[viewStack.length - 1];
+    const toName = viewStack[viewStack.length - 2];
+    const fromEl = getViewEl(fromName);
+    const toEl = getViewEl(toName);
+    if (!fromEl || !toEl) return;
+
+    isAnimating = true;
+    // Incoming (previous) view sits dimmed to the left; bring it back to 0.
+    toEl.classList.remove("is-hidden", "view-exit-left");
+    toEl.setAttribute("aria-hidden", "false");
+    void toEl.offsetWidth;
+    toEl.classList.add("is-animating");
+    fromEl.classList.add("is-animating");
+
+    toEl.classList.remove("view-exit-left");
+    toEl.classList.add("view-active");
+    fromEl.classList.remove("view-active");
+    fromEl.classList.add("view-exit-right");
+
+    const cleanup = () => {
+        fromEl.removeEventListener("transitionend", cleanup);
+        fromEl.classList.add("is-hidden");
+        fromEl.classList.remove("view-exit-right", "is-animating", "view-active");
+        fromEl.setAttribute("aria-hidden", "true");
+        toEl.classList.remove("is-animating");
+        if (toName === "home") toEl.classList.remove("view-active"); // home rests at translateX(0)
+        isAnimating = false;
+    };
+    fromEl.addEventListener("transitionend", cleanup);
+    setTimeout(cleanup, 500);
+
+    viewStack.pop();
+    if (fromName === "product") activeModalProduct = null;
+    updateAppBar();
+}
+
+// Bottom tab switch: reset the stack to a single view (cross-fade / instant swap).
+function switchTab(name) {
+    if (isAnimating) return;
+    const top = viewStack[viewStack.length - 1];
+    if (top === name) {
+        // Tapping the current tab: if we're deep in a stack, pop to root.
+        if (viewStack.length > 1) { history.go(-(viewStack.length - 1)); }
+        return;
+    }
+    buildView(name, null);
+    // Collapse history back to a single entry, then swap instantly.
+    if (viewStack.length > 1) { history.go(-(viewStack.length - 1)); }
+    // Defer the swap so the popstate unwinding settles first.
+    setTimeout(() => {
+        viewStack = [name];
+        Object.keys(VIEWS).forEach(v => {
+            const el = getViewEl(v);
+            if (!el) return;
+            el.classList.remove("view-active", "view-exit-left", "view-exit-right", "is-animating");
+            if (v === name) {
+                el.classList.remove("is-hidden");
+                el.setAttribute("aria-hidden", "false");
+                el.style.transform = (v === "home") ? "" : "translateX(0)";
+                if (v !== "home") el.classList.add("view-active");
+                const sc = el.querySelector(".view-scroll");
+                if (sc) sc.scrollTop = 0;
+            } else {
+                el.classList.add("is-hidden");
+                el.setAttribute("aria-hidden", "true");
+                el.style.transform = "";
+            }
+        });
+        history.replaceState({ view: name }, "");
+        updateAppBar();
+    }, isAnimating ? 60 : 0);
+}
+
+function initRouter() {
+    if (window.glazeRouterInit) return;
+    window.glazeRouterInit = true;
+
+    history.replaceState({ view: "home" }, "");
+
+    window.addEventListener("popstate", () => {
+        if (viewStack.length > 1) popView();
+    });
+
+    if (appBarBack) appBarBack.addEventListener("click", () => history.back());
+    if (searchBtn) searchBtn.addEventListener("click", () => switchTab("search"));
+    if (cartBtn) cartBtn.addEventListener("click", () => {
+        if (viewStack[viewStack.length - 1] !== "bag") pushView("bag");
+    });
+
+    if (tabBar) {
+        tabBar.querySelectorAll(".tab-item").forEach(tab => {
+            tab.addEventListener("click", () => switchTab(tab.getAttribute("data-tab")));
+        });
+    }
+
+    // Desktop top-nav links (shown at >=1024px) drive the same router.
+    document.querySelectorAll("#app-bar-nav .nav-link").forEach(link => {
+        link.addEventListener("click", () => switchTab(link.getAttribute("data-tab")));
+    });
+
+    // Search wiring
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            searchQuery = (e.target.value || "").toLowerCase().trim();
+            renderSearch();
+        });
+    }
+    searchFilterTabs.forEach(tab => {
+        tab.addEventListener("click", (e) => {
+            searchFilterTabs.forEach(t => t.classList.remove("active"));
+            e.currentTarget.classList.add("active");
+            activeCategory = e.currentTarget.getAttribute("data-category");
+            renderSearch();
+        });
+    });
+}
+
+// Render the search results grid (name + category filter).
+function renderSearch() {
+    if (!searchGrid) return;
+    let list = activeCategory === "all" ? PRODUCTS : PRODUCTS.filter(p => p.category === activeCategory);
+    if (searchQuery) {
+        list = list.filter(p => (p.name || "").toLowerCase().includes(searchQuery)
+            || (p.hook || "").toLowerCase().includes(searchQuery)
+            || (p.categoryLabel || "").toLowerCase().includes(searchQuery));
+    }
+    renderProducts(searchGrid, list);
+}
+
+// --- Sync with Shopify Cart (AJAX) ---
+function syncShopifyCart() {
+    fetch('/cart.js')
+        .then(res => res.json())
+        .then(data => {
+            // Map Shopify Cart Items into our localized format
+            cart = data.items.map(item => {
+                // Find matching product in our local list
+                const matchedProduct = PRODUCTS.find(p => p.name === item.product_title) || {
+                    id: item.product_id,
+                    name: item.product_title,
+                    price: item.price / 100,
+                    image: item.image
+                };
+                return {
+                    product: matchedProduct,
+                    size: item.variant_options ? item.variant_options[0] : "Default",
+                    quantity: item.quantity,
+                    key: item.key,
+                    variantId: item.id
+                };
+            });
+            updateCartUI(data.total_price / 100, data.item_count);
+        })
+        .catch(err => console.error("Error syncing Shopify cart:", err));
+}
+
+// --- Render star icons for a 0-5 rating ---
+function renderStars(rating) {
+    const r = Math.max(0, Math.min(5, Number(rating) || 0));
+    const full = Math.floor(r);
+    const half = (r - full) >= 0.5 ? 1 : 0;
+    const empty = 5 - full - half;
+    let html = "";
+    for (let i = 0; i < full; i++) html += '<i class="fa-solid fa-star"></i>';
+    if (half) html += '<i class="fa-solid fa-star-half-stroke"></i>';
+    for (let i = 0; i < empty; i++) html += '<i class="fa-regular fa-star"></i>';
+    return html;
+}
+
+// Rating label: include the review count only when we actually have reviews,
+// so unmatched products never show a misleading "· 0 reviews".
+function ratingText(product) {
+    const n = Number(product.reviewsCount) || 0;
+    if (n > 0) return `<strong>${product.rating}</strong> · ${n.toLocaleString()} reviews`;
+    return `<strong>${product.rating}</strong>`;
+}
+
+// --- Render Product Grid (into a target grid; optional pre-filtered list) ---
+function renderProducts(gridEl, list) {
+    gridEl = gridEl || productGrid;
+    if (!gridEl) return;
+    gridEl.innerHTML = "";
+
+    const filtered = list || (activeCategory === "all"
+        ? PRODUCTS
+        : PRODUCTS.filter(p => p.category === activeCategory));
+
+    if (filtered.length === 0) {
+        gridEl.innerHTML = `<div class="empty-message">No items found.</div>`;
+        return;
+    }
+
+    filtered.forEach(product => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+        card.setAttribute("data-id", product.id);
+
+        const rankBadge = product.rankLabel
+            ? `<div class="product-rank-badge"><i class="fa-solid fa-award"></i> ${product.rankLabel}</div>`
+            : (product.badges && product.badges[0] ? `<div class="product-rank-badge alt">${product.badges[0]}</div>` : "");
+        const chipsHTML = (product.badges || []).slice(0, 3).map(b =>
+            `<span class="product-chip">${b}</span>`).join("");
+
+        card.innerHTML = `
+            <div class="product-img-wrapper">
+                <div class="glass-reflection-shine"></div>
+                <img src="${product.image}" alt="${product.name}" class="product-img" loading="lazy">
+                ${rankBadge}
+            </div>
+            <div class="product-info">
+                <div class="product-rating">
+                    <span class="stars-inline">${renderStars(product.rating)}</span>
+                    <span class="rating-count">${ratingText(product)}</span>
+                </div>
+                <h3 class="product-name">${product.name}</h3>
+                ${product.hook ? `<p class="product-hook">${product.hook}</p>` : ""}
+                <div class="product-chips">${chipsHTML}</div>
+                <div class="product-price-row">
+                    <span class="product-price">$${product.price.toFixed(2)}</span>
+                    <button class="btn-add-cart" title="Add to Bag">
+                        <i class="fa-solid fa-bag-shopping"></i> Add
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Bind add to cart
+        card.querySelector(".btn-add-cart").addEventListener("click", (e) => {
+            e.stopPropagation();
+            const defaultSize = product.sizes && product.sizes.length > 0 ? product.sizes[0] : "M";
+            addToCart(product, defaultSize);
+        });
+
+        // Bind open full-screen product view on card click
+        card.addEventListener("click", () => {
+            pushView("product", product);
+        });
+
+        gridEl.appendChild(card);
+    });
+}
+
+// --- Add Item to Shopify Cart (AJAX) ---
+function addToCart(product, size) {
+    if (window.AYSzvothEK) {
+        window.AYSzvothEK.track('AddToCart', {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            size: size
+        });
+    }
+    const variantId = product.variantsMap ? product.variantsMap[size] : null;
+
+    // A valid Shopify variant ID is a long numeric string. If we don't have one,
+    // the product isn't properly wired to Shopify (collection not set / not imported).
+    // NEVER fake a successful add — that sends buyers to an empty checkout.
+    const isValidVariant = variantId && /^\d{6,}$/.test(String(variantId));
+
+    if (!isValidVariant) {
+        console.error("No valid Shopify variant ID for", product.name, size, "-> got:", variantId);
+        showToast("Sorry, this item can't be added right now.", "fa-circle-exclamation");
+        return;
+    }
+
+    showToast("Adding " + product.name + " (" + size + ") to bag...", "fa-spinner");
+
+    fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            items: [{ id: variantId, quantity: 1 }]
+        })
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("Shopify rejected cart add");
+        return res.json();
+    })
+    .then(() => {
+        showToast("Added " + product.name + " to bag!", "fa-bag-shopping");
+        syncShopifyCart();
+    })
+    .catch(err => {
+        console.error("Cart add error: ", err);
+        showToast("Couldn't add to bag. It may be out of stock.", "fa-circle-exclamation");
+    });
+}
+
+// --- Modify Variant Quantity in Shopify Cart (AJAX) ---
+function changeQuantity(lineKey, newQty) {
+    // Update the authoritative Shopify cart by line key (from /cart.js).
+    fetch('/cart/change.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            id: String(lineKey),
+            quantity: Math.max(0, newQty)
+        })
+    })
+    .then(res => res.json())
+    .then(() => {
+        syncShopifyCart();
+    })
+    .catch(err => console.error("Error updating quantity: ", err));
+}
+
+// --- Render Cart UI ---
+function updateCartUI(totalPrice = 0, itemCount = 0) {
+    cartItemsContainer.innerHTML = "";
+
+    if (cart.length === 0) {
+        cartItemsContainer.innerHTML = `
+            <div class="cart-empty-message">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <p>Your bag is empty.</p>
+                <button class="btn btn-secondary close-cart-btn-action" style="font-size:0.85rem; padding:10px 20px;">Browse Collection</button>
+            </div>
+        `;
+
+        const browseBtn = cartItemsContainer.querySelector(".close-cart-btn-action");
+        if (browseBtn) {
+            browseBtn.addEventListener("click", () => switchTab("home"));
+        }
+
+        setCartBadges(0);
+        cartSubtotalVal.innerText = "$0.00";
+        checkoutBtn.disabled = true;
+        if (viewStack[viewStack.length - 1] === "bag") updateAppBar();
+        return;
+    }
+
+    cart.forEach((item) => {
+        const cartItemEl = document.createElement("div");
+        cartItemEl.className = "cart-item";
+        cartItemEl.innerHTML = `
+            <div class="cart-item-img-wrapper">
+                <img src="${item.product.image}" alt="${item.product.name}">
+            </div>
+            <div class="cart-item-info">
+                <h4 class="cart-item-name">${item.product.name}</h4>
+                <span class="cart-item-size">Size: ${item.size}</span>
+                <span class="cart-item-price">$${item.product.price.toFixed(2)}</span>
+                <div class="cart-item-actions">
+                    <div class="qty-controls">
+                        <button class="qty-btn dec-qty-btn">-</button>
+                        <span class="qty-val">${item.quantity}</span>
+                        <button class="qty-btn inc-qty-btn">+</button>
+                    </div>
+                    <button class="btn-remove-item" title="Remove Item">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Use the Shopify line key (set by syncShopifyCart) for all changes.
+        const lineRef = item.key || item.variantId;
+
+        // Handle quantity decrement
+        cartItemEl.querySelector(".dec-qty-btn").addEventListener("click", () => {
+            changeQuantity(lineRef, item.quantity - 1);
+        });
+
+        // Handle quantity increment
+        cartItemEl.querySelector(".inc-qty-btn").addEventListener("click", () => {
+            changeQuantity(lineRef, item.quantity + 1);
+        });
+
+        // Handle deletion
+        cartItemEl.querySelector(".btn-remove-item").addEventListener("click", () => {
+            changeQuantity(lineRef, 0);
+        });
+
+        cartItemsContainer.appendChild(cartItemEl);
+    });
+
+    // Update Badge & Totals
+    setCartBadges(itemCount);
+    cartSubtotalVal.innerText = `$${totalPrice.toFixed(2)}`;
+    checkoutBtn.disabled = false;
+    if (viewStack[viewStack.length - 1] === "bag") updateAppBar();
+}
+
+// Sync both the app-bar cart badge and the bottom-tab bag badge.
+function setCartBadges(count) {
+    if (cartBadge) {
+        cartBadge.innerText = count;
+        cartBadge.classList.toggle("active", count > 0);
+        cartBadge.style.display = count > 0 ? "flex" : "none";
+    }
+    if (tabCartBadge) {
+        tabCartBadge.innerText = count;
+        tabCartBadge.classList.toggle("active", count > 0);
+    }
+}
+
+// --- Full-screen Product View ---
+function renderProductView(product) {
+    if (!productViewBody) return;
+    if (window.AYSzvothEK) {
+        window.AYSzvothEK.track('product_viewed', {
+            id: product.id,
+            name: product.name,
+            price: product.price
+        });
+    }
+    if (window.Shopify && window.Shopify.analytics) {
+        window.Shopify.analytics.publish('custom_product_viewed', {
+            id: product.id,
+            name: product.name,
+            price: product.price
+        });
+    }
+    activeModalProduct = product;
+    
+    // Format specifications
+    let specsHTML = "";
+    if (product.specs) {
+        specsHTML = `<div class="specs-grid">`;
+        for (const [key, value] of Object.entries(product.specs)) {
+            const label = key.charAt(0).toUpperCase() + key.slice(1);
+            specsHTML += `
+                <div class="spec-item">
+                    <span class="spec-label">${label}</span>
+                    <span class="spec-val">${value}</span>
+                </div>
+            `;
+        }
+        specsHTML += `</div>`;
+    }
+
+    // Format sizes buttons
+    let sizesHTML = "";
+    if (product.sizes) {
+        product.sizes.forEach((size, idx) => {
+            sizesHTML += `
+                <button class="size-btn ${idx === 0 ? 'active' : ''}" data-size="${size}">${size}</button>
+            `;
+        });
+    }
+
+    // Benefit bullets (what you GET) — the primary selling content.
+    let benefitsHTML = "";
+    if (product.benefits && product.benefits.length) {
+        benefitsHTML = `<ul class="modal-benefits">` +
+            product.benefits.map(b => `<li><i class="fa-solid fa-check"></i> ${b}</li>`).join("") +
+            `</ul>`;
+    }
+
+    // Rank ribbon (real bestseller rank) sits above the title as top proof.
+    const rankRibbon = product.rankLabel
+        ? `<div class="modal-rank"><i class="fa-solid fa-award"></i> ${product.rankLabel}</div>` : "";
+
+    productViewBody.innerHTML = `
+        <div class="modal-img-wrapper glass-card">
+            <div class="glass-reflection-shine"></div>
+            <img src="${product.image}" alt="${product.name}" class="modal-product-img">
+        </div>
+        <div class="modal-details">
+            <span class="modal-category">${product.categoryLabel}</span>
+            ${rankRibbon}
+            <h2 class="modal-product-name">${product.name}</h2>
+            <div class="modal-rating-row">
+                <div class="stars">${renderStars(product.rating)}</div>
+                <span class="reviews-count">${ratingText(product)}</span>
+            </div>
+            ${product.hook ? `<p class="modal-hook">${product.hook}</p>` : ""}
+            <span class="modal-product-price">$${product.price.toFixed(2)}</span>
+            ${benefitsHTML}
+
+            <div style="margin: 20px 0;">
+                <div class="size-head">
+                    <h4 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; margin: 0;">Select Size</h4>
+                    <button type="button" class="size-guide-toggle"><i class="fa-solid fa-ruler"></i> Size guide</button>
+                </div>
+                <div class="size-selector">
+                    ${sizesHTML}
+                </div>
+                <div class="size-guide-panel" hidden>
+                    <table class="size-guide-table">
+                        <thead>
+                            <tr><th>Size</th><th>US</th><th>Bust (in)</th><th>Waist (in)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>XS</td><td>0-2</td><td>31-32</td><td>24-25</td></tr>
+                            <tr><td>S</td><td>4-6</td><td>33-34</td><td>26-27</td></tr>
+                            <tr><td>M</td><td>8-10</td><td>35-37</td><td>28-30</td></tr>
+                            <tr><td>L</td><td>12-14</td><td>38-40</td><td>31-33</td></tr>
+                            <tr><td>XL</td><td>16-18</td><td>41-43</td><td>34-36</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="size-guide-note">Measurements are approximate. If you're between sizes, we suggest sizing up.</p>
+                </div>
+            </div>
+
+            ${product.description ? `<p class="modal-product-desc">${product.description}</p>` : ""}
+
+            ${specsHTML}
+
+            <button class="btn btn-primary modal-add-to-bag-btn">
+                <i class="fa-solid fa-bag-shopping"></i> Add To Bag · $${product.price.toFixed(2)}
+            </button>
+
+            <div class="trust-badges">
+                <div class="trust-badge"><i class="fa-solid fa-truck-fast"></i><span>Free worldwide shipping</span></div>
+                <div class="trust-badge"><i class="fa-solid fa-rotate-left"></i><span>30-day easy returns</span></div>
+                <div class="trust-badge"><i class="fa-solid fa-lock"></i><span>Secure checkout</span></div>
+            </div>
+        </div>
+    `;
+
+    // Size Guide Toggle
+    const sizeGuideToggle = productViewBody.querySelector(".size-guide-toggle");
+    const sizeGuidePanel = productViewBody.querySelector(".size-guide-panel");
+    if (sizeGuideToggle && sizeGuidePanel) {
+        sizeGuideToggle.addEventListener("click", () => {
+            sizeGuidePanel.hidden = !sizeGuidePanel.hidden;
+        });
+    }
+
+    // Size Selection Handlers
+    const sizeBtns = productViewBody.querySelectorAll(".size-btn");
+    sizeBtns.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            sizeBtns.forEach(b => b.classList.remove("active"));
+            e.target.classList.add("active");
+        });
+    });
+
+    // Add To Bag — stay on the product view so the buyer can keep browsing.
+    productViewBody.querySelector(".modal-add-to-bag-btn").addEventListener("click", () => {
+        const activeSizeBtn = productViewBody.querySelector(".size-btn.active");
+        const selectedSize = activeSizeBtn ? activeSizeBtn.getAttribute("data-size") : "M";
+        addToCart(product, selectedSize);
+    });
+}
+
+// --- Toast notification ---
+function showToast(message, iconName = "fa-info-circle") {
+    if (!toastContainer) return;
+    const toast = document.createElement("div");
+    toast.className = "toast glass-card";
+    toast.innerHTML = `
+        <i class="fa-solid ${iconName}"></i>
+        <span>${message}</span>
+    `;
+
+    toastContainer.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add("toast-fade-out");
+        toast.addEventListener("animationend", () => {
+            toast.remove();
+        });
+    }, 3500);
+}
+
+</script>
+
+{% schema %}
+{
+  "name": "GLAZE Storefront Grid",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection to Render",
+      "info": "Choose the collection containing your apparel items."
+    }
+  ],
+  "presets": [
+    {
+      "name": "GLAZE Storefront Grid",
+      "category": "Custom Sections"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,13 @@
+{
+  "current": {
+    "sections": {
+      "glaze-storefront": {
+        "type": "glaze-storefront",
+        "settings": {}
+      }
+    },
+    "content_for_layout": [
+      "glaze-storefront"
+    ]
+  }
+}
