@@ -1,0 +1,418 @@
+{% comment %}
+  GLAZE® Standalone Product Page Template
+{% endcomment %}
+
+{{ 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css' | stylesheet_tag }}
+
+<style>
+  ${styleCSS}
+  
+  /* Additional layout styling for product page centering */
+  .product-page-main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 100px 20px 60px;
+      position: relative;
+      z-index: 1;
+  }
+  .back-link-wrapper {
+      margin-bottom: 24px;
+  }
+  .back-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-family: var(--font-heading);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: var(--transition-smooth);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+  }
+  .back-link:hover {
+      color: var(--primary);
+  }
+  .product-page-container {
+      margin-top: 10px;
+  }
+</style>
+
+<div class="glaze-theme-wrapper">
+  <!-- Dynamic Spotlights & Backdrop Grid -->
+  <div class="blob-container">
+    <div class="blob blob-cyan"></div>
+    <div class="blob blob-magenta"></div>
+    <div class="blob blob-indigo"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="main-header" style="background: rgba(7, 8, 13, 0.75); top: 10px; height: 65px;">
+    <a href="/" class="logo">
+      <span class="logo-accent">GLA</span>ZE<span class="logo-tm">®</span>
+    </a>
+    <button class="cart-btn" id="cart-btn" aria-label="Open Cart">
+      <i class="fa-solid fa-bag-shopping"></i>
+      <span class="cart-badge">0</span>
+    </button>
+  </header>
+
+  <!-- Product Details Layout -->
+  <main class="product-page-main">
+    <div class="back-link-wrapper">
+      <a href="/" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to catalog</a>
+    </div>
+
+    <div class="product-page-container glass-card" style="padding: 40px; border-radius: 24px;">
+      <div class="modal-body-grid">
+        <!-- Media Column -->
+        <div class="modal-img-wrapper glass-card">
+          <div class="glass-reflection-shine"></div>
+          <img src="{% if product.featured_image %}{{ product.featured_image | image_url: width: 800 }}{% else %}https://files.catbox.moe/hgn95m.jpg{% endif %}" alt="{{ product.title | escape }}" class="modal-product-img">
+        </div>
+        
+        <!-- Details Column -->
+        <div class="modal-details">
+          <span class="modal-category">{{ product.type | escape }}</span>
+          <h1 class="modal-product-name" style="font-size: 2.2rem; margin-top: 5px;">{{ product.title | escape }}</h1>
+          
+          <div class="modal-rating-row">
+            <div class="stars">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <span class="reviews-count">(124 reviews)</span>
+          </div>
+
+          <span class="modal-product-price" style="font-size: 1.8rem; margin: 15px 0 20px;">{{ product.price | money }}</span>
+          
+          <div class="modal-product-desc" id="product-description-container">
+            {{ product.description }}
+          </div>
+          
+          <div style="margin: 25px 0;">
+            <h4 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px;">Select Size</h4>
+            <div class="size-selector" id="product-size-selector">
+              {% for variant in product.variants %}
+                <button class="size-btn {% if forloop.first %}active{% endif %}" data-size="{{ variant.title | escape }}" data-variant-id="{{ variant.id }}">
+                  {{ variant.title | escape }}
+                </button>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Dynamic Specifications -->
+          <div class="modal-specs-grid" id="product-specs-grid"></div>
+
+          <button class="btn btn-primary glow-effect" id="add-to-bag-btn" style="margin-top: 30px; width: 100%;">
+            <span>Add to Shopping Bag</span>
+            <i class="fa-solid fa-bag-shopping"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Shopping Cart Slide-out Drawer -->
+  <div class="cart-drawer-overlay" id="cart-drawer-overlay">
+    <div class="cart-drawer glass-card">
+      <div class="cart-header">
+        <h3>Shopping Bag (<span id="cart-count">0</span>)</h3>
+        <button class="close-cart-btn" id="close-cart-btn" aria-label="Close Cart">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="cart-items" id="cart-items-container"></div>
+      <div class="cart-footer">
+        <div class="cart-subtotal">
+          <span>Subtotal</span>
+          <span id="cart-subtotal-value">$0.00</span>
+        </div>
+        <p class="cart-shipping-notice">Shipping and taxes calculated at checkout.</p>
+        <button class="btn btn-primary btn-checkout" id="checkout-btn" disabled>
+          <span>Proceed to Checkout</span>
+          <i class="fa-solid fa-lock"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notification container -->
+  <div class="toast-container" id="toast-container"></div>
+</div>
+
+<script>
+// Load active product details into JavaScript
+const currentProduct = {
+  id: "{{ product.id }}",
+  name: "{{ product.title | escape }}",
+  price: {{ product.price | divided_by: 100.0 }},
+  description: "{{ product.description | escape | strip_newlines }}",
+  specs: {},
+  variantsMap: {
+    {% for variant in product.variants %}
+      "{{ variant.title | escape }}": "{{ variant.id }}"{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  }
+};
+
+// Post-process the product specs from description HTML
+if (currentProduct.description.includes('Specifications')) {
+  try {
+    const txt = document.createElement("textarea");
+    txt.innerHTML = currentProduct.description;
+    const rawHtml = txt.value;
+    
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(rawHtml, 'text/html');
+    
+    const liElements = doc.querySelectorAll('li');
+    const specsGrid = document.getElementById("product-specs-grid");
+    
+    let specsHTML = "";
+    liElements.forEach(li => {
+      const strong = li.querySelector('strong');
+      if (strong) {
+        const key = strong.textContent.replace(':', '').trim();
+        const value = li.textContent.replace(strong.textContent, '').trim();
+        currentProduct.specs[key] = value;
+        
+        specsHTML += `
+          <div class="spec-item">
+            <span class="spec-lbl">${key}</span>
+            <span class="spec-val">${value}</span>
+          </div>
+        `;
+      }
+    });
+    
+    if (specsGrid) {
+      specsGrid.innerHTML = specsHTML;
+    }
+    
+    // Replace product description container with cleaned description text
+    const descContainer = document.getElementById("product-description-container");
+    if (descContainer) {
+      const pElements = doc.querySelectorAll('p');
+      if (pElements.length > 0) {
+        descContainer.innerHTML = Array.from(pElements).map(p => p.outerHTML).join('');
+      } else {
+        const parts = rawHtml.split(/<h[23]>/i);
+        descContainer.innerHTML = parts[0].trim();
+      }
+    }
+  } catch (e) {
+    console.error("Failed to parse specifications: ", e);
+  }
+}
+
+let cart = [];
+
+// --- AJAX Cart Controls ---
+const cartBtn = document.getElementById("cart-btn");
+const cartBadge = document.querySelector(".cart-badge");
+const cartDrawerOverlay = document.getElementById("cart-drawer-overlay");
+const closeCartBtn = document.getElementById("close-cart-btn");
+const cartItemsContainer = document.getElementById("cart-items-container");
+const cartSubtotalVal = document.getElementById("cart-subtotal-value");
+const checkoutBtn = document.getElementById("checkout-btn");
+const toastContainer = document.getElementById("toast-container");
+const sizeBtns = document.querySelectorAll(".size-btn");
+const addToBagBtn = document.getElementById("add-to-bag-btn");
+
+document.addEventListener("DOMContentLoaded", () => {
+    setupCartEvents();
+    syncShopifyCart();
+});
+
+function setupCartEvents() {
+    if (cartBtn) {
+        cartBtn.addEventListener("click", () => cartDrawerOverlay.classList.add("active"));
+    }
+    if (closeCartBtn) {
+        closeCartBtn.addEventListener("click", () => cartDrawerOverlay.classList.remove("active"));
+    }
+    if (cartDrawerOverlay) {
+        cartDrawerOverlay.addEventListener("click", (e) => {
+            if (e.target === cartDrawerOverlay) cartDrawerOverlay.classList.remove("active");
+        });
+    }
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener("click", () => window.location.href = '/checkout');
+    }
+    
+    // Size selectors
+    sizeBtns.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            sizeBtns.forEach(b => b.classList.remove("active"));
+            e.target.classList.add("active");
+        });
+    });
+
+    // Add to bag button
+    if (addToBagBtn) {
+        addToBagBtn.addEventListener("click", () => {
+            const activeSizeBtn = document.querySelector(".size-btn.active");
+            const selectedSize = activeSizeBtn ? activeSizeBtn.getAttribute("data-size") : "M";
+            addToCart(currentProduct, selectedSize);
+        });
+    }
+}
+
+function syncShopifyCart() {
+    fetch('/cart.js')
+        .then(res => res.json())
+        .then(data => {
+            cart = data.items.map(item => ({
+                product: {
+                    id: item.product_id,
+                    name: item.product_title,
+                    price: item.price / 100.0,
+                    image: item.image
+                },
+                size: item.variant_options[0] || "M",
+                quantity: item.quantity,
+                variantId: item.id
+            }));
+            updateCartUI(data.total_price / 100.0, data.item_count);
+        })
+        .catch(err => console.error("Error syncing cart: ", err));
+}
+
+function addToCart(product, size) {
+    const variantId = product.variantsMap ? product.variantsMap[size] : null;
+    if (!variantId) {
+        showToast("Error adding to cart. Size variant invalid.", "fa-circle-exclamation");
+        return;
+    }
+
+    fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            items: [{
+                id: String(variantId),
+                quantity: 1
+            }]
+        })
+    })
+    .then(res => res.json())
+    .then(() => {
+        syncShopifyCart();
+        cartDrawerOverlay.classList.add("active");
+        showToast(`Added ${product.name} (${size}) to bag.`, "fa-bag-shopping");
+    })
+    .catch(err => {
+        console.error("Cart add error: ", err);
+        showToast("Failed to add to bag. Out of stock.", "fa-circle-exclamation");
+    });
+}
+
+function changeQuantity(variantId, newQty) {
+    fetch('/cart/change.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            id: String(variantId),
+            quantity: newQty
+        })
+    })
+    .then(res => res.json())
+    .then(() => {
+        syncShopifyCart();
+    })
+    .catch(err => console.error("Error updating quantity: ", err));
+}
+
+// Render Cart UI for standalone product page
+function updateCartUI(totalPrice = 0, itemCount = 0) {
+    cartItemsContainer.innerHTML = "";
+
+    if (cart.length === 0) {
+        cartItemsContainer.innerHTML = `
+            <div class="cart-empty-message">
+                <i class="fa-solid fa-wind"></i>
+                <p>Your bag is empty.</p>
+                <button class="btn btn-secondary close-cart-btn-action" style="font-size:0.85rem; padding:10px 20px;">Browse Runway</button>
+            </div>
+        `;
+
+        const browseBtn = cartItemsContainer.querySelector(".close-cart-btn-action");
+        if (browseBtn) {
+            browseBtn.addEventListener("click", () => {
+                cartDrawerOverlay.classList.remove("active");
+            });
+        }
+
+        cartBadge.classList.remove("active");
+        cartBadge.innerText = "0";
+        cartSubtotalVal.innerText = "$0.00";
+        checkoutBtn.disabled = true;
+        return;
+    }
+
+    cart.forEach((item) => {
+        const cartItemEl = document.createElement("div");
+        cartItemEl.className = "cart-item";
+        cartItemEl.innerHTML = `
+            <div class="cart-item-img-wrapper">
+                <img src="${item.product.image}" alt="${item.product.name}">
+            </div>
+            <div class="cart-item-info">
+                <h4 class="cart-item-name">${item.product.name}</h4>
+                <span class="cart-item-size">Size: ${item.size}</span>
+                <span class="cart-item-price">$${item.product.price.toFixed(2)}</span>
+                <div class="cart-item-actions">
+                    <div class="qty-controls">
+                        <button class="qty-btn dec-qty-btn">-</button>
+                        <span class="qty-val">${item.quantity}</span>
+                        <button class="qty-btn inc-qty-btn">+</button>
+                    </div>
+                    <button class="btn-remove-item" title="Remove Item">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        cartItemEl.querySelector(".dec-qty-btn").addEventListener("click", () => {
+            changeQuantity(item.variantId, item.quantity - 1);
+        });
+
+        cartItemEl.querySelector(".inc-qty-btn").addEventListener("click", () => {
+            changeQuantity(item.variantId, item.quantity + 1);
+        });
+
+        cartItemEl.querySelector(".btn-remove-item").addEventListener("click", () => {
+            changeQuantity(item.variantId, 0);
+        });
+
+        cartItemsContainer.appendChild(cartItemEl);
+    });
+
+    cartBadge.innerText = itemCount;
+    cartBadge.classList.add("active");
+    cartSubtotalVal.innerText = `$${totalPrice.toFixed(2)}`;
+    checkoutBtn.disabled = false;
+}
+
+function showToast(message, iconName = "fa-info-circle") {
+    if (!toastContainer) return;
+    const toast = document.createElement("div");
+    toast.className = "toast glass-card";
+    toast.innerHTML = `
+        <i class="fa-solid ${iconName}"></i>
+        <span>${message}</span>
+    `;
+    toastContainer.appendChild(toast);
+    setTimeout(() => {
+        toast.classList.add("toast-fade-out");
+        toast.addEventListener("animationend", () => {
+            toast.remove();
+        });
+    }, 3500);
+}
+</script>

@@ -1007,6 +1007,11 @@ writeFileSync('./temp-shopify-theme/layout/theme.liquid', themeLiquid, 'utf-8');
 // Write index.liquid
 writeFileSync('./temp-shopify-theme/templates/index.liquid', "{% section 'glaze-storefront' %}", 'utf-8');
 
+// Compile product.liquid standalone product template!
+let productLiquid = readFileSync('src/product_template.liquid', 'utf-8');
+productLiquid = productLiquid.replace('${styleCSS}', styleCSS);
+writeFileSync('./temp-shopify-theme/templates/product.liquid', productLiquid, 'utf-8');
+
 // Write settings_schema.json
 const schema = [
   {
