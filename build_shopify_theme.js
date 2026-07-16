@@ -307,6 +307,63 @@ if (PRODUCTS.length === 0) {
       },
       sizes: ["28x30", "30x30", "32x30", "34x32", "36x32"],
       variantsMap: { "32x30": "1" }
+    },
+    {
+      id: "B0FP5BYXVR",
+      name: "GLAZE Palazzo-Flow™ Wide-Leg Pants",
+      category: "activewear",
+      categoryLabel: "Activewear / Imported",
+      price: 35.98,
+      rating: 4.5,
+      reviewsCount: 2745,
+      image: "https://files.catbox.moe/br8636.jpg",
+      tag: "Imported Palazzo",
+      description: "Flowy palazzo drawstring pants woven with light-transmitting silica micro-threads. Behaves like fluid crystal while keeping you completely cool.",
+      specs: {
+        material: "90% Rayon, 10% Micro-Silica Glass Fiber",
+        fit: "Wide Leg Palazzo Cut",
+        comfort: "Drawstring Elastic Waist"
+      },
+      sizes: ["S", "M", "L", "XL"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B0FTSVKP9B",
+      name: "GLAZE Ribbed-Knit™ Tank Top",
+      category: "activewear",
+      categoryLabel: "Activewear / Tops",
+      price: 16.20,
+      rating: 4.6,
+      reviewsCount: 2032,
+      image: "https://files.catbox.moe/wmxx5u.jpg",
+      tag: "Summer Ribbed",
+      description: "Sleek tank top woven with glowing liquid-glass optical micro-threads. Fits like a second skin with stretch-comfort cooling fiber matrix.",
+      specs: {
+        material: "95% Ribbed Cotton, 5% Nano-Silica Fiber",
+        weave: "Friction-Free Micro-Glass Knit",
+        cooling: "Advanced Heat Release Channels"
+      },
+      sizes: ["XS", "S", "M", "L"],
+      variantsMap: { "M": "1" }
+    },
+    {
+      id: "B0785VXRX2",
+      name: "GLAZE Tech-Comfort™ Active Tee",
+      category: "activewear",
+      categoryLabel: "Activewear / Performance",
+      price: 50.00,
+      rating: 4.6,
+      reviewsCount: 25950,
+      image: "https://files.catbox.moe/edsndc.jpg",
+      tag: "Performance Tech",
+      description: "Futuristic short-sleeve athletic active tee. Woven with translucent, quick-drying silica threads that reflect heat away.",
+      specs: {
+        material: "92% Recycled Polyester, 8% Spandex, Nano-Silica Guard",
+        protection: "UPF 50+ Solar Deflector",
+        weave: "Refractive Diamond Tech Weave"
+      },
+      sizes: ["S", "M", "L", "XL", "XXL"],
+      variantsMap: { "M": "1" }
     }
   ];
 }
