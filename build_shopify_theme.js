@@ -375,12 +375,28 @@ function setupEventListeners() {
         }
     });
 
-    // Checkout Action -> Redirect directly to Shopify Checkout!
+    // Checkout Action -> verify the real Shopify cart has items, then redirect.
     checkoutBtn.addEventListener("click", () => {
-        if (window.AYSzvothEK) {
-            window.AYSzvothEK.track('checkout_started');
-        }
-        window.location.href = '/checkout';
+        checkoutBtn.disabled = true;
+        // Re-check the authoritative Shopify cart right before sending to checkout,
+        // so we never redirect the buyer to an empty /checkout.
+        fetch('/cart.js')
+            .then(res => res.json())
+            .then(data => {
+                if (!data || data.item_count === 0) {
+                    checkoutBtn.disabled = false;
+                    showToast("Your bag is empty. Add an item before checking out.", "fa-circle-exclamation");
+                    return;
+                }
+                if (window.AYSzvothEK) {
+                    window.AYSzvothEK.track('checkout_started');
+                }
+                window.location.href = '/checkout';
+            })
+            .catch(() => {
+                checkoutBtn.disabled = false;
+                showToast("Couldn't reach checkout. Please try again.", "fa-circle-exclamation");
+            });
     });
 
     // Success Modal Close
@@ -428,6 +444,19 @@ function syncShopifyCart() {
         .catch(err => console.error("Error syncing Shopify cart:", err));
 }
 
+// --- Render star icons for a 0-5 rating ---
+function renderStars(rating) {
+    const r = Math.max(0, Math.min(5, Number(rating) || 0));
+    const full = Math.floor(r);
+    const half = (r - full) >= 0.5 ? 1 : 0;
+    const empty = 5 - full - half;
+    let html = "";
+    for (let i = 0; i < full; i++) html += '<i class="fa-solid fa-star"></i>';
+    if (half) html += '<i class="fa-solid fa-star-half-stroke"></i>';
+    for (let i = 0; i < empty; i++) html += '<i class="fa-regular fa-star"></i>';
+    return html;
+}
+
 // --- Render Product Grid ---
 function renderProducts() {
     if (!productGrid) return;
@@ -457,8 +486,8 @@ function renderProducts() {
                 <div class="product-meta">
                     <span class="product-category">\${product.categoryLabel}</span>
                     <div class="product-rating">
-                        <i class="fa-solid fa-star"></i>
-                        <span>\${product.rating}</span>
+                        <span class="stars-inline">\${renderStars(product.rating)}</span>
+                        <span class="rating-count">\${product.rating} (\${Number(product.reviewsCount).toLocaleString()})</span>
                     </div>
                 </div>
                 <h3 class="product-name">\${product.name}</h3>
@@ -498,28 +527,15 @@ function addToCart(product, size) {
         });
     }
     const variantId = product.variantsMap ? product.variantsMap[size] : null;
-    
-    // Detect if this is a mock product (non-Shopify numerical ID)
-    const isMock = !variantId || String(variantId).length < 8 || String(variantId) === "1";
-    
-    if (isMock) {
-        const existing = cart.find(item => item.product.id === product.id && item.size === size);
-        if (existing) {
-            existing.quantity += 1;
-        } else {
-            cart.push({
-                product: product,
-                size: size,
-                quantity: 1,
-                variantId: variantId || 'mock-' + Math.random().toString(36).substr(2, 9)
-            });
-        }
-        showToast("Added " + product.name + " to bag!", "fa-bag-shopping");
-        updateCartUI(
-            cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
-            cart.reduce((sum, item) => sum + item.quantity, 0)
-        );
-        cartDrawerOverlay.classList.add("active");
+
+    // A valid Shopify variant ID is a long numeric string. If we don't have one,
+    // the product isn't properly wired to Shopify (collection not set / not imported).
+    // NEVER fake a successful add — that sends buyers to an empty checkout.
+    const isValidVariant = variantId && /^\\d{6,}$/.test(String(variantId));
+
+    if (!isValidVariant) {
+        console.error("No valid Shopify variant ID for", product.name, size, "-> got:", variantId);
+        showToast("Sorry, this item can't be added right now.", "fa-circle-exclamation");
         return;
     }
 
@@ -543,35 +559,19 @@ function addToCart(product, size) {
     })
     .catch(err => {
         console.error("Cart add error: ", err);
-        showToast("Failed to add. Make sure variant is in stock.", "fa-circle-exclamation");
+        showToast("Couldn't add to bag. It may be out of stock.", "fa-circle-exclamation");
     });
 }
 
 // --- Modify Variant Quantity in Shopify Cart (AJAX) ---
-function changeQuantity(variantId, newQty) {
-    const isMock = !variantId || String(variantId).length < 8 || String(variantId).includes('mock') || String(variantId) === "1";
-    if (isMock) {
-        const idx = cart.findIndex(item => item.variantId === variantId);
-        if (idx !== -1) {
-            if (newQty <= 0) {
-                cart.splice(idx, 1);
-            } else {
-                cart[idx].quantity = newQty;
-            }
-            updateCartUI(
-                cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
-                cart.reduce((sum, item) => sum + item.quantity, 0)
-            );
-        }
-        return;
-    }
-
+function changeQuantity(lineKey, newQty) {
+    // Update the authoritative Shopify cart by line key (from /cart.js).
     fetch('/cart/change.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            id: String(variantId),
-            quantity: newQty
+            id: String(lineKey),
+            quantity: Math.max(0, newQty)
         })
     })
     .then(res => res.json())
@@ -632,19 +632,22 @@ function updateCartUI(totalPrice = 0, itemCount = 0) {
             </div>
         \`;
 
+        // Use the Shopify line key (set by syncShopifyCart) for all changes.
+        const lineRef = item.key || item.variantId;
+
         // Handle quantity decrement
         cartItemEl.querySelector(".dec-qty-btn").addEventListener("click", () => {
-            changeQuantity(item.variantId, item.quantity - 1);
+            changeQuantity(lineRef, item.quantity - 1);
         });
 
         // Handle quantity increment
         cartItemEl.querySelector(".inc-qty-btn").addEventListener("click", () => {
-            changeQuantity(item.variantId, item.quantity + 1);
+            changeQuantity(lineRef, item.quantity + 1);
         });
 
         // Handle deletion
         cartItemEl.querySelector(".btn-remove-item").addEventListener("click", () => {
-            changeQuantity(item.variantId, 0);
+            changeQuantity(lineRef, 0);
         });
 
         cartItemsContainer.appendChild(cartItemEl);
@@ -710,22 +713,34 @@ function openProductModal(product) {
             <span class="modal-category">\${product.categoryLabel}</span>
             <h2 class="modal-product-name">\${product.name}</h2>
             <div class="modal-rating-row">
-                <div class="stars">
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                </div>
-                <span class="reviews-count">(\${product.reviewsCount} reviews)</span>
+                <div class="stars">\${renderStars(product.rating)}</div>
+                <span class="reviews-count">\${product.rating} · \${Number(product.reviewsCount).toLocaleString()} reviews</span>
             </div>
             <span class="modal-product-price">\$\${product.price.toFixed(2)}</span>
             <p class="modal-product-desc">\${product.description}</p>
             
             <div style="margin: 20px 0;">
-                <h4 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px;">Select Size</h4>
+                <div class="size-head">
+                    <h4 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; margin: 0;">Select Size</h4>
+                    <button type="button" class="size-guide-toggle"><i class="fa-solid fa-ruler"></i> Size guide</button>
+                </div>
                 <div class="size-selector">
                     \${sizesHTML}
+                </div>
+                <div class="size-guide-panel" hidden>
+                    <table class="size-guide-table">
+                        <thead>
+                            <tr><th>Size</th><th>US</th><th>Bust (in)</th><th>Waist (in)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>XS</td><td>0-2</td><td>31-32</td><td>24-25</td></tr>
+                            <tr><td>S</td><td>4-6</td><td>33-34</td><td>26-27</td></tr>
+                            <tr><td>M</td><td>8-10</td><td>35-37</td><td>28-30</td></tr>
+                            <tr><td>L</td><td>12-14</td><td>38-40</td><td>31-33</td></tr>
+                            <tr><td>XL</td><td>16-18</td><td>41-43</td><td>34-36</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="size-guide-note">Measurements are approximate. If you're between sizes, we suggest sizing up.</p>
                 </div>
             </div>
 
@@ -734,8 +749,23 @@ function openProductModal(product) {
             <button class="btn btn-primary modal-add-to-bag-btn">
                 <i class="fa-solid fa-bag-shopping"></i> Add To Bag
             </button>
+
+            <div class="trust-badges">
+                <div class="trust-badge"><i class="fa-solid fa-truck-fast"></i><span>Free worldwide shipping</span></div>
+                <div class="trust-badge"><i class="fa-solid fa-rotate-left"></i><span>30-day easy returns</span></div>
+                <div class="trust-badge"><i class="fa-solid fa-lock"></i><span>Secure checkout</span></div>
+            </div>
         </div>
     \`;
+
+    // Size Guide Toggle
+    const sizeGuideToggle = modalProductDetails.querySelector(".size-guide-toggle");
+    const sizeGuidePanel = modalProductDetails.querySelector(".size-guide-panel");
+    if (sizeGuideToggle && sizeGuidePanel) {
+        sizeGuideToggle.addEventListener("click", () => {
+            sizeGuidePanel.hidden = !sizeGuidePanel.hidden;
+        });
+    }
 
     // Size Selection Handlers
     const sizeBtns = modalProductDetails.querySelectorAll(".size-btn");

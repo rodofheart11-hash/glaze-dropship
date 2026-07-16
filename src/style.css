@@ -1538,3 +1538,103 @@ body {
     filter: saturate(1.2) contrast(1.1) brightness(0.95) hue-rotate(8deg) drop-shadow(0 0 15px rgba(165, 243, 252, 0.3));
     opacity: 1;
 }
+
+/* ==========================================================================
+   Conversion elements: star ratings, trust badges, size guide
+   ========================================================================== */
+
+.stars-inline,
+.modal-rating-row .stars {
+    color: #fbbf24; /* warm gold stars read as trustworthy */
+    letter-spacing: 1px;
+}
+.product-rating .rating-count {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    margin-left: 4px;
+}
+.modal-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.modal-rating-row .reviews-count {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+}
+
+/* Size guide */
+.size-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.size-guide-toggle {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 0.78rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+}
+.size-guide-toggle:hover { text-decoration: underline; }
+.size-guide-panel {
+    margin-top: 14px;
+    border: 1px solid var(--border-glass);
+    border-radius: 10px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.02);
+}
+.size-guide-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    color: var(--text-main);
+}
+.size-guide-table th,
+.size-guide-table td {
+    padding: 6px 8px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-glass);
+}
+.size-guide-table th { color: var(--text-muted); font-weight: 600; }
+.size-guide-table tr:last-child td { border-bottom: none; }
+.size-guide-note {
+    margin: 10px 0 0;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+/* Trust badges under Add To Bag */
+.trust-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-glass);
+}
+.trust-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+.trust-badge i { color: var(--primary); font-size: 0.9rem; }
+
+/* Trust row in cart drawer footer */
+.cart-trust-row {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 12px;
+    font-size: 0.74rem;
+    color: var(--text-muted);
+}
+.cart-trust-row i { color: var(--primary); margin-right: 4px; }
