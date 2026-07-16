@@ -17,7 +17,14 @@ $images = @(
     @{ Src = "C:\Users\rod\.gemini\antigravity-ide\brain\c10d9abe-c16e-49ff-a8f7-0d762e1761af\clothing_womens_shorts_exact_1784089693977.png"; Dest = "clothing_womens_shorts.jpg" },
     @{ Src = "C:\Users\rod\.gemini\antigravity-ide\brain\c10d9abe-c16e-49ff-a8f7-0d762e1761af\clothing_leggings_exact_1784089711181.png"; Dest = "clothing_leggings.jpg" },
     @{ Src = "C:\Users\rod\.gemini\antigravity-ide\brain\c10d9abe-c16e-49ff-a8f7-0d762e1761af\clothing_golf_polo_exact_1784089727821.png"; Dest = "clothing_golf_polo.jpg" },
-    @{ Src = "C:\Users\rod\.gemini\antigravity-ide\brain\c10d9abe-c16e-49ff-a8f7-0d762e1761af\clothing_jeans_exact_1784089744765.png"; Dest = "clothing_jeans.jpg" }
+    @{ Src = "C:\Users\rod\.gemini\antigravity-ide\brain\c10d9abe-c16e-49ff-a8f7-0d762e1761af\clothing_jeans_exact_1784089744765.png"; Dest = "clothing_jeans.jpg" },
+    @{ Src = "C:\Users\rod\.gemini\antigravity-ide\brain\c10d9abe-c16e-49ff-a8f7-0d762e1761af\clothing_velo_windbreaker_1784170617843.png"; Dest = "clothing_velo_windbreaker.jpg" },
+    @{ Src = "C:\Users\rod\.gemini\antigravity-ide\brain\c10d9abe-c16e-49ff-a8f7-0d762e1761af\clothing_aero_sports_bra_1784170626976.png"; Dest = "clothing_aero_sports_bra.jpg" },
+    @{ Src = "C:\Users\rod\.gemini\antigravity-ide\brain\c10d9abe-c16e-49ff-a8f7-0d762e1761af\clothing_lumina_crop_1784170635559.png"; Dest = "clothing_lumina_crop.jpg" },
+    @{ Src = "C:\Users\rod\.gemini\antigravity-ide\brain\c10d9abe-c16e-49ff-a8f7-0d762e1761af\clothing_thermo_pants_1784170644156.png"; Dest = "clothing_thermo_pants.jpg" },
+    @{ Src = "C:\Users\rod\.gemini\antigravity-ide\brain\c10d9abe-c16e-49ff-a8f7-0d762e1761af\clothing_palazzo_pants_1784170690514.png"; Dest = "clothing_palazzo_pants.jpg" },
+    @{ Src = "C:\Users\rod\.gemini\antigravity-ide\brain\c10d9abe-c16e-49ff-a8f7-0d762e1761af\clothing_ribbed_tank_1784170700084.png"; Dest = "clothing_ribbed_tank.jpg" },
+    @{ Src = "C:\Users\rod\.gemini\antigravity-ide\brain\c10d9abe-c16e-49ff-a8f7-0d762e1761af\clothing_tech_tee_1784170709189.png"; Dest = "clothing_tech_tee.jpg" }
 )
 
 foreach ($img in $images) {
