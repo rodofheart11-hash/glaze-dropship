@@ -1248,11 +1248,16 @@ body {
 .modal-body-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    max-height: 80vh;
+}
+
+.modal-body-grid > * {
+    min-width: 0; /* Prevent image from forcing column expansion */
 }
 
 .modal-img-wrapper {
     width: 100%;
-    aspect-ratio: 1/1.15;
+    height: 100%;
     position: relative;
     background: #0f1015;
 }
@@ -1264,10 +1269,12 @@ body {
 }
 
 .modal-details {
-    padding: 45px;
+    padding: 40px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    overflow-y: auto;
+    max-height: 80vh;
 }
 
 .modal-details .product-category {
